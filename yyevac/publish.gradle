@@ -1,0 +1,33 @@
+ext {
+    // 此处填写刚才建立的maven仓库的仓库名称
+    bintrayRepo = 'maven'
+    // library的group id
+    publishedGroupId = 'com.yy.yyeva'
+    // library网站地址
+    siteUrl = 'https://github.com/YY-LIVE/YYEVA-Android'
+    // library仓库地址
+    gitUrl = 'https://github.com/YY-LIVE/YYEVA-Android'
+
+    // 注册时候的bintray username
+    developerId = 'hexleo'
+    // 开发者名称
+    developerName = 'hexleo'
+    // 开发者邮箱
+    developerEmail = 'wanghailiang333@gmail.com'
+
+    // 开源许可证
+    licenseName = 'MIT'
+    licenseUrl = 'http://opensource.org/licenses/MIT'
+    allLicenses = ["MIT"]
+
+    // library artifact（单个module一般就填写library name）
+    artifact = 'yyeva'
+    libraryName = 'yyeva'
+    libraryVersion = '1.0.0'
+    libraryDescription = ''
+    // bintrayName 是你在网页Repository页面能看到的名称
+    bintrayName = 'yyeva'
+}
+
+apply from: '../installv1.gradle'
+apply from: '../bintrayv1.gradle'
