@@ -74,7 +74,7 @@ interface IEvaAnimView {
 ### 代码
 
 ## QQ交流群
-![qqgroup](https://github.com/YY-LIVE/YYEVA-Web/blob/main/docs/assets/qqgroup.png)
+![qqgroup](https://github.com/yylive/YYEVA/blob/master/img/qqgroup.png)
 
 ## Dev Team
 <table>
