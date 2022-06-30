@@ -36,15 +36,15 @@ interface IEvaAnimView {
     fun setScaleType(scaleType: IScaleType)
 
     fun setMute(isMute: Boolean)
-
+    //播放文件
     fun startPlay(file: File)
-
+    //播放本地文件
     fun startPlay(assetManager: AssetManager, assetsPath: String)
 
     fun startPlay(evaFileContainer: IEvaFileContainer)
-
+    //停止播放
     fun stopPlay()
-
+    //是否正在运行
     fun isRunning(): Boolean
 
     fun getRealSize(): Pair<Int, Int>

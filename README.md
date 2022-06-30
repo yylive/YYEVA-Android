@@ -7,7 +7,7 @@
 
 ## 介绍
 
-+ YYEVAPlayer 是一个轻量的动画渲染库。你可以使用工具从 Adobe After Effects 中导出动画文件，然后使用 YYEVAPlayer 在移动设备上渲染并播放。
++ YYEVAPlayer 是一个轻量的动画渲染库。通过[这里](https://github.com/YY-LIVE/YYEVA-docs/blob/main/docs/YYEVA%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83.md)导出动画文件
 
 + YYEVA-Android 使用Native Opengles 渲染视频，为你提供高性能、低开销的动画体验。
 
@@ -38,7 +38,39 @@ dependencies {
 ```
 
 ### 放置混合 mp4 文件 在Assets中
+如需要使用SurfaceView可以使用EvaAnimView，需要使用TextureView可以使用EvaAnimViewV3，demo使用EvaAnimViewV3
+
+替换元素接口
+```kotlin
+interface IEvaFetchResource {
+    // 获取图片 (暂时不支持Bitmap.Config.ALPHA_8 主要是因为一些机型opengl兼容问题)
+    fun setImage(resource: EvaResource, result:(Bitmap?) -> Unit)
+
+    // 获取文字
+    fun setText(resource: EvaResource, result:(String?) -> Unit)
+
+    // 资源释放通知
+    fun releaseSrc(resources: List<EvaResource>)
+}
+```
 具体实现可以参照EvaDemoActivity的代码实验，替换自身mp4中的元素。
+
+播放使用IEvaAnimView接口
+```kotlin
+interface IEvaAnimView {
+    ...
+    //播放文件
+    fun startPlay(file: File)
+    //播放本地文件
+    fun startPlay(assetManager: AssetManager, assetsPath: String)
+    //停止播放
+    fun stopPlay()
+    //是否正在运行
+    fun isRunning(): Boolean
+    ...
+}
+```
+
 ### 代码
 
 ## QQ交流群
