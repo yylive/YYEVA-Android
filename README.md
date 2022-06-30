@@ -33,7 +33,7 @@ allprojects {
 
 ```groovy
 dependencies {
-	implementation 'com.github.YY-LIVE.YYEVA-Android:yyeva:1.0.0_alpha_0.0.4'
+	implementation 'com.github.yylive:yyeva:1.0.0_alpha_0.0.4'
 }
 ```
 
