@@ -10,7 +10,7 @@ import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import com.yy.yyeva.EvaAnimConfig
-import com.yy.yyeva.R
+import com.yy.yyeva.player.R
 import com.yy.yyeva.inter.IEvaAnimListener
 import com.yy.yyeva.inter.IEvaFetchResource
 import com.yy.yyeva.inter.OnEvaResourceClickListener
