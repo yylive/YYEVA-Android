@@ -33,7 +33,7 @@ allprojects {
 
 ```groovy
 dependencies {
-	implementation 'com.github.YY-LIVE.YYEVA-Android:yyeva:1.0.0_alpha_0.0.4'
+	implementation 'com.github.yylive:yyeva:1.0.0_alpha_0.0.4'
 }
 ```
 
@@ -74,7 +74,7 @@ interface IEvaAnimView {
 ### 代码
 
 ## QQ交流群
-![qqgroup](https://github.com/YY-LIVE/YYEVA-Web/blob/main/docs/assets/qqgroup.png)
+![qqgroup](https://github.com/yylive/YYEVA/blob/master/img/qqgroup.png)
 
 ## Dev Team
 <table>
