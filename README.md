@@ -12,10 +12,10 @@
 + YYEVA-Android 使用Native Opengles 渲染视频，为你提供高性能、低开销的动画体验。
 
 ## 平台支持
-+ 支持 [Android](https://github.com/yylive/YYEVA-Android)、[IOS](https://github.com/yylive/YYEVA-iOS)、[Web](https://github.com/yylive/YYEVA-Web)、百度小程序  点击了解详细接入
-+ 素材制作 AE插件 [详情](https://github.com/YY-LIVE/YYEVA-AE-Plugin)
-+ 数据结构定义 [详情](https://github.com/YY-LIVE/YYEVA-format)
-+ 项目相关文章、设计规范等 [详情](https://github.com/YY-LIVE/YYEVA-docs)
++ 支持 [Android](https://github.com/YY-LIVE/YYEVA-Android)、[IOS](https://github.com/YY-LIVE/YYEVA-iOS)、[Web](https://github.com/YY-LIVE/YYEVA-Web)、百度小程序  点击了解详细接入   
++ 资源制作的AE插件使用规范 [详情](https://github.com/yylive/YYEVA/tree/master/AEP)
++ 数据结构定义 [详情](https://github.com/yylive/YYEVA/blob/master/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.md)
++ 项目相关文章、设计规范等 [详情](https://github.com/yylive/YYEVA)
 
 ## 用法
 
