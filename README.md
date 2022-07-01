@@ -18,7 +18,7 @@
 
 ## 用法
 
-我们在这里介绍 YYEVA-Android 的用法。想要知道如何导出动画，点击[这里](https://github.com/yylive/YYEVA-docs/blob/main/docs/YYEVA%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83.md)。
+我们在这里介绍 YYEVA-Android 的用法。想要知道如何导出动画，点击[这里](https://github.com/yylive/YYEVA/blob/main/YYEVA%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83.md)。
 
 ### 使用Gradle安装依赖
 build.gradle
