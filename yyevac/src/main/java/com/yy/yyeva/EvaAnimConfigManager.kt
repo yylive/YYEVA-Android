@@ -40,10 +40,10 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
                 isParsingConfig = false
                 return EvaConstant.REPORT_ERROR_TYPE_PARSE_CONFIG
             }
-            if (config?.isDefaultConfig == true && !enableVersion1) {
-                isParsingConfig = false
-                return EvaConstant.REPORT_ERROR_TYPE_PARSE_CONFIG
-            }
+//            if (config?.isDefaultConfig == true && !enableVersion1) {
+//                isParsingConfig = false
+//                return EvaConstant.REPORT_ERROR_TYPE_PARSE_CONFIG
+//            }
             // 插件解析配置
             val resultCode = config?.let {
                 playerEva.pluginManager.onConfigCreate(it)

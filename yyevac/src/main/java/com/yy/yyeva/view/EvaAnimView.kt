@@ -93,6 +93,13 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         addView(innerSurfaceView)
     }
 
+    private val updateTextureLayout = Runnable {
+        innerSurfaceView?.let {
+            val lp = scaleTypeUtil.getLayoutParam(it)
+            it.layoutParams = lp
+        }
+    }
+
 
     init {
         hide()
@@ -330,5 +337,9 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
             ELog.e(TAG, "failed to release mSurfaceTexture= $surfaceTexture: ${error.message}", error)
         }
         surfaceTexture = null
+    }
+
+    override fun updateTextureViewLayout() {
+        uiHandler.post(updateTextureLayout)
     }
 }

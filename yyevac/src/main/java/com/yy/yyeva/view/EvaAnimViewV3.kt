@@ -97,6 +97,12 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
         addView(innerTextureView)
     }
 
+    private val updateTextureLayout = Runnable {
+        innerTextureView?.let {
+            val lp = scaleTypeUtil.getLayoutParam(it)
+            it.layoutParams = lp
+        }
+    }
 
     init {
         hide()
@@ -104,6 +110,9 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
         playerEva.evaAnimListener = animProxyListener
     }
 
+    override fun updateTextureViewLayout() {
+        uiHandler.post(updateTextureLayout)
+    }
 
     override fun prepareTextureView() {
         if (onSizeChangedCalled) {

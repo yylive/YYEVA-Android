@@ -88,11 +88,18 @@ JNIEXPORT void JNICALL YYEVA(setRenderConfig)(
         JNIEnv *env, jobject instance, jstring json) {
     const char *cJson = env->GetStringUTFChars(json, JNI_FALSE);
     EvaAnimeConfig* config = EvaAnimeConfig::parse(cJson);
-    if (controller != nullptr) {
+    if (controller != nullptr && config != NULL) {
         controller->setRenderConfig(config);
     }
 }
 
+JNIEXPORT void JNICALL YYEVA(defaultConfig)(
+        JNIEnv *env, jobject instance, jint _videoWidth, jint _videoHeight, jint _defaultVideoMode) {
+    EvaAnimeConfig* config = EvaAnimeConfig::defaultConfig((int)_videoWidth, (int)_videoHeight, (int)_defaultVideoMode);
+    if (controller != nullptr && config != NULL) {
+        controller->setRenderConfig(config);
+    }
+}
 
 JNIEXPORT void JNICALL YYEVA(renderFrame)(
         JNIEnv *env, jobject instance) {

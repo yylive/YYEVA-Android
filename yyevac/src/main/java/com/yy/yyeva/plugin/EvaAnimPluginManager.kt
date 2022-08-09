@@ -67,6 +67,7 @@ class EvaAnimPluginManager(val playerEva: EvaAnimPlayer) {
     }
 
     fun onRendering() {
+        if (playerEva.configManager.config?.isMix == false) return
         if (decodeIndex > frameIndex + 1 || frameDiffTimes >= DIFF_TIMES) {
             ELog.i(TAG, "jump frameIndex= $frameIndex,decodeIndex=$decodeIndex,frameDiffTimes=$frameDiffTimes")
             frameIndex = decodeIndex
