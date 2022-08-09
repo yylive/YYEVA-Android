@@ -48,4 +48,6 @@ interface IEvaAnimView {
     fun isRunning(): Boolean
 
     fun getRealSize(): Pair<Int, Int>
+
+    fun updateTextureViewLayout()
 }

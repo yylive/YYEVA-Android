@@ -35,6 +35,8 @@ object EvaJniUtil {
      */
     external fun setRenderConfig(json: String)
 
+    external fun defaultConfig(width: Int, height: Int, defaultVideoMode: Int = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE)
+
     /**
      * 设置动效元素bitmap数据
      */

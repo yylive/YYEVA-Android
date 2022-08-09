@@ -32,6 +32,7 @@ public:
     bool isMix = false;
 
     static EvaAnimeConfig* parse(const char* json);
+    static EvaAnimeConfig* defaultConfig(int _videoWidth, int _videoHeight, int defaultVideoMode);
 };
 
 

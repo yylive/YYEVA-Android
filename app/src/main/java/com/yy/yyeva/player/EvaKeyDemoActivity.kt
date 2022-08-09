@@ -31,7 +31,7 @@ import kotlin.math.ceil
  *
  * 必须使用YYEVA插件生成对应的mp4才能播放
  */
-class EvaDemoActivity : Activity(), IEvaAnimListener {
+class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
 
     companion object {
         private const val TAG = "EvaDemoActivity"
@@ -44,7 +44,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
 
     // 视频信息
     data class VideoInfo(val fileName: String, val md5: String)
-    private val videoInfo = VideoInfo("normal_264_mid.mp4", "400a778f258ed6bd02ec32defe8ca8be")
+    private val videoInfo = VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be")
 
 
     // 动画View
@@ -130,7 +130,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
         animView.setOnResourceClickListener(object : OnEvaResourceClickListener {
             override fun onClick(resource: EvaResource) {
                 Toast.makeText(
-                    this@EvaDemoActivity,
+                    this@EvaKeyDemoActivity,
                     "tag=${resource.tag} onClick",
                     Toast.LENGTH_LONG
                 ).show()

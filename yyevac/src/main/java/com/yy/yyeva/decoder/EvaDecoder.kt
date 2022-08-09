@@ -12,6 +12,7 @@ import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
 import com.yy.yyeva.util.EvaJniUtil
 import com.yy.yyeva.util.SpeedControlUtil
+import org.json.JSONObject
 
 
 abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
@@ -88,7 +89,13 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
         playerEva.configManager.defaultConfig(videoWidth, videoHeight)
         playerEva.configManager.config?.apply {
 //            render?.setAnimConfig(this)
-            EvaJniUtil.setRenderConfig(jsonConfig.toString())
+            if (isDefaultConfig) {
+                EvaJniUtil.defaultConfig(videoWidth, videoHeight, defaultVideoMode)
+                playerEva.evaAnimListener?.onVideoConfigReady(this)
+                playerEva.evaAnimView.updateTextureViewLayout()
+            } else if (jsonConfig != null) {
+                EvaJniUtil.setRenderConfig(jsonConfig.toString())
+            }
         }
 
         playerEva.pluginManager.onRenderCreate()

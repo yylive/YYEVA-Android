@@ -175,3 +175,42 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
     }
     return nullptr;
 }
+
+EvaAnimeConfig* EvaAnimeConfig::defaultConfig(int _videoWidth, int _videoHeight, int defaultVideoMode) {
+    auto* config = new EvaAnimeConfig();
+    config->videoWidth = _videoWidth;
+    config->videoHeight = _videoHeight;
+    switch (defaultVideoMode) {
+        case 1: // 视频对齐方式 (兼容老版本视频模式) // 视频左右对齐（alpha左\rgb右）
+            config->width = _videoWidth / 2;
+            config->height = _videoHeight;
+            config->alphaPointRect = new PointRect(0, 0, config->width, config->height);
+            config->rgbPointRect = new PointRect(config->width, 0, config->width, config->height);
+            break;
+        case 2:// 视频左右对齐（alpha左\rgb右）
+            config->width = _videoWidth;
+            config->height = _videoHeight / 2;
+            config->alphaPointRect = new PointRect(0, 0, config->width, config->height);
+            config->rgbPointRect = new PointRect(0, config->height, config->width, config->height);
+            break;
+        case 3: // 视频左右对齐（rgb左\alpha右）
+            config->width = _videoWidth / 2;
+            config->height = _videoHeight;
+            config->rgbPointRect = new PointRect(0, 0, config->width, config->height);
+            config->alphaPointRect = new PointRect(config->width, 0, config->width, config->height);
+            break;
+        case 4: // 视频上下对齐（rgb上\alpha下）
+            config->width = _videoWidth;
+            config->height = _videoHeight / 2;
+            config->rgbPointRect = new PointRect(0, 0, config->width, config->height);
+            config->alphaPointRect = new PointRect(0, config->height, config->width, config->height);
+            break;
+        default:
+            config->width = _videoWidth / 2;
+            config->height = _videoHeight;
+            config->rgbPointRect= new PointRect(0, 0, config->width, config->height);
+            config->alphaPointRect = new PointRect(config->width, 0, config->width, config->height);
+            break;
+    }
+    return config;
+}

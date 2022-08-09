@@ -56,7 +56,7 @@ class EvaAnimConfig {
     var fps = 0
     var alphaPointRect = PointRect(0, 0 ,0 ,0) // alpha区域
     var rgbPointRect = PointRect(0, 0, 0, 0) // rgb区域
-    var defaultVideoMode = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL
+    var defaultVideoMode = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE
     var jsonConfig: JSONObject? = null
     var isMix = false
 

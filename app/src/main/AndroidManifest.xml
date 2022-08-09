@@ -24,6 +24,9 @@
         <activity android:name=".EvaDemoActivity" android:screenOrientation="portrait"
             android:exported="true">
         </activity>
+        <activity android:name=".EvaKeyDemoActivity" android:screenOrientation="portrait"
+            android:exported="true">
+        </activity>
     </application>
 
 </manifest>
