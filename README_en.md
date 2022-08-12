@@ -1,29 +1,21 @@
 # YY-EVA <sup>Android</sup>
+> Lightweight,High Performance,Cross Platform,MP4 Gift Player
 
-简体中文 | [English](./README_en.md)
+## Intruduction
++ YYEVAPlayer is a lightweight animation library with a simple yet powerful API。Reference [here](https://github.com/yylive/YYEVA/blob/main/YYEVA%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83.md) can easily export animation resources
++ YYEVA-iOS render with Metal library , providing you with a high-performance, low-cost animation experience.
 
-> 轻量级 高性能 跨平台 MP4 礼物播放器
+## Platform support
++ Platform：[Android](https://github.com/yylive/YYEVA-Android), [iOS](https://github.com/yylive/YYEVA-iOS), [Web](https://github.com/yylive/YYEVA-Web)
++ Generation Tool : [AE plguin](https://github.com/yylive/YYEVA/tree/main/AEP)
++ [Data structure](https://github.com/yylive/YYEVA/blob/main/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.md)
++ [Docs](https://github.com/yylive/YYEVA)
 
-## 支持本项目
-
-请支持我们的项目，点击 GitHub Star, 让更多的人看到该项目
-
-## 介绍
-
-+ YYEVAPlayer 是一个轻量的动画渲染库。通过[这里](https://github.com/yylive/YYEVA/blob/main/YYEVA%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83.md)导出动画文件
-+ YYEVA-Android 使用Native Opengles 渲染视频，为你提供高性能、低开销的动画体验。
-
-## 平台支持
-+ 支持 [Android](https://github.com/yylive/YYEVA-Android)、[IOS](https://github.com/yylive/YYEVA-iOS)、[Web](https://github.com/yylive/YYEVA-Web)   点击了解详细接入   
-+ 资源制作的AE插件使用规范 [详情](https://github.com/yylive/YYEVA/tree/main/AEP)
-+ 数据结构定义 [详情](https://github.com/yylive/YYEVA/blob/main/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.md)
-+ 项目相关文章、设计规范等 [详情](https://github.com/yylive/YYEVA)
-
-## 用法
+## Usage
 
 我们在这里介绍 YYEVA-Android 的用法。想要知道如何导出动画，点击[这里](https://github.com/yylive/YYEVA/blob/main/YYEVA%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83.md)。
 
-### 使用Gradle安装依赖
+### Installation with Gradle
 build.gradle
 ```groovy
 allprojects {
@@ -39,10 +31,10 @@ dependencies {
 }
 ```
 
-### 放置混合 mp4 文件 在Assets中
-如需要使用SurfaceView可以使用EvaAnimView，需要使用TextureView可以使用EvaAnimViewV3，demo使用EvaAnimViewV3
+### Animation with Key
+For SurfaceView can use EvaAnimView，For TextureView can useEvaAnimViewV3，demo show use EvaAnimViewV3
 
-替换元素接口
+change property interface
 ```kotlin
 interface IEvaFetchResource {
     // 获取图片 (暂时不支持Bitmap.Config.ALPHA_8 主要是因为一些机型opengl兼容问题)
@@ -55,9 +47,9 @@ interface IEvaFetchResource {
     fun releaseSrc(resources: List<EvaResource>)
 }
 ```
-具体实现可以参照EvaDemoActivity的代码实验，替换自身mp4中的元素。
+You can find the example int the project in app module.
 
-播放使用IEvaAnimView接口
+Play with IEvaAnimView interface.
 ```kotlin
 interface IEvaAnimView {
     ...
@@ -74,11 +66,11 @@ interface IEvaAnimView {
 ```
  
 
-## QQ交流群
+## QQexchange group
 ![qqgroup](https://github.com/yylive/YYEVA/blob/main/img/qqgroup.png)
 
 ## 鸣谢 
-+ 感谢 [vap](https://github.com/Tencent/vap) 优秀的混合渲染方案、项目Render混合部分重用了 vap的方案
++ Thanks [vap](https://github.com/Tencent/vap) , our decoder module with good experiences of it.
 
 ## Dev Team
 <table>
