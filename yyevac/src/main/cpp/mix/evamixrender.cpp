@@ -152,7 +152,8 @@ float *EvaMixRender::transColor(int color) {
 //转换RGB颜色 color string转为color RGB色值
 float *EvaMixRender::transColor(std::string color) {
     if (color == "") {
-        return nullptr;
+        auto* argb = new float[4]{1.0f};
+        return argb;
     }
 //    int num = std::stoi(color, NULL, 16);
 //    int num = std::stoi(color, nullptr, 16);
