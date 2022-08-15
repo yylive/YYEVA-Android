@@ -119,17 +119,20 @@ void RenderController::mixRendering(int frameIndex) {
     if (videoTextureId == -1) return;
 
     curFrameIndex = frameIndex;
-
-    list<EvaFrame> list = frameAll->map.find(frameIndex)->second.list;
+    if (frameAll!= nullptr && !frameAll->map.empty()) {
+        list<EvaFrame> list = frameAll->map.find(frameIndex)->second.list;
 //    std::list<EvaFrame>::iterator it;
 //    for (it = list.begin(); it != list.end(); ++it) {
 //        EvaSrc src = srcMap->map.find(it->srcId)->second;
 //        mixRender->rendFrame(videoTextureId, config, *it, src);
 //    }
 
-    for (EvaFrame frame: list) {
-        EvaSrc src = srcMap->map.find(frame.srcId)->second;
-        mixRender->rendFrame(videoTextureId, config, &frame, &src);
+        if (srcMap != nullptr && !srcMap->map.empty()) {
+            for (EvaFrame frame: list) {
+                EvaSrc src = srcMap->map.find(frame.srcId)->second;
+                mixRender->rendFrame(videoTextureId, config, &frame, &src);
+            }
+        }
     }
 }
 
