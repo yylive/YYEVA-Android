@@ -10,18 +10,14 @@ import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import com.yy.yyeva.EvaAnimConfig
-import com.yy.yyeva.player.R
 import com.yy.yyeva.inter.IEvaAnimListener
-import com.yy.yyeva.inter.IEvaFetchResource
 import com.yy.yyeva.inter.OnEvaResourceClickListener
 import com.yy.yyeva.mix.EvaResource
-import com.yy.yyeva.util.ELog
-import com.yy.yyeva.util.IELog
-import com.yy.yyeva.util.ScaleType
 import java.io.File
 import java.util.*
 import android.text.TextPaint
 import android.util.Log
+import com.yy.yyeva.util.*
 import com.yy.yyeva.view.EvaAnimViewV3
 import kotlinx.android.synthetic.main.activity_anim_simple_demo_p.*
 import kotlin.math.abs
@@ -31,7 +27,7 @@ import kotlin.math.ceil
  *
  * 必须使用YYEVA插件生成对应的mp4才能播放
  */
-class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
+class EvaDownloadDemoActivity : Activity(), IEvaAnimListener {
 
     companion object {
         private const val TAG = "EvaDemoActivity"
@@ -45,7 +41,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
     // 视频信息
     data class VideoInfo(val fileName: String, val md5: String)
     private val videoInfo = VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be")
-
+    private var evaDownloader: EvaDownloader? = null
 
     // 动画View
     private lateinit var animView: EvaAnimViewV3
@@ -57,7 +53,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_anim_simple_demo_p)
-        loadFile()
+        init()
     }
 
     private fun init() {
@@ -130,7 +126,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         animView.setOnResourceClickListener(object : OnEvaResourceClickListener {
             override fun onClick(resource: EvaResource) {
                 Toast.makeText(
-                    this@EvaKeyDemoActivity,
+                    this@EvaDownloadDemoActivity,
                     "tag=${resource.tag} onClick",
                     Toast.LENGTH_LONG
                 ).show()
@@ -143,7 +139,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
          */
-        play(videoInfo)
+        animView.startPlay("http://lxcode.bs2cdn.yy.com/084e52e9-fd58-4967-ba8b-cd3c4d6c1849.mp4")
     }
 
     fun generateBitmap(text: String, textSizePx: Int, textColor: Int): Bitmap {
@@ -178,6 +174,20 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
 //            } else {
 //                ELog.e(TAG, "md5 is not match, error md5=$md5")
 //            }
+        }.start()
+    }
+
+    private fun play(videoInfo: EvaVideoEntity) {
+        // 播放前强烈建议检查文件的md5是否有改变
+        // 因为下载或文件存储过程中会出现文件损坏，导致无法播放
+        Thread {
+            val file = videoInfo.mCacheDir
+            ELog.i(TAG, "play file address ${file.absolutePath}")
+            if (!file.exists()) {
+                ELog.e(TAG, "${file.absolutePath} is not exist")
+                return@Thread
+            }
+            animView.startPlay(file)
         }.start()
     }
 
