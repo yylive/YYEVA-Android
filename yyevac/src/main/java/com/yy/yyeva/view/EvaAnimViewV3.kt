@@ -22,7 +22,6 @@ import com.yy.yyeva.inter.IEvaFetchResource
 import com.yy.yyeva.inter.OnEvaResourceClickListener
 import com.yy.yyeva.util.*
 import java.io.File
-import java.net.URL
 
 open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0):
     IEvaAnimView,
@@ -41,7 +40,6 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
     private var innerTextureView: InnerTextureView? = null
     private var lastEvaFile: IEvaFileContainer? = null
     private val scaleTypeUtil = ScaleTypeUtil()
-    private var evaDownloader: EvaDownloader? = null
 
     // 代理监听
     private val animProxyListener by lazy {
@@ -263,26 +261,6 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
         playerEva.isMute = isMute
     }
 
-    override fun startPlay(url: String) {
-        /**
-         * 开始播放主流程
-         * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
-         */
-        if (evaDownloader == null) {
-            evaDownloader = EvaDownloader(context)
-        }
-        evaDownloader?.decodeFromURL(
-            URL(url),
-            object : EvaDownloader.ParseCompletion {
-                override fun onComplete(videoItem: EvaVideoEntity) {
-                    play(videoItem)
-                }
-
-                override fun onError() {
-                    ELog.e(TAG, "download error")
-                }
-            })
-    }
 
     private fun play(videoInfo: EvaVideoEntity) {
         // 播放前强烈建议检查文件的md5是否有改变
@@ -369,6 +347,5 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
             ELog.e(TAG, "failed to release mSurfaceTexture= $surface: ${error.message}", error)
         }
         surface = null
-        evaDownloader?.stop()
     }
 }

@@ -38,8 +38,6 @@ interface IEvaAnimView {
     fun setMute(isMute: Boolean)
     //播放文件
     fun startPlay(file: File)
-    //播放在线地址
-    fun startPlay(url: String)
 
     //播放本地文件
     fun startPlay(assetManager: AssetManager, assetsPath: String)

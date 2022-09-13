@@ -17,9 +17,11 @@ import java.io.File
 import java.util.*
 import android.text.TextPaint
 import android.util.Log
+import com.yy.yyeva.player.util.EvaDownloader
 import com.yy.yyeva.util.*
 import com.yy.yyeva.view.EvaAnimViewV3
 import kotlinx.android.synthetic.main.activity_anim_simple_demo_p.*
+import java.net.URL
 import kotlin.math.abs
 import kotlin.math.ceil
 
@@ -139,7 +141,7 @@ class EvaDownloadDemoActivity : Activity(), IEvaAnimListener {
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
          */
-        animView.startPlay("http://lxcode.bs2cdn.yy.com/084e52e9-fd58-4967-ba8b-cd3c4d6c1849.mp4")
+        play("http://lxcode.bs2cdn.yy.com/084e52e9-fd58-4967-ba8b-cd3c4d6c1849.mp4")
     }
 
     fun generateBitmap(text: String, textSizePx: Int, textColor: Int): Bitmap {
@@ -189,6 +191,23 @@ class EvaDownloadDemoActivity : Activity(), IEvaAnimListener {
             }
             animView.startPlay(file)
         }.start()
+    }
+
+    private fun play(url: String) {
+        if (evaDownloader == null) {
+            evaDownloader = EvaDownloader(this)
+        }
+        evaDownloader?.decodeFromURL(
+            URL(url),
+            object : EvaDownloader.ParseCompletion {
+                override fun onComplete(videoItem: EvaVideoEntity) {
+                    play(videoItem)
+                }
+
+                override fun onError() {
+                    ELog.e(TAG, "download error")
+                }
+            })
     }
 
     /**
@@ -266,6 +285,11 @@ class EvaDownloadDemoActivity : Activity(), IEvaAnimListener {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        evaDownloader?.stop()
+        evaDownloader = null
+    }
 
     private fun initTestView() {
         btnLayout.visibility = View.VISIBLE

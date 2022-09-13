@@ -1,7 +1,8 @@
-package com.yy.yyeva.util
+package com.yy.yyeva.player.util
 
 import android.content.Context
 import android.os.Environment
+import com.yy.yyeva.util.ELog
 import java.io.File
 import java.net.URL
 import java.security.MessageDigest
@@ -41,7 +42,7 @@ object EvaCache {
         cacheDir = context.getExternalFilesDir(null)?.absolutePath ?: Environment.getExternalStorageDirectory().path
         cacheDir = "$cacheDir/"
         File(cacheDir).takeIf { !it.exists() }?.mkdirs()
-        this.type = type
+        EvaCache.type = type
     }
 
     /**

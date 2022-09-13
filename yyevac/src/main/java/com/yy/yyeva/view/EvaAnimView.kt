@@ -42,7 +42,6 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     private var innerSurfaceView: InnerSurfaceView? = null
     private var lastEvaFile: IEvaFileContainer? = null
     private val scaleTypeUtil = ScaleTypeUtil()
-    private var evaDownloader: EvaDownloader? = null
 
     // 代理监听
     private val animProxyListener by lazy {
@@ -265,27 +264,6 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         playerEva.isMute = isMute
     }
 
-    override fun startPlay(url: String) {
-        /**
-         * 开始播放主流程
-         * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
-         */
-        if (evaDownloader == null) {
-            evaDownloader = EvaDownloader(context)
-        }
-        evaDownloader?.decodeFromURL(
-            URL(url),
-            object : EvaDownloader.ParseCompletion {
-                override fun onComplete(videoItem: EvaVideoEntity) {
-                    play(videoItem)
-                }
-
-                override fun onError() {
-                    ELog.e(TAG, "download error")
-                }
-            })
-    }
-
     private fun play(videoInfo: EvaVideoEntity) {
         // 播放前强烈建议检查文件的md5是否有改变
         // 因为下载或文件存储过程中会出现文件损坏，导致无法播放
@@ -371,7 +349,6 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
             ELog.e(TAG, "failed to release mSurfaceTexture= $surfaceTexture: ${error.message}", error)
         }
         surfaceTexture = null
-        evaDownloader?.stop()
     }
 
     override fun updateTextureViewLayout() {

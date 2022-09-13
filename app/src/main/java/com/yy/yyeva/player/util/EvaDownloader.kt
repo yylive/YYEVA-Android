@@ -1,8 +1,10 @@
-package com.yy.yyeva.util
+package com.yy.yyeva.player.util
 
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import com.yy.yyeva.util.ELog
+import com.yy.yyeva.util.EvaVideoEntity
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -67,7 +69,10 @@ class EvaDownloader(context: Context?) {
                                 var count: Int
                                 while (true) {
                                     if (cancelled) {
-                                        ELog.i(TAG, "================ eva file download canceled ================")
+                                        ELog.i(
+                                            TAG,
+                                            "================ eva file download canceled ================"
+                                        )
                                         break
                                     }
                                     count = inputStream.read(buffer, 0, 4096)
@@ -77,11 +82,17 @@ class EvaDownloader(context: Context?) {
                                     outputStream.write(buffer, 0, count)
                                 }
                                 if (cancelled) {
-                                    ELog.i(TAG, "================ eva file download canceled ================")
+                                    ELog.i(
+                                        TAG,
+                                        "================ eva file download canceled ================"
+                                    )
                                     return@execute
                                 }
                                 ByteArrayInputStream(outputStream.toByteArray()).use {
-                                    ELog.i(TAG, "================ eva file download complete ================")
+                                    ELog.i(
+                                        TAG,
+                                        "================ eva file download complete ================"
+                                    )
                                     complete(it)
                                 }
                             }
@@ -212,32 +223,22 @@ class EvaDownloader(context: Context?) {
     ) {
         threadPoolExecutor.execute {
             try {
-                ELog.i(TAG, "================ decode $alias from eva cachel file to entity ================")
+                ELog.i(
+                    TAG,
+                    "================ decode $alias from eva cachel file to entity ================"
+                )
                 FileInputStream(EvaCache.buildMp4File(cacheKey)).use { inputStream ->
                     readAsBytes(inputStream)?.let { bytes ->
                         if (isZipFile(bytes)) {
                             this.decodeFromCacheKey(cacheKey, callback, alias)
                         } else {
-                            ELog.i(TAG, "inflate start")
-                            inflate(bytes)?.let {
-                                ELog.i(TAG, "inflate complete")
-                                val videoItem = EvaVideoEntity(
-                                    EvaCache.buildMp4File(cacheKey),
-                                    mFrameWidth,
-                                    mFrameHeight
-                                )
-                                callback?.onComplete(videoItem)
-//                                ELog.i(TAG, "EvaVideoEntity prepare start")
-//                                videoItem.prepare({
-//                                    ELog.i(TAG, "EvaVideoEntity prepare success")
-//                                    this.invokeCompleteCallback(videoItem, callback, alias)
-//                                },playCallback)
-
-                            } ?: this.invokeErrorCallback(
-                                Exception("inflate(bytes) cause exception"),
-                                callback,
-                                alias
+                            ELog.i(TAG, "file start")
+                            val videoItem = EvaVideoEntity(
+                                EvaCache.buildMp4File(cacheKey),
+                                mFrameWidth,
+                                mFrameHeight
                             )
+                            callback?.onComplete(videoItem)
                         }
                     } ?: this.invokeErrorCallback(
                         Exception("readAsBytes(inputStream) cause exception"),
@@ -248,7 +249,10 @@ class EvaDownloader(context: Context?) {
             } catch (e: java.lang.Exception) {
                 this.invokeErrorCallback(e, callback, alias)
             } finally {
-                ELog.i(TAG, "================ decode $alias from eva cachel file to entity end ================")
+                ELog.i(
+                    TAG,
+                    "================ decode $alias from eva cachel file to entity end ================"
+                )
             }
         }
     }
@@ -308,26 +312,6 @@ class EvaDownloader(context: Context?) {
 
                             }
                         }
-//                        ELog.i(TAG, "inflate start")
-//                        inflate(bytes)?.let {
-//                            ELog.i(TAG, "inflate complete")
-//                            val videoItem = EvaVideoEntity(
-//                                EvaCache.buildMp4File(cacheKey),
-//                                mFrameWidth,
-//                                mFrameHeight
-//                            )
-//                            callback?.onComplete(videoItem)
-////                            ELog.i(TAG, "EvaVideoEntity prepare start")
-////                            videoItem.prepare({
-////                                ELog.i(TAG, "EvaVideoEntity prepare success")
-////                                this.invokeCompleteCallback(videoItem, callback, alias)
-////                            },playCallback)
-//
-//                        } ?: this.invokeErrorCallback(
-//                            Exception("inflate(bytes) cause exception"),
-//                            callback,
-//                            alias
-//                        )
                     }
                 } ?: this.invokeErrorCallback(
                     Exception("readAsBytes(inputStream) cause exception"),
@@ -447,20 +431,6 @@ class EvaDownloader(context: Context?) {
                                 }
                                 byteArrayOutputStream.write(buffer, 0, size)
                             }
-//                            byteArrayOutputStream.toString().let {
-//                                JSONObject(it).let {
-//                                    ELog.i(TAG, "spec change to entity success")
-//                                    this.invokeCompleteCallback(
-//                                        EvaVideoEntity(
-//                                            cacheDir,
-//                                            mFrameWidth,
-//                                            mFrameHeight
-//                                        ),
-//                                        callback,
-//                                        alias
-//                                    )
-//                                }
-//                            }
                             ELog.i(TAG, "spec change to entity success")
                             this.invokeCompleteCallback(
                                 EvaVideoEntity(
@@ -567,9 +537,9 @@ class EvaDownloader(context: Context?) {
     }
 
     fun stop() {
-        if (!threadPoolExecutor.isShutdown) {
-            threadPoolExecutor.shutdown()
-        }
+//        if (!threadPoolExecutor.isShutdown) {
+//            threadPoolExecutor.shutdown()
+//        }
     }
 
     // 检查 zip 路径穿透
