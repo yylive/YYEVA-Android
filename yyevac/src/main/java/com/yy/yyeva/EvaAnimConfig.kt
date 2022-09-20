@@ -66,7 +66,7 @@ class EvaAnimConfig {
      */
     fun parse(json: JSONObject): Boolean {
         return try {
-            json.getJSONObject("descript").apply {
+            json.optJSONObject("descript")?.apply {
                 descript = Descript(
                     width = optInt("width"),
                     height = optInt("height"),
@@ -83,7 +83,7 @@ class EvaAnimConfig {
                 rgbPointRect = descript!!.rgbFrame
             }
 
-            json.getJSONArray("effect").apply {
+            json.optJSONArray("effect")?.apply {
                 if (length() > 0) {
                     effects = ArrayList()
                     for (i in 0 until length()) {
@@ -92,7 +92,7 @@ class EvaAnimConfig {
                 }
             }
 
-            json.getJSONArray("datas").apply {
+            json.optJSONArray("datas")?.apply {
                 if (length() > 0) {
                     datas = ArrayList()
                     for (i in 0 until length()) {
@@ -100,7 +100,9 @@ class EvaAnimConfig {
                     }
                 }
             }
-            isMix = true
+            if (!effects.isNullOrEmpty() && !datas.isNullOrEmpty()) {
+                isMix = true
+            }
             true
         } catch (e : JSONException) {
             ELog.e(TAG, "json parse fail $e", e)

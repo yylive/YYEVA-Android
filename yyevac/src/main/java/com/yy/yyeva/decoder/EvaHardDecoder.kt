@@ -237,11 +237,11 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                     if (chunkSize < 0) {
                         decoder.queueInputBuffer(inputBufIndex, 0, 0, 0L, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
                         inputDone = true
-                        ELog.d(TAG, "decode EOS")
+                        ELog.i(TAG, "decode EOS")
                     } else {
                         val presentationTimeUs = extractor.sampleTime
                         decoder.queueInputBuffer(inputBufIndex, 0, chunkSize, presentationTimeUs, 0)
-                        ELog.d(TAG, "submitted frame $inputChunk to dec, size=$chunkSize")
+                        ELog.i(TAG, "submitted frame $inputChunk to dec, size=$chunkSize")
                         inputChunk++
                         extractor.advance()
                     }

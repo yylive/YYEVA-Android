@@ -170,8 +170,8 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
 //            json_value_free(effectValue);
 //            json_value_free(datasJson);
             json_value_free(root_value);
-            return config;
         }
+        return config;
     }
     return nullptr;
 }
