@@ -74,17 +74,29 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         while (evaFileContainer.read(readBytes, 0, readBytes.size) > 0) {
             if (!findStart) { //没找到开头
                 bufStr = String(readBytes)
-                val index = bufStr.indexOf(matchStart)
+                var index = bufStr.indexOf(matchStart)
                 if (index > 0) { //分段1找到匹配开头
                     jsonStr = bufStr.substring(index + matchStart.length)
                     findStart = true
+                    index = jsonStr.indexOf(matchEnd)
+                    if (index > 0) { //同时包含结尾段进行截取
+                        findEnd = true
+                        jsonStr = jsonStr.substring(0, index)
+                        break
+                    }
                 } else {
                     if (readBytesLast.isNotEmpty()) {
                         bufStrS = String(readBytes + readBytesLast)
-                        val indexS = bufStrS.indexOf(matchStart)
+                        var indexS = bufStrS.indexOf(matchStart)
                         if (indexS > 0) { //合并分段找到匹配开头
                             jsonStr = bufStrS.substring(indexS + matchStart.length)
                             findStart = true
+                            indexS = jsonStr.indexOf(matchEnd)
+                            if (indexS > 0) { // 同时包含结尾段进行截取
+                                findEnd = true
+                                jsonStr = jsonStr.substring(0, indexS)
+                                break
+                            }
                         }
                     }
                     //保存分段
