@@ -74,6 +74,9 @@ class EvaAnimConfig {
                     version = optInt("version"),
                     rgbFrame = getFrame(getJSONArray("rgbFrame")),
                     alphaFrame = getFrame(getJSONArray("alphaFrame")),
+                    fps = optInt("fps"),
+                    hasAudio = optBoolean("haAudio"),
+                    hasBg = optBoolean("hasBg")
                 )
                 videoWidth = descript!!.width
                 videoHeight = descript!!.height
@@ -176,9 +179,14 @@ class EvaAnimConfig {
     "alphaFrame": [900, 0, 450, 500] //alpha位置信息
     },
      */
-    data class Descript(val width: Int, val height: Int, val isEffect: Boolean, val version: Int, val rgbFrame: PointRect, val alphaFrame: PointRect) {
+    data class Descript(val width: Int, val height: Int, val isEffect: Boolean, val version: Int,
+                        val rgbFrame: PointRect, val alphaFrame: PointRect,
+                        val fps: Int, val hasAudio: Boolean,
+                        val hasBg: Boolean) {
         override fun toString(): String {
-            return "Descript(width=$width, height=$height, isEffect=$isEffect, version=$version, rgbFrame=$rgbFrame, alphaFrame=$alphaFrame)"
+            return "Descript(width=$width, height=$height, isEffect=$isEffect, version=$version, " +
+                    "rgbFrame=$rgbFrame, alphaFrame=$alphaFrame, " +
+                    "fps=$fps, hasAudio=$hasAudio, hasBg=$hasBg)"
         }
     }
 

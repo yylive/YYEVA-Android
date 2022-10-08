@@ -16,7 +16,7 @@ class EvaMixTouch(private val mixAnimPlugin: EvaMixAnimPlugin) {
         if (viewWith == 0 || viewHeight == 0) return null
 
         when(ev.action) {
-            MotionEvent.ACTION_UP -> {
+            MotionEvent.ACTION_DOWN -> {
                 val x = ev.x * videoWith / viewWith.toFloat()
                 val y = ev.y * videoHeight / viewHeight.toFloat()
                 val list = mixAnimPlugin.frameAll?.map?.get(mixAnimPlugin.curFrameIndex)?.list
