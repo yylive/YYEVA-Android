@@ -27,7 +27,7 @@ allprojects {
 
 ```groovy
 dependencies {
-	implementation 'com.github.yylive.YYEVA-Android:yyeva:1.0.5'
+	implementation 'com.github.yylive.YYEVA-Android:yyeva:1.0.7'
 }
 ```
 

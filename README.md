@@ -35,7 +35,7 @@ allprojects {
 
 ```groovy
 dependencies {
-	implementation 'com.github.yylive.YYEVA-Android:yyeva:1.0.5'
+	implementation 'com.github.yylive.YYEVA-Android:yyeva:1.0.7'
 }
 ```
 
@@ -69,6 +69,8 @@ interface IEvaAnimView {
     fun stopPlay()
     //是否正在运行
     fun isRunning(): Boolean
+    //循环播放
+    fun setLoop(playLoop: Int)
     ...
 }
 ```

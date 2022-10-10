@@ -10,6 +10,7 @@
 /.idea
 .DS_Store
 /build
+/*/jniLibs
 /captures
 .externalNativeBuild
 .cxx

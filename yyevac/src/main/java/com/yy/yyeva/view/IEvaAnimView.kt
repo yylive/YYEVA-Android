@@ -24,7 +24,7 @@ interface IEvaAnimView {
     fun setFetchResource(evaFetchResource: IEvaFetchResource?)
 
     fun setOnResourceClickListener(evaResourceClickListener: OnEvaResourceClickListener?)
-
+    //循环播放数
     fun setLoop(playLoop: Int)
 
     fun supportMask(isSupport: Boolean, isEdgeBlur: Boolean)
