@@ -61,6 +61,10 @@ interface IEvaAnimView {
     fun stopPlay()
     //是否正在运行
     fun isRunning(): Boolean
+    //循环播放
+    fun setLoop(playLoop: Int)
+     //设置背景图
+    fun setBgImage(bg: Bitmap)
     ...
 }
 ```

@@ -8,21 +8,32 @@
 #define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 #define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
 
-RenderController::RenderController():render(nullptr), config(nullptr), frameAll(nullptr), srcMap(nullptr) {
+RenderController::RenderController():render(nullptr),config(nullptr),
+                                    frameAll(nullptr), srcMap(nullptr), bgRender(nullptr), eglCore(new EGLCore()) {
 
 }
 
 RenderController::~RenderController() {
     render = nullptr;
+    bgRender = nullptr;
+    config = nullptr;
+    srcMap = nullptr;
+    frameAll = nullptr;
+    eglCore = nullptr;
 }
 
 GLuint RenderController::initRender(ANativeWindow *window, bool isNeedYUV) {
-    if (isNeedYUV) {
-        ELOGV("use yuv render");
-        render = new YUVRender(window);
-    } else {
-        ELOGV("use normal render");
-        render = new Render(window);
+    if (eglCore != nullptr && window != nullptr) {
+        eglCore->start(window);
+    }
+    if (window != nullptr && render == nullptr) {
+        if (isNeedYUV) {
+            ELOGV("use yuv render");
+            render = new YUVRender();
+        } else {
+            ELOGV("use normal render");
+            render = new Render();
+        }
     }
     return render->getExternalTexture();
 }
@@ -32,6 +43,9 @@ void RenderController::setRenderConfig(EvaAnimeConfig *config) {
         return;
     } else {
         this->config = config;
+    }
+    if (bgRender != nullptr) {
+        bgRender->setAnimeConfig(config);
     }
     if (render != nullptr) {
         render->setAnimeConfig(config);
@@ -50,13 +64,24 @@ void RenderController::videoSizeChange(int newWidth, int newHeight) {
 }
 
 void RenderController::destroyRender() {
+    if (bgRender != nullptr) {
+        bgRender->releaseTexture();
+        bgRender = nullptr;
+    }
+
     if (render != nullptr) {
         render->releaseTexture();
         render = nullptr;
     }
+    if (eglCore != nullptr) {
+        eglCore->release();
+    }
 }
 
 void RenderController::updateViewPoint(int width, int height) {
+    if (bgRender != nullptr) {
+        bgRender->updateViewPort(width, height);
+    }
     if (render != nullptr) {
         render->updateViewPort(width, height);
     }
@@ -72,24 +97,44 @@ int RenderController::getExternalTexture() {
 }
 
 void RenderController::renderFrame() {
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    if (bgRender != nullptr) {
+        bgRender->renderFrame();
+    }
     if (render != nullptr) {
         render->renderFrame();
     }
 }
 
 void RenderController::renderSwapBuffers() {
+    if (bgRender != nullptr) {
+        bgRender->swapBuffers();
+    }
     if (render != nullptr) {
         render->swapBuffers();
+    }
+    if (eglCore != nullptr) {
+        eglCore->swapBuffer();
     }
 }
 
 void RenderController::renderClearFrame() {
+    if (bgRender != nullptr) {
+        bgRender->clearFrame();
+    }
     if (render != nullptr) {
         render->clearFrame();
+    }
+    if (eglCore != nullptr) {
+        eglCore->swapBuffer();
     }
 }
 
 void RenderController::releaseTexture() {
+    if (bgRender != nullptr) {
+        bgRender->releaseTexture();
+    }
     if (render != nullptr) {
         render->releaseTexture();
     }
@@ -220,4 +265,13 @@ void RenderController::setSrcTxt(const char *srcId, const char *txt) {
         string t = txt;
         srcMap->map.find(id)->second.txt = t;
     }
+}
+
+void RenderController::setBgImage(unsigned char *bitmap, AndroidBitmapInfo *bitmapInfo) {
+    ELOGV("setBgImage");
+    if (bgRender == nullptr) {
+        bgRender = new BgRender();
+    }
+
+    bgRender->setBgImage(bitmap, bitmapInfo);
 }

@@ -29,6 +29,7 @@ add_library( # Sets the name of the library.
         src/main/cpp/egl/eglcore.cpp
         src/main/cpp/engine/yuvrender.cpp
         src/main/cpp/engine/render.cpp
+        src/main/cpp/engine/bgrender.cpp
         src/main/cpp/engine/rendercontroller.cpp
         src/main/cpp/engine/evaengine.cpp
         src/main/cpp/util/shaderutil.cpp

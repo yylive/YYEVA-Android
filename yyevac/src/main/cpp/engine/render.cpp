@@ -8,8 +8,7 @@
 #define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
 #define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-Render::Render(ANativeWindow *window) : eglCore(new EGLCore()){
-    eglCore->start(window);
+Render::Render() {
     initRender();
 }
 
@@ -17,7 +16,6 @@ Render::~Render() {
     vertexArray = nullptr;
     alphaArray = nullptr;
     rgbArray = nullptr;
-    eglCore = nullptr;
 }
 
 void Render::initRender() {
@@ -60,9 +58,6 @@ void Render::initRender() {
 }
 
 void Render::renderFrame() {
-    glClearColor(0, 0, 0, 0);
-//    glClearColor(1.0, 0, 0.5, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
     if (surfaceSizeChanged && surfaceWidth > 0 && surfaceHeight > 0) {
         surfaceSizeChanged = false;
         glViewport(0, 0, surfaceWidth, surfaceHeight);
@@ -74,12 +69,10 @@ void Render::clearFrame() {
     glClearColor(0, 0, 0, 0);
 //    glClearColor(1.0, 0, 0.5, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
-    eglCore->swapBuffer();
 }
 
 void Render::destroyRender() {
     releaseTexture();
-    eglCore->release();
 }
 
 void Render::setAnimeConfig(EvaAnimeConfig* config) {
@@ -91,7 +84,6 @@ void Render::setAnimeConfig(EvaAnimeConfig* config) {
 }
 
 GLuint Render::getExternalTexture() {
-
     return textureId;
 }
 
@@ -107,7 +99,7 @@ void Render::updateViewPort(int width, int height) {
 }
 
 void Render::swapBuffers() {
-    eglCore->swapBuffer();
+
 }
 
 void Render::draw() {
@@ -121,7 +113,16 @@ void Render::draw() {
 
         alphaArray->setVertexAttribPointer(aTextureAlphaLocation);
         rgbArray->setVertexAttribPointer(aTextureRgbLocation);
-
+        //启动混合
+        glEnable(GL_BLEND);
+        //基于alpha通道的半透明混合函数
+        //void glBlendFuncSeparate(GLenum srcRGB,
+        //     GLenum dstRGB,
+        //     GLenum srcAlpha,
+        //     GLenum dstAlpha);
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        //关闭混合
+        glDisable(GL_BLEND);
     }
 }

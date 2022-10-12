@@ -149,6 +149,32 @@ JNIEXPORT void JNICALL YYEVA(mixConfigCreate)(
     }
 }
 
+JNIEXPORT void JNICALL YYEVA(setBgBitmap)(
+        JNIEnv *env, jobject instance, jobject bitmap) {
+
+    if (bitmap == NULL) {
+        return;
+    }
+
+    AndroidBitmapInfo bitmapInfo;
+    memset(&bitmapInfo, 0, sizeof(bitmapInfo));
+    int result = AndroidBitmap_getInfo(env, bitmap, &bitmapInfo);
+    if (result != ANDROID_BITMAP_RESULT_SUCCESS) {
+        return;
+    }
+
+    unsigned char *pixels;
+    result = AndroidBitmap_lockPixels(env, bitmap, reinterpret_cast<void **>(&pixels));
+    if (result != ANDROID_BITMAP_RESULT_SUCCESS) {
+        return;
+    }
+    if (controller != nullptr) {
+        controller->setBgImage(pixels, &bitmapInfo);
+    }
+    AndroidBitmap_unlockPixels(env, bitmap);
+}
+
+
 JNIEXPORT void JNICALL YYEVA(setSrcBitmap)(
         JNIEnv *env, jobject instance, jstring srcId, jobject bitmap, jstring address) {
     if (bitmap == NULL) {
@@ -171,7 +197,6 @@ JNIEXPORT void JNICALL YYEVA(setSrcBitmap)(
         std::string addr = env->GetStringUTFChars(address, JNI_FALSE);
         controller->setSrcBitmap(id, pixels, &bitmapInfo, addr);
     }
-//    AndroidBitmap_unlockPixels(env, bitmap);
     AndroidBitmap_unlockPixels(env, bitmap);
 }
 

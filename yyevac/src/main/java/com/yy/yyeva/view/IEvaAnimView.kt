@@ -1,6 +1,7 @@
 package com.yy.yyeva.view
 
 import android.content.res.AssetManager
+import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.view.Surface
 import com.yy.yyeva.file.IEvaFileContainer
@@ -51,4 +52,6 @@ interface IEvaAnimView {
     fun getRealSize(): Pair<Int, Int>
 
     fun updateTextureViewLayout()
+    //设置背景图
+    fun setBgImage(bg: Bitmap)
 }

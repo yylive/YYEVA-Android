@@ -38,6 +38,11 @@ object EvaJniUtil {
     external fun defaultConfig(width: Int, height: Int, defaultVideoMode: Int = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE)
 
     /**
+     * 设置背景bitmap数据
+     */
+    external fun setBgBitmap(bitmap: Bitmap?)
+
+    /**
      * 设置动效元素bitmap数据
      */
     external fun setSrcBitmap(srcId: String, bitmap: Bitmap?, address: String)

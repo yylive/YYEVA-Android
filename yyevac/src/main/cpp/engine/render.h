@@ -17,7 +17,7 @@
 
 class Render: public IRender {
 public:
-    Render(ANativeWindow *window);
+    Render();
     ~Render();
     void initRender();
     void renderFrame();
@@ -49,7 +49,6 @@ private:
     int surfaceWidth = 0;
     int surfaceHeight = 0;
     bool surfaceSizeChanged = false;
-    EGLCore *eglCore;
 
 //    string VERTEX_SHADER = string("attribute vec4 vPosition;\n") +
 //                              "attribute vec4 vTexCoordinateAlpha;\n" +

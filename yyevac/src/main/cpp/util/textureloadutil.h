@@ -6,6 +6,9 @@
 #include <GLES2/gl2ext.h>
 #include <android/log.h>
 #include <android/bitmap.h>
+#include <util/stb_image_write.h>
+#include <bean/evasrc.h>
+#include <EGL/egl.h>
 
 #ifndef YYEVA_TEXTURELOADUTIL_H
 #define YYEVA_TEXTURELOADUTIL_H

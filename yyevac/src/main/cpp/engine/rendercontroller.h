@@ -8,11 +8,13 @@
 
 #include "irender.h"
 #include <android/native_window_jni.h>
+#include <egl/eglcore.h>
 #include <mix/evamixrender.h>
-#include "bean/evaframeall.h"
-#include "list"
-#include "render.h"
-#include "yuvrender.h"
+#include <bean/evaframeall.h>
+#include <list>
+#include <engine/render.h>
+#include <engine/yuvrender.h>
+#include <engine/bgrender.h>
 
 using namespace std;
 class RenderController {
@@ -40,14 +42,17 @@ public:
     void parseSrc(EvaAnimeConfig* config);
     void setSrcBitmap(const char* srcId, unsigned char* bitmap, AndroidBitmapInfo* bitmapInfo, string addr);
     void setSrcTxt(const char* srcId, const char* txt);
+    void setBgImage(unsigned char* bitmap, AndroidBitmapInfo* bitmapInfo);
 
 private:
+    BgRender* bgRender;
     IRender* render;
     EvaMixRender* mixRender;
     EvaAnimeConfig* config;
     int curFrameIndex;
     EvaFrameAll* frameAll;
     EvaSrcMap* srcMap;
+    EGLCore *eglCore;
 };
 
 

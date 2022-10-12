@@ -47,7 +47,7 @@ std::string FRAGMENT_SHADER = std::string("precision mediump float;\n") +
                             "}";
 
 
-YUVRender::YUVRender(ANativeWindow* window): eglCore(new EGLCore()) {
+YUVRender::YUVRender() {
     initRender();
 }
 
@@ -144,7 +144,6 @@ void YUVRender::clearFrame() {
 
 void YUVRender::destroyRender() {
     releaseTexture();
-    eglCore->release();
 }
 
 void YUVRender::setAnimeConfig(EvaAnimeConfig* config) {
@@ -166,7 +165,7 @@ void YUVRender::releaseTexture() {
 }
 
 void YUVRender::swapBuffers() {
-    eglCore->swapBuffer();
+
 }
 
 void YUVRender::setYUVData(int width, int height, char *y, char *u, char *v) {

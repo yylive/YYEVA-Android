@@ -16,7 +16,7 @@
 
 class YUVRender: public IRender {
 public:
-    YUVRender(ANativeWindow* window);
+    YUVRender();
     ~YUVRender();
     void initRender();
     void renderFrame();
@@ -71,8 +71,6 @@ private:
             0.0f, -0.3441f, 1.772f,
             1.402f, -0.7141f, 0.0f
     };
-
-    EGLCore *eglCore;
 
     void draw();
 };

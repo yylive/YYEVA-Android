@@ -10,9 +10,7 @@ import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import com.yy.yyeva.EvaAnimConfig
-import com.yy.yyeva.player.R
 import com.yy.yyeva.inter.IEvaAnimListener
-import com.yy.yyeva.inter.IEvaFetchResource
 import com.yy.yyeva.inter.OnEvaResourceClickListener
 import com.yy.yyeva.mix.EvaResource
 import com.yy.yyeva.util.ELog
@@ -22,6 +20,7 @@ import java.io.File
 import java.util.*
 import android.text.TextPaint
 import android.util.Log
+import com.yy.yyeva.inter.IEvaFetchResource
 import com.yy.yyeva.view.EvaAnimViewV3
 import kotlinx.android.synthetic.main.activity_anim_simple_demo_p.*
 import kotlin.math.abs
@@ -72,59 +71,59 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         /**
          * 注册资源获取类
          */
-//        animView.setFetchResource(object : IEvaFetchResource {
-//            /**
-//             * 获取图片资源
-//             * 无论图片是否获取成功都必须回调 result 否则会无限等待资源
-//             */
-//            override fun setImage(resource: EvaResource, result: (Bitmap?) -> Unit) {
-//                /**
-//                 * tag是素材中的一个标记，在制作素材时定义
-//                 * 解析时由业务读取tag决定需要播放的内容是什么
-//                 * 比如：一个素材里需要显示多个头像，则需要定义多个不同的tag，表示不同位置，需要显示不同的头像，文字类似
-//                 */
-//                val tag = resource.tag
-//                if (tag == "anchor_avatar1") { // 此tag是已经写入到动画配置中的tag
-//                    val drawableId = R.drawable.ball_1
-//                    val options = BitmapFactory.Options()
-//                    options.inScaled = false
-//                    result(BitmapFactory.decodeResource(resources, drawableId, options))
-//                } else if (tag == "anchor_avatar2") { // 此tag是已经写入到动画配置中的tag
-//                    val drawableId =  R.drawable.ball_2
-//                    val options = BitmapFactory.Options()
-//                    options.inScaled = false
-//                    result(BitmapFactory.decodeResource(resources, drawableId, options))
-//                } else if (tag == "anchor_avatar3") { // 此tag是已经写入到动画配置中的tag
-//                    val drawableId =  R.drawable.ball_3
-//                    val options = BitmapFactory.Options()
-//                    options.inScaled = false
-//                    result(BitmapFactory.decodeResource(resources, drawableId, options))
-//                } else {
-//                    result(null)
-//                }
-//            }
-//
-//            /**
-//             * 获取文字资源
-//             */
-//            override fun setText(resource: EvaResource, result: (String?) -> Unit) {
-//                val tag = resource.tag
-//                if (tag == "anchor_nick") { // 此tag是已经写入到动画配置中的tag
-//                    result("USERNICK")
-//                } else {
-//                    result(null)
-//                }
-//            }
-//
-//            /**
-//             * 播放完毕后的资源回收
-//             */
-//            override fun releaseSrc(resources: List<EvaResource>) {
-//                resources.forEach {
-//                    it.bitmap?.recycle()
-//                }
-//            }
-//        })
+        animView.setFetchResource(object : IEvaFetchResource {
+            /**
+             * 获取图片资源z
+             * 无论图片是否获取成功都必须回调 result 否则会无限等待资源
+             */
+            override fun setImage(resource: EvaResource, result: (Bitmap?) -> Unit) {
+                /**
+                 * tag是素材中的一个标记，在制作素材时定义
+                 * 解析时由业务读取tag决定需要播放的内容是什么
+                 * 比如：一个素材里需要显示多个头像，则需要定义多个不同的tag，表示不同位置，需要显示不同的头像，文字类似
+                 */
+                val tag = resource.tag
+                if (tag == "anchor_avatar1") { // 此tag是已经写入到动画配置中的tag
+                    val drawableId = R.drawable.ball_1
+                    val options = BitmapFactory.Options()
+                    options.inScaled = false
+                    result(BitmapFactory.decodeResource(resources, drawableId, options))
+                } else if (tag == "anchor_avatar2") { // 此tag是已经写入到动画配置中的tag
+                    val drawableId =  R.drawable.ball_2
+                    val options = BitmapFactory.Options()
+                    options.inScaled = false
+                    result(BitmapFactory.decodeResource(resources, drawableId, options))
+                } else if (tag == "anchor_avatar3") { // 此tag是已经写入到动画配置中的tag
+                    val drawableId =  R.drawable.ball_3
+                    val options = BitmapFactory.Options()
+                    options.inScaled = false
+                    result(BitmapFactory.decodeResource(resources, drawableId, options))
+                } else {
+                    result(null)
+                }
+            }
+
+            /**
+             * 获取文字资源
+             */
+            override fun setText(resource: EvaResource, result: (String?) -> Unit) {
+                val tag = resource.tag
+                if (tag == "anchor_nick") { // 此tag是已经写入到动画配置中的tag
+                    result("USERNICK")
+                } else {
+                    result(null)
+                }
+            }
+
+            /**
+             * 播放完毕后的资源回收
+             */
+            override fun releaseSrc(resources: List<EvaResource>) {
+                resources.forEach {
+                    it.bitmap?.recycle()
+                }
+            }
+        })
 
         // 注册点击事件监听
         animView.setOnResourceClickListener(object : OnEvaResourceClickListener {
@@ -139,6 +138,9 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
 
         // 注册动画监听
         animView.setAnimListener(this)
+        //设置背景图
+        val img = BitmapFactory.decodeResource(resources, R.drawable.bg)
+        animView.setBgImage(img)
         /**
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
@@ -170,6 +172,8 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
                 ELog.e(TAG, "${videoInfo.fileName} is not exist")
                 return@Thread
             }
+            //循环三次
+            animView.setLoop(3)
             animView.startPlay(file)
 //            val md5 = FileUtil.getFileMD5(file)
 //            if (videoInfo.md5 == md5) {

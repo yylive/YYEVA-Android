@@ -2,6 +2,7 @@ package com.yy.yyeva.view
 
 import android.content.Context
 import android.content.res.AssetManager
+import android.graphics.Bitmap
 import android.graphics.SurfaceTexture
 import android.os.Build
 import android.os.Handler
@@ -40,6 +41,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
     private var innerTextureView: InnerTextureView? = null
     private var lastEvaFile: IEvaFileContainer? = null
     private val scaleTypeUtil = ScaleTypeUtil()
+    private var bg: Bitmap? = null
 
     // 代理监听
     private val animProxyListener by lazy {
@@ -160,6 +162,9 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
             if (textureId < 0) {
                 Log.e(TAG, "surfaceCreated init OpenGL ES failed!")
             } else {
+                bg?.let {
+                    EvaJniUtil.setBgBitmap(it)
+                }
                 this.surface = SurfaceTexture(textureId)
             }
         }
@@ -347,5 +352,9 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
             ELog.e(TAG, "failed to release mSurfaceTexture= $surface: ${error.message}", error)
         }
         surface = null
+    }
+
+    override fun setBgImage(bg: Bitmap) {
+        this.bg = bg
     }
 }
