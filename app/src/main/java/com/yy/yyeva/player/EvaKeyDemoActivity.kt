@@ -173,7 +173,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
                 return@Thread
             }
             //循环三次
-            animView.setLoop(3)
+//            animView.setLoop(3)
             animView.startPlay(file)
 //            val md5 = FileUtil.getFileMD5(file)
 //            if (videoInfo.md5 == md5) {
@@ -267,6 +267,9 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
          * 开始播放
          */
         btnPlay.setOnClickListener {
+            //设置背景图
+            val img = BitmapFactory.decodeResource(resources, R.drawable.bg)
+            animView.setBgImage(img)
             play(videoInfo)
         }
         /**

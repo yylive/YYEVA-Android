@@ -157,6 +157,7 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                     }
                     EvaJniUtil.setSrcBitmap(src.srcId, it, address)
                     ELog.i(TAG, "fetch image ${src.srcId} finish bitmap is ${it?.hashCode()}")
+                    it?.recycle()
                     resultCall()
                 }
             } else if (src.srcType == EvaSrc.SrcType.TXT) {
@@ -169,8 +170,10 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                     }else{  // Meizu 、Oppo
                         Environment.getExternalStorageDirectory().path +"/DCIM/"+System.currentTimeMillis()+".png"
                     }
-                    EvaJniUtil.setSrcBitmap(src.srcId, EvaBitmapUtil.createTxtBitmap(src), address)
+                    val txtBitmap = EvaBitmapUtil.createTxtBitmap(src)
+                    EvaJniUtil.setSrcBitmap(src.srcId, txtBitmap, address)
                     ELog.i(TAG, "fetch text ${src.srcId} finish txt is $it")
+                    txtBitmap.recycle()
                     resultCall()
                 }
             }

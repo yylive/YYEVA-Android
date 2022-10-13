@@ -164,6 +164,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
             } else {
                 bg?.let {
                     EvaJniUtil.setBgBitmap(it)
+                    it.recycle()
                 }
                 this.surface = SurfaceTexture(textureId)
             }
