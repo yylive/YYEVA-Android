@@ -195,6 +195,10 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
         ELog.i(TAG, "onVideoStart")
     }
 
+    override fun onVideoRestart() {
+        ELog.i(TAG, "onVideoReStart")
+    }
+
     /**
      * 视频渲染每一帧时的回调
      * @param frameIndex 帧索引

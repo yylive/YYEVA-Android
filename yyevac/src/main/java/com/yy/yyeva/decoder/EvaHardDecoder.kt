@@ -312,6 +312,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                             speedControlUtil.reset()
                             frameIndex = 0
                             isLoop = true
+                            onVideoRestart()
                         }
                         if (outputDone) {  //输出完成
                             release(decoder, extractor)

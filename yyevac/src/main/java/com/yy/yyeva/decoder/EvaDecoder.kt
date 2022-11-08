@@ -134,6 +134,11 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
         playerEva.evaAnimListener?.onVideoStart()
     }
 
+    override fun onVideoRestart() {
+        ELog.i(TAG, "onVideoRestart")
+        playerEva.evaAnimListener?.onVideoRestart()
+    }
+
     override fun onVideoRender(frameIndex: Int, config: EvaAnimConfig?) {
         ELog.d(TAG, "onVideoRender")
         playerEva.evaAnimListener?.onVideoRender(frameIndex, config)

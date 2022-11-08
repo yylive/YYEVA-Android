@@ -17,6 +17,11 @@ interface IEvaAnimListener {
      */
     fun onVideoStart()
 
+    /**
+     * 循环播放开始
+     */
+    fun onVideoRestart()
+
 
     /**
      * 视频渲染每一帧时的回调
