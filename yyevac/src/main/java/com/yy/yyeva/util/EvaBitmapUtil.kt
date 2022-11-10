@@ -24,7 +24,17 @@ object EvaBitmapUtil {
         val paint = TextPaint().apply {
 //            textSize = h * sizeR
             textSize = src.frontSize.toFloat()
-            textAlign = Paint.Align.CENTER
+            textAlign = when (src.textAlign) {
+                "right" -> {
+                    Paint.Align.RIGHT
+                }
+                "left" -> {
+                    Paint.Align.LEFT
+                }
+                else -> {
+                    Paint.Align.CENTER
+                }
+            }
             style = Paint.Style.FILL
             isAntiAlias = true
             if (src.style == EvaSrc.Style.BOLD) {
@@ -46,8 +56,17 @@ object EvaBitmapUtil {
         val top = fontMetrics.top
         val bottom = fontMetrics.bottom
         val baseline = rect.centerY() - top/2 - bottom/2
-
-        canvas.drawText(text, rect.centerX().toFloat(), baseline.toFloat(), paint)
+        when (src.textAlign) {
+            "left" -> {
+                canvas.drawText(text, rect.left.toFloat(), baseline.toFloat(), paint)
+            }
+            "right" -> {
+                canvas.drawText(text, rect.right.toFloat(), baseline.toFloat(), paint)
+            }
+            else -> {
+                canvas.drawText(text, rect.centerX().toFloat(), baseline.toFloat(), paint)
+            }
+        }
 
         return bitmap
     }

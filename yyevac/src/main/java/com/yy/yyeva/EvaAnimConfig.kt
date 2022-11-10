@@ -124,11 +124,11 @@ class EvaAnimConfig {
 
     private fun getEffect(effect: JSONObject?): Effect {
         return if (effect == null) {
-            Effect(0, 0,0, "", "", "", 0)
+            Effect(0, 0,0, "", "", "", 0, "center")
         } else {
             Effect(effect.optInt("effectWidth"), effect.optInt("effectHeight"), effect.optInt("effectId"),
                 effect.optString("effectTag"), effect.optString("effectType"),
-                effect.optString("fontColor"), effect.optInt("fontSize"))
+                effect.optString("fontColor"), effect.optInt("fontSize"), effect.optString("textAlign"))
         }
     }
 
@@ -203,9 +203,9 @@ class EvaAnimConfig {
      */
     data class Effect(val effectWidth: Int, val effectHeight: Int, val effectId: Int,
                       val effectTag: String, val effectType: String,
-                      val fontColor: String, val fontSize: Int) {
+                      val fontColor: String, val fontSize: Int, val textAlign: String) {
         override fun toString(): String {
-            return "Effect(effectWidth=$effectWidth, effectHeight=$effectHeight, effectId=$effectId, effectTag='$effectTag', effectType='$effectType', fontColor='$fontColor', fontSize=$fontSize)"
+            return "Effect(effectWidth=$effectWidth, effectHeight=$effectHeight, effectId=$effectId, effectTag='$effectTag', effectType='$effectType', fontColor='$fontColor', fontSize=$fontSize, textAlign=$textAlign)"
         }
     }
 

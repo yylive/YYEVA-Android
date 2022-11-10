@@ -105,6 +105,11 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
                     effect->fontColor = fontColor;
                 }
 
+                const char* textAlign = json_object_get_string(effectTmp, "textAlign");
+                if (textAlign != NULL) {
+                    effect->textAlign = textAlign;
+                }
+
                 effect->fontSize = (int)json_object_get_number(effectTmp, "fontSize");
                 config->effects.push_back(*effect);
             }

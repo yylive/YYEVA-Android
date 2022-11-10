@@ -46,6 +46,7 @@ class EvaSrc {
     var color: Int = 0
     var fitType = FitType.FIT_XY
     var frontSize = 0
+    var textAlign = "center" // center, right, left
 
     constructor(effect: EvaAnimConfig.Effect) {
         srcId = effect.effectId.toString()
@@ -59,6 +60,7 @@ class EvaSrc {
         srcTag = effect.effectTag
         txt= srcTag
         frontSize = effect.fontSize
+        textAlign = effect.textAlign
         srcType = when(effect.effectType) {
             SrcType.IMG.type -> SrcType.IMG
             SrcType.TXT.type -> SrcType.TXT
@@ -107,7 +109,7 @@ class EvaSrc {
 
 
     override fun toString(): String {
-        return "Src(srcId='$srcId', srcType=$srcType, loadType=$loadType, srcTag='$srcTag', bitmap=$bitmap, txt='$txt')"
+        return "Src(srcId='$srcId', srcType=$srcType, loadType=$loadType, srcTag='$srcTag', bitmap=$bitmap, txt='$txt, textAlign = $textAlign)"
     }
 
 }

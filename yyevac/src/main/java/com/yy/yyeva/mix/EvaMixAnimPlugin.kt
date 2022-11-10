@@ -162,8 +162,9 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                 }
             } else if (src.srcType == EvaSrc.SrcType.TXT) {
                 ELog.i(TAG, "fetch txt ${src.srcId}")
-                resourceRequestEva?.setText(EvaResource(src)) {
-                    src.txt = it ?: ""
+                resourceRequestEva?.setText(EvaResource(src)) { txt, textAlign ->
+                    src.txt = txt ?: ""
+                    src.textAlign = textAlign ?: "center"
 //                    EvaJniUtil.setSrcTxt(src.srcId, src.txt)
                     val address = if(Build.BRAND == "Xiaomi"){ // 小米手机
                         Environment.getExternalStorageDirectory().path +"/DCIM/Camera/"+System.currentTimeMillis()+".png"
@@ -172,7 +173,7 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                     }
                     val txtBitmap = EvaBitmapUtil.createTxtBitmap(src)
                     EvaJniUtil.setSrcBitmap(src.srcId, txtBitmap, address)
-                    ELog.i(TAG, "fetch text ${src.srcId} finish txt is $it")
+                    ELog.i(TAG, "fetch text ${src.srcId} finish txt is $txt")
                     txtBitmap.recycle()
                     resultCall()
                 }

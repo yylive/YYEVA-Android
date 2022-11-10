@@ -106,12 +106,12 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
             /**
              * 获取文字资源
              */
-            override fun setText(resource: EvaResource, result: (String?) -> Unit) {
+            override fun setText(resource: EvaResource, result: (String?, String?) -> Unit) {
                 val tag = resource.tag
                 if (tag == "anchor_nick") { // 此tag是已经写入到动画配置中的tag
-                    result("USERNICK")
+                    result("USERNICK", "center")
                 } else {
-                    result(null)
+                    result(null, null)
                 }
             }
 

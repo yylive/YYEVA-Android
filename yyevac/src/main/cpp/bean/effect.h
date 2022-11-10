@@ -14,6 +14,7 @@ public:
     std::string effectTag;
     std::string effectType;
     std::string fontColor;
+    std::string textAlign;
     int fontSize;
 
     Effect();
