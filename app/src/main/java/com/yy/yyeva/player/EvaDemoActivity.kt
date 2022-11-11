@@ -21,6 +21,7 @@ import java.io.File
 import java.util.*
 import android.text.TextPaint
 import android.util.Log
+import com.yy.yyeva.mix.EvaSrc
 import com.yy.yyeva.view.EvaAnimViewV3
 import kotlinx.android.synthetic.main.activity_anim_simple_demo_p.*
 import kotlin.math.abs
@@ -76,7 +77,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
              * 获取图片资源
              * 无论图片是否获取成功都必须回调 result 否则会无限等待资源
              */
-            override fun setImage(resource: EvaResource, result: (Bitmap?) -> Unit) {
+            override fun setImage(resource: EvaResource, result: (Bitmap?, EvaSrc.FitType?) -> Unit) {
                 /**
                  * tag是素材中的一个标记，在制作素材时定义
                  * 解析时由业务读取tag决定需要播放的内容是什么
@@ -87,19 +88,19 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
                     val drawableId = R.drawable.ball_1
                     val options = BitmapFactory.Options()
                     options.inScaled = false
-                    result(BitmapFactory.decodeResource(resources, drawableId, options))
+                    result(BitmapFactory.decodeResource(resources, drawableId, options), null)
                 } else if (tag == "anchor_avatar2") { // 此tag是已经写入到动画配置中的tag
                     val drawableId =  R.drawable.ball_2
                     val options = BitmapFactory.Options()
                     options.inScaled = false
-                    result(BitmapFactory.decodeResource(resources, drawableId, options))
+                    result(BitmapFactory.decodeResource(resources, drawableId, options), null)
                 } else if (tag == "anchor_avatar3") { // 此tag是已经写入到动画配置中的tag
                     val drawableId =  R.drawable.ball_3
                     val options = BitmapFactory.Options()
                     options.inScaled = false
-                    result(BitmapFactory.decodeResource(resources, drawableId, options))
+                    result(BitmapFactory.decodeResource(resources, drawableId, options), null)
                 } else {
-                    result(null)
+                    result(null, null)
                 }
             }
 
