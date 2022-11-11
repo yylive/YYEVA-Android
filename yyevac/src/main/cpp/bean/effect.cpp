@@ -7,9 +7,12 @@ Effect::Effect(){
     effectTag = "";
     effectType = "";
     fontColor = "";
+    scaleMode = "";
 }
 Effect::~Effect(){
     effectTag.clear();
     effectType.clear();
     fontColor.clear();
+    textAlign.clear();
+    scaleMode.clear();
 }

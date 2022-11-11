@@ -59,7 +59,7 @@ EGLConfig EGLCore::chooseConfig() {
     EGLConfig configs;
 //    EGLint* attributes = getAttributes();
     EGLint attributes[] =
-            {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, //指定渲染api类别
+            {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT, //指定渲染api类别
              EGL_RED_SIZE, 8,
              EGL_GREEN_SIZE, 8,
              EGL_BLUE_SIZE, 8,
@@ -79,7 +79,7 @@ EGLConfig EGLCore::chooseConfig() {
 
 EGLint* EGLCore::getAttributes() {
     EGLint attribList[] =
-            {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, //指定渲染api类别
+            {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT, //指定渲染api类别
              EGL_RED_SIZE, 8,
              EGL_GREEN_SIZE, 8,
              EGL_BLUE_SIZE, 8,
@@ -94,7 +94,7 @@ EGLint* EGLCore::getAttributes() {
 EGLContext EGLCore::createContext(EGLDisplay eglDisplay, EGLConfig eglConfig) {
     //创建渲染上下文
     //只使用opengles2
-    GLint contextAttrib[] = {EGL_CONTEXT_CLIENT_VERSION, 2 ,
+    GLint contextAttrib[] = {EGL_CONTEXT_CLIENT_VERSION, 3 ,
                              EGL_NONE};
     // EGL_NO_CONTEXT表示不向其它的context共享资源
     mContext = eglCreateContext(eglDisplay, eglConfig, EGL_NO_CONTEXT, contextAttrib);
@@ -198,5 +198,6 @@ void EGLCore::release() {
     eglDestroySurface(mDisplay,mSurface);
     eglMakeCurrent(mDisplay,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
     eglDestroyContext(mDisplay,mContext);
+    eglReleaseThread();
     eglTerminate(mDisplay);
 }

@@ -3,11 +3,9 @@
 //
 
 
-#include <bean/evasrc.h>
-#include <EGL/egl.h>
+
 #include "textureloadutil.h"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "util/stb_image_write.h"
+
 
 #define LOG_TAG "TextureLoadUtil"
 #define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
@@ -27,8 +25,12 @@ GLuint TextureLoadUtil::loadTexture(unsigned char *bitmap, AndroidBitmapInfo* in
     }
 
     glBindTexture(GL_TEXTURE_2D, textureObjectIds);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //纹理放大缩小使用线性插值
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    //超出的部份会重复纹理坐标的边缘，产生一种边缘被拉伸的效果，s/t相当于x/y轴坐标
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
 
     GLint format = GL_RGB;
     if (info->format == ANDROID_BITMAP_FORMAT_RGB_565) { //RGB三通道，例如jpg格式
@@ -38,11 +40,10 @@ GLuint TextureLoadUtil::loadTexture(unsigned char *bitmap, AndroidBitmapInfo* in
     }
     //将图片数据生成一个2D纹理
     glTexImage2D(GL_TEXTURE_2D, 0, format, info->width, info->height, 0, format, GL_UNSIGNED_BYTE,
-                 reinterpret_cast<const void *>(*bitmap));
+                 bitmap);
 
     glGenerateMipmap(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, 0);
-
     return textureObjectIds;
 }
 
@@ -60,8 +61,12 @@ GLuint TextureLoadUtil::loadTexture(EvaSrc* src) {
     }
 
     glBindTexture(GL_TEXTURE_2D, textureObjectIds);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //纹理放大缩小使用线性插值
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    //超出的部份会重复纹理坐标的边缘，产生一种边缘被拉伸的效果，s/t相当于x/y轴坐标
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_BORDER_EXT);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_BORDER_EXT);
 
     GLint format = GL_RGB;
     if (src->bitmapFormat == ANDROID_BITMAP_FORMAT_RGB_565) { //RGB三通道，例如jpg格式

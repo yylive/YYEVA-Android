@@ -8,18 +8,18 @@
 #include <EGL/eglext.h>
 //#include <GLES3/gl3.h>
 //#include <GLES3/gl3ext.h>
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
 #include "src/main/cpp/util/vertexutil.h"
 #include "src/main/cpp/util/texcoordsutil.h"
 
 
 class YUVRender: public IRender {
 public:
-    YUVRender(ANativeWindow* window);
+    YUVRender();
     ~YUVRender();
     void initRender();
-    void renderFrame();
+    void renderFrame(int frameIndex);
     void clearFrame();
     void destroyRender();
     void setAnimeConfig(EvaAnimeConfig* config);
@@ -71,8 +71,6 @@ private:
             0.0f, -0.3441f, 1.772f,
             1.402f, -0.7141f, 0.0f
     };
-
-    EGLCore *eglCore;
 
     void draw();
 };

@@ -20,6 +20,9 @@ public:
     int version;
     PointRect* rgbFrame;
     PointRect* alphaFrame;
+    int fps = 30;
+    bool hasAudio;
+    bool hasBg;
 };
 
 

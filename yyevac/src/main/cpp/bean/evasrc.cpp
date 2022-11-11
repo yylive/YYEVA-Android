@@ -13,11 +13,26 @@ EvaSrc::EvaSrc(Effect* effect) {
     w = effect->effectWidth;
     h = effect->effectHeight;
     fontColor = effect->fontColor;
+    textAlign = effect->textAlign;
     if (effect->effectType == "img") {
         srcType = SrcType(1);
     } else if (effect->effectType == "txt") {
         srcType = SrcType(2);
     }
+    srcTypeStr = effect->effectType;
+    srcTag = effect->effectTag;
+    if (effect->fontSize == 0) {
+        ELOGE("fontSize = 0");
+    }
+    if (effect->scaleMode == "aspectFit") {
+        fitType = FitType::CENTER_FIT;
+    } else if (effect->scaleMode == "aspectFill") {
+        fitType = FitType::CENTER_FULL;
+    } else {
+        fitType = FitType::FIX_XY;
+    }
+
+    fontSize = effect->fontSize;
 //    srcId = to_string(effect.effectId);
 //    w = effect.effectWidth;
 //    h = effect.effectHeight;
@@ -33,6 +48,8 @@ EvaSrc::~EvaSrc() {
     srcTag.clear();
     txt.clear();
     fontColor.clear();
+    textAlign.clear();
     bitmap = nullptr;
     bitmapInfo = nullptr;
+    srcTypeStr.clear();
 }

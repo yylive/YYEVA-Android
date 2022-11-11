@@ -1,6 +1,5 @@
 #include <EGL/egl.h>
-//#include <GLES3/gl3.h>
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 #include <android/log.h>
 #include <android/native_window.h>
 
@@ -33,8 +32,8 @@ public:
 protected:
 
 private:
-    EGLDisplay mDisplay;
-    EGLSurface mSurface;
-    EGLContext mContext;
+    EGLDisplay mDisplay = EGL_NO_DISPLAY;
+    EGLSurface mSurface = EGL_NO_SURFACE;
+    EGLContext mContext = EGL_NO_CONTEXT;
 };
 #endif

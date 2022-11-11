@@ -6,14 +6,17 @@
 #ifndef YYEVA_EFFECT_H
 #define YYEVA_EFFECT_H
 
+using namespace std;
 class Effect {
 public:
     int effectWidth;
     int effectHeight;
     int effectId;
-    std::string effectTag;
-    std::string effectType;
-    std::string fontColor;
+    string effectTag;
+    string effectType;
+    string fontColor;
+    string textAlign;
+    string scaleMode; //scaleFill ,aspectFit, aspectFill
     int fontSize;
 
     Effect();

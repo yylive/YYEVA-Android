@@ -45,7 +45,7 @@ GLuint ShaderUtil::compileShader(GLenum shaderType, const char* shaderSource) {
     } else {
         GLint infoLen = 0;
         glGetShaderiv(shaderHandle,GL_INFO_LOG_LENGTH,&infoLen);
-        if(infoLen >1){
+        if(infoLen > 1){
             char *infoLog= (char*)malloc(sizeof(char*) *infoLen);
             glGetShaderInfoLog(shaderHandle,infoLen,NULL,infoLog);
             ELOGE("Error create shader:[%s]",infoLog);

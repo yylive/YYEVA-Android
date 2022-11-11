@@ -4,9 +4,9 @@ ext {
     // library的group id
     publishedGroupId = 'com.yy.yyeva'
     // library网站地址
-    siteUrl = 'https://github.com/yylive/YYEVA-Android'
+    siteUrl = 'https://github.com/YY-LIVE/YYEVA-Android'
     // library仓库地址
-    gitUrl = 'https://github.com/yylive/YYEVA-Android'
+    gitUrl = 'https://github.com/YY-LIVE/YYEVA-Android'
 
     // 注册时候的bintray username
     developerId = 'hexleo'

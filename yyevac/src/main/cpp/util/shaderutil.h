@@ -2,9 +2,8 @@
 // Created by asus on 2022/4/17.
 //
 #include <string>
-//#include <GLES3/gl3.h>
-//#include <GLES3/gl3ext.h>
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
 #include <GLES2/gl2ext.h>
 
 #ifndef YYEVA_SHADERUTIL_H

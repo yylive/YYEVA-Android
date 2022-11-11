@@ -11,11 +11,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         btn1.setOnClickListener {
-            startActivity(Intent(this, EvaDemoActivity::class.java))
-        }
-
-        btn2.setOnClickListener {
-            startActivity(Intent(this, EvaKeyDemoActivity::class.java))
+            startActivity(Intent(this, EvaCActivity::class.java))
         }
     }
 }

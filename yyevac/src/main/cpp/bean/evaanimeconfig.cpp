@@ -1,17 +1,25 @@
 //
 // Created by zengjiale on 2022/4/15.
 //
-#include "datas.h"
-#include "descript.h"
-#include "effect.h"
-#include <list>
-#include "android/log.h"
 
 #include "evaanimeconfig.h"
 
-#define LOG_TAG "EvaAnimeConfig"
-#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+EvaAnimeConfig::EvaAnimeConfig(): descript(nullptr), listener(nullptr),params(nullptr),
+        alphaPointRect(nullptr), rgbPointRect(nullptr), frameAll(nullptr), srcMap(nullptr) {
+
+}
+
+EvaAnimeConfig::~EvaAnimeConfig() {
+    descript = nullptr;
+    effects.clear();
+    datas.clear();
+    params = nullptr;
+    alphaPointRect = nullptr;
+    rgbPointRect = nullptr;
+    listener = nullptr;
+    frameAll = nullptr;
+    srcMap = nullptr;
+}
 
 EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
     if (json == nullptr) return nullptr;
@@ -76,7 +84,14 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
                 }
             }
 
+            const double fps = json_object_get_number(descriptJsonObject, "fps");
+            config->descript->fps = (int)fps;
 
+            const bool hasAudio = json_object_get_boolean(descriptJsonObject, "hasAudio");
+            config->descript->hasAudio = hasAudio;
+
+            const bool hasBg = json_object_get_boolean(descriptJsonObject, "hasBg");
+            config->descript->hasBg = hasBg;
         }
 
         //解析descript
@@ -105,6 +120,19 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
                     effect->fontColor = fontColor;
                 }
 
+                const char* scaleMode = json_object_get_string(effectTmp, "scaleMode");
+                if (scaleMode != NULL) {
+                    effect->scaleMode = scaleMode;
+                } else {
+                    effect->scaleMode = "scaleFill";
+                }
+
+                const char* textAlign = json_object_get_string(effectTmp, "textAlign");
+                if (textAlign != NULL) {
+                    effect->textAlign = textAlign;
+                } else {
+                    effect->textAlign = "center";
+                }
                 effect->fontSize = (int)json_object_get_number(effectTmp, "fontSize");
                 config->effects.push_back(*effect);
             }
@@ -170,47 +198,12 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
 //            json_value_free(effectValue);
 //            json_value_free(datasJson);
             json_value_free(root_value);
-            return config;
         }
+        if (!config->effects.empty() && !config->datas.empty()) {
+            config->isMix = true;
+        }
+
+        return config;
     }
     return nullptr;
-}
-
-EvaAnimeConfig* EvaAnimeConfig::defaultConfig(int _videoWidth, int _videoHeight, int defaultVideoMode) {
-    auto* config = new EvaAnimeConfig();
-    config->videoWidth = _videoWidth;
-    config->videoHeight = _videoHeight;
-    switch (defaultVideoMode) {
-        case 1: // 视频对齐方式 (兼容老版本视频模式) // 视频左右对齐（alpha左\rgb右）
-            config->width = _videoWidth / 2;
-            config->height = _videoHeight;
-            config->alphaPointRect = new PointRect(0, 0, config->width, config->height);
-            config->rgbPointRect = new PointRect(config->width, 0, config->width, config->height);
-            break;
-        case 2:// 视频左右对齐（alpha左\rgb右）
-            config->width = _videoWidth;
-            config->height = _videoHeight / 2;
-            config->alphaPointRect = new PointRect(0, 0, config->width, config->height);
-            config->rgbPointRect = new PointRect(0, config->height, config->width, config->height);
-            break;
-        case 3: // 视频左右对齐（rgb左\alpha右）
-            config->width = _videoWidth / 2;
-            config->height = _videoHeight;
-            config->rgbPointRect = new PointRect(0, 0, config->width, config->height);
-            config->alphaPointRect = new PointRect(config->width, 0, config->width, config->height);
-            break;
-        case 4: // 视频上下对齐（rgb上\alpha下）
-            config->width = _videoWidth;
-            config->height = _videoHeight / 2;
-            config->rgbPointRect = new PointRect(0, 0, config->width, config->height);
-            config->alphaPointRect = new PointRect(0, config->height, config->width, config->height);
-            break;
-        default:
-            config->width = _videoWidth / 2;
-            config->height = _videoHeight;
-            config->rgbPointRect= new PointRect(0, 0, config->width, config->height);
-            config->alphaPointRect = new PointRect(config->width, 0, config->width, config->height);
-            break;
-    }
-    return config;
 }

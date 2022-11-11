@@ -27,12 +27,16 @@ public:
     ~EvaMixRender();
     void init(EvaSrcMap* evaSrcMap);
     void rendFrame(GLuint videoTextureId, EvaAnimeConfig* config, EvaFrame* frame, EvaSrc* src);
+    void updateViewPort(int width, int height);
     void release(GLuint textureId);
 
 private:
     float* genSrcCoordsArray(float* array, int fw, int fh, int sw, int sh, EvaSrc::FitType fitType);
     float* transColor(int color);
     float* transColor(string color);
+    float ratio = 1.0f;
+    int surfaceWidth = 0;
+    int surfaceHeight = 0;
 };
 
 
