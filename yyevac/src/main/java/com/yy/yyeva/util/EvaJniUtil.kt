@@ -45,7 +45,7 @@ object EvaJniUtil {
     /**
      * 设置动效元素bitmap数据
      */
-    external fun setSrcBitmap(srcId: String, bitmap: Bitmap?, address: String)
+    external fun setSrcBitmap(srcId: String, bitmap: Bitmap?, address: String, scaleMode: String)
 
     /**
      * 设置动效元素txt

@@ -75,8 +75,6 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
                     config->alphaPointRect=config->descript->alphaFrame;
                 }
             }
-
-
         }
 
         //解析descript
@@ -105,9 +103,18 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
                     effect->fontColor = fontColor;
                 }
 
+                const char* scaleMode = json_object_get_string(effectTmp, "scaleMode");
+                if (scaleMode != NULL) {
+                    effect->scaleMode = scaleMode;
+                } else {
+                    effect->scaleMode = "scaleFill";
+                }
+
                 const char* textAlign = json_object_get_string(effectTmp, "textAlign");
                 if (textAlign != NULL) {
                     effect->textAlign = textAlign;
+                } else {
+                    effect->textAlign = "center";
                 }
 
                 effect->fontSize = (int)json_object_get_number(effectTmp, "fontSize");

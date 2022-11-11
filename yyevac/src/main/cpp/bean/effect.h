@@ -15,6 +15,7 @@ public:
     std::string effectType;
     std::string fontColor;
     std::string textAlign;
+    std::string scaleMode; //scaleFill ,aspectFit, aspectFill
     int fontSize;
 
     Effect();

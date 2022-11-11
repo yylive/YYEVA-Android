@@ -44,7 +44,7 @@ void EvaMixRender::rendFrame(GLuint videoTextureId, EvaAnimeConfig* config, EvaF
     vertexArray->setVertexAttribPointer(shader->aPositionLocation);
 
     //src纹理坐标 坐标归一
-    float* array = genSrcCoordsArray(srcArray->array, frame->frame->w, frame->frame->h, src->w, src->h, src->fitType);
+    float* array = genSrcCoordsArray(srcArray->array, frame->frame->w, frame->frame->h, src->bitmapWidth, src->bitmapHeight, src->fitType);
     srcArray->setArray(array);
     srcArray->setVertexAttribPointer(shader->aTextureSrcCoordinatesLocation);
 
@@ -107,34 +107,58 @@ void EvaMixRender::release(GLuint textureId) {
 float *EvaMixRender::genSrcCoordsArray(float *array, int fw, int fh, int sw, int sh,
                                        EvaSrc::FitType fitType) {
     float* srcArray = nullptr;
-    if (fitType == EvaSrc::FitType::CENTER_FULL) {
-        if (fw <= sw && fh <= sh) {
+    if (fitType == EvaSrc::FitType::CENTER_FULL) { //aspectFill
+        if (fw ==0 || fh == 0) {
             //中心对齐，不拉伸
-            int gw = (sw - fw) /2;
-            int gh = (sh - fh) /2;
+            int gw = (sw - fw) / 2;
+            int gh = (sh - fh) / 2;
             srcArray = TexCoordsUtil::create(sw, sh, new PointRect(gw, gh, fw, fh), array);
         } else { //centerCrop
             float fScale = float(fw) / fh;
             float sScale = float(sw) / sh;
-            PointRect* srcRect;
+            PointRect *srcRect;
             if (fScale > sScale) {
                 int w = sw;
                 int x = 0;
-                int h = int(sw/fScale);
-                int y = (sh - h) /2;
-                srcRect = new PointRect(x,y,w,h);
+                int h = int(sw / fScale);
+                int y = (sh - h) / 2;
+                srcRect = new PointRect(x, y, w, h);
             } else {
                 int h = sh;
                 int y = 0;
-                int w = int (sh *fScale);
-                int x = (sw - w) /2;
+                int w = int(sh * fScale);
+                int x = (sw - w) / 2;
                 srcRect = new PointRect(x, y, w, h);
             }
             srcArray = TexCoordsUtil::create(sw, sh, srcRect, array);
         }
-    } else {
-        //坐标归一
-        return TexCoordsUtil::create(fw, fh, new PointRect(0, 0, fw, fh), array);
+    } else if (fitType == EvaSrc::FitType::CENTER_FIT) {  //aspectFit
+        if (fw ==0 || fh == 0) {
+            //中心对齐，不拉伸
+            int gw = (sw - fw) / 2;
+            int gh = (sh - fh) / 2;
+            srcArray = TexCoordsUtil::create(sw, sh, new PointRect(gw, gh, fw, fh), array);
+        } else {
+            float fScale = float(fw) / fh;
+            float sScale = float(sw) / sh;
+            PointRect *srcRect;
+            if (fScale < sScale) {
+                int w = sw;
+                int x = 0;
+                int h = int(sw / fScale);
+                int y = (sh - h) / 2;
+                srcRect = new PointRect(x, y, w, h);
+            } else {
+                int h = sh;
+                int y = 0;
+                int w = int(sh * fScale);
+                int x = (sw - w) / 2;
+                srcRect = new PointRect(x, y, w, h);
+            }
+            srcArray = TexCoordsUtil::create(sw, sh, srcRect, array);
+        }
+    } else { //scaleFill
+        srcArray = TexCoordsUtil::create(fw, fh, new PointRect(0, 0, fw, fh), array);
     }
     return srcArray;
 }

@@ -91,6 +91,7 @@ JNIEXPORT void JNICALL YYEVA(setRenderConfig)(
     if (controller != nullptr && config != NULL) {
         controller->setRenderConfig(config);
     }
+    env->ReleaseStringUTFChars(json, cJson);
 }
 
 JNIEXPORT void JNICALL YYEVA(defaultConfig)(
@@ -147,6 +148,7 @@ JNIEXPORT void JNICALL YYEVA(mixConfigCreate)(
     if (controller != nullptr) {
         controller->mixConfigCreate(config);
     }
+    env->ReleaseStringUTFChars(json, cJson);
 }
 
 JNIEXPORT void JNICALL YYEVA(setBgBitmap)(
@@ -176,7 +178,7 @@ JNIEXPORT void JNICALL YYEVA(setBgBitmap)(
 
 
 JNIEXPORT void JNICALL YYEVA(setSrcBitmap)(
-        JNIEnv *env, jobject instance, jstring srcId, jobject bitmap, jstring address) {
+        JNIEnv *env, jobject instance, jstring srcId, jobject bitmap, jstring address, jstring scaleMode) {
     if (bitmap == NULL) {
         return;
     }
@@ -194,8 +196,9 @@ JNIEXPORT void JNICALL YYEVA(setSrcBitmap)(
     }
     if (controller != nullptr) {
         const char *id = env->GetStringUTFChars(srcId, JNI_FALSE);
-        std::string addr = env->GetStringUTFChars(address, JNI_FALSE);
-        controller->setSrcBitmap(id, pixels, &bitmapInfo, addr);
+        const std::string addr = env->GetStringUTFChars(address, JNI_FALSE);
+        const std::string scaleM = env->GetStringUTFChars(scaleMode, JNI_FALSE);
+        controller->setSrcBitmap(id, pixels, &bitmapInfo, addr, scaleM);
     }
     AndroidBitmap_unlockPixels(env, bitmap);
 }

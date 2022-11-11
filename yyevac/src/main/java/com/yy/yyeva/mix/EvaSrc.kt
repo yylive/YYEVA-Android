@@ -27,6 +27,7 @@ class EvaSrc {
     enum class FitType(val type: String) {
         FIT_XY("fitXY"), // 按原始大小填充纹理
         CENTER_FULL("centerFull"), // 以纹理中心点放置
+        CENTER_FIT("centerFull"), // 以纹理中心点显示整个放置
     }
 
     enum class Style(val style: String) {
@@ -40,6 +41,7 @@ class EvaSrc {
     var srcType = SrcType.UNKNOWN
     var loadType = LoadType.UNKNOWN
     var srcTag = ""
+    var scaleMode = "scaleFill"  //scaleFill aspectFit aspectFill
     var bitmap: Bitmap? = null
     var txt = ""
     var style = Style.DEFAULT

@@ -224,7 +224,7 @@ void RenderController::parseSrc(EvaAnimeConfig* config) {
 }
 
 void RenderController::setSrcBitmap(const char *srcId, unsigned char *bitmap,
-                                    AndroidBitmapInfo* bitmapInfo, string addr) {
+                                    AndroidBitmapInfo* bitmapInfo, string addr, string scaleMode) {
     if (srcMap != nullptr && !srcMap->map.empty()) {
         string id = srcId;
 //        srcMap->map.find(id)->second.bitmap = bitmap;
@@ -232,6 +232,13 @@ void RenderController::setSrcBitmap(const char *srcId, unsigned char *bitmap,
         srcMap->map.find(id)->second.bitmapWidth = bitmapInfo->width;
         srcMap->map.find(id)->second.bitmapHeight = bitmapInfo->height;
         srcMap->map.find(id)->second.bitmapFormat = bitmapInfo->format;
+        if (scaleMode == "aspectFit") {
+            srcMap->map.find(id)->second.fitType = EvaSrc::CENTER_FIT;
+        } else if (scaleMode == "aspectFill") {
+            srcMap->map.find(id)->second.fitType = EvaSrc::CENTER_FULL;
+        } else {
+            srcMap->map.find(id)->second.fitType = EvaSrc::FIX_XY;
+        }
         if (bitmapInfo->format == ANDROID_BITMAP_FORMAT_RGB_565) { //RGB三通道，例如jpg格式
             int size = bitmapInfo->stride * bitmapInfo->height;
             srcMap->map.find(id)->second.bitmap = new unsigned char[size];

@@ -124,10 +124,10 @@ class EvaAnimConfig {
 
     private fun getEffect(effect: JSONObject?): Effect {
         return if (effect == null) {
-            Effect(0, 0,0, "", "", "", 0, "center")
+            Effect(0, 0,0, "", "", "","", 0, "center")
         } else {
             Effect(effect.optInt("effectWidth"), effect.optInt("effectHeight"), effect.optInt("effectId"),
-                effect.optString("effectTag"), effect.optString("effectType"),
+                effect.optString("effectTag"), effect.optString("effectType"), effect.optString("scaleMode"),
                 effect.optString("fontColor"), effect.optInt("fontSize"), effect.optString("textAlign"))
         }
     }
@@ -199,13 +199,16 @@ class EvaAnimConfig {
     "effectType": "txt",  ////动态元素类型 有 txt和img 2种
     "fontColor":"#ffffff",  //当为txt类型的时候才存在 如果设计侧未指定，由SDK默认给
     "fontSize":13,     //当为txt类型的时候才存在 如果设计侧未指定，由SDK默认给
+    "textAlign":"center",     //当为txt类型是时候，文字对齐方式
     }...],
      */
     data class Effect(val effectWidth: Int, val effectHeight: Int, val effectId: Int,
-                      val effectTag: String, val effectType: String,
+                      val effectTag: String, val effectType: String, val scaleMode: String,
                       val fontColor: String, val fontSize: Int, val textAlign: String) {
         override fun toString(): String {
-            return "Effect(effectWidth=$effectWidth, effectHeight=$effectHeight, effectId=$effectId, effectTag='$effectTag', effectType='$effectType', fontColor='$fontColor', fontSize=$fontSize, textAlign=$textAlign)"
+            return "Effect(effectWidth=$effectWidth, effectHeight=$effectHeight, effectId=$effectId," +
+                    " effectTag='$effectTag', effectType='$effectType', scaleMode='$scaleMode'," +
+                    " fontColor='$fontColor', fontSize=$fontSize, textAlign=$textAlign)"
         }
     }
 

@@ -25,8 +25,9 @@ public:
     };
 
     enum FitType {
-        FIX_XY, // 按原始大小填充纹理
-        CENTER_FULL,  // 以纹理中心点放置
+        FIX_XY, // 按原始大小填充纹理  scaleFill
+        CENTER_FULL,  // 以纹理中心点放置  aspectFill
+        CENTER_FIT,  // aspectFit
     };
     enum Style {
         DEFAULT,

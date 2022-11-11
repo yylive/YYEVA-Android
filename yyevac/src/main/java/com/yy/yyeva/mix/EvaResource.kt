@@ -10,6 +10,7 @@ class EvaResource(src: EvaSrc) {
     var type = EvaSrc.SrcType.UNKNOWN
     var loadType = EvaSrc.LoadType.UNKNOWN
     var tag = ""
+    var scaleMode: String = "" // scaleFill, aspectFit, aspectFill
     var bitmap: Bitmap? = null
 
     init {
@@ -18,5 +19,8 @@ class EvaResource(src: EvaSrc) {
         loadType = src.loadType
         tag = src.srcTag
         bitmap = src.bitmap
+        if (src.scaleMode.isNotEmpty()) {
+            scaleMode = src.scaleMode
+        }
     }
 }

@@ -145,19 +145,33 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
         srcMap?.map?.values?.forEach {src ->
             if (src.srcType == EvaSrc.SrcType.IMG) {
                 ELog.i(TAG, "fetch image ${src.srcId}")
-                resourceRequestEva?.setImage(EvaResource(src)) {
-                    src.bitmap = if (it == null) {
+                resourceRequestEva?.setImage(EvaResource(src)) { bitmap, fixType ->
+                    src.bitmap = if (bitmap == null) {
                         ELog.e(TAG, "fetch image ${src.srcId} bitmap return null")
                         EvaBitmapUtil.createEmptyBitmap()
-                    } else it
+                    } else bitmap
                     val address = if(Build.BRAND == "Xiaomi"){ // 小米手机
                         Environment.getExternalStorageDirectory().path +"/DCIM/Camera/"+System.currentTimeMillis()+".png"
                     }else{  // Meizu 、Oppo
                         Environment.getExternalStorageDirectory().path +"/DCIM/"+System.currentTimeMillis()+".png"
                     }
-                    EvaJniUtil.setSrcBitmap(src.srcId, it, address)
-                    ELog.i(TAG, "fetch image ${src.srcId} finish bitmap is ${it?.hashCode()}")
-                    it?.recycle()
+                    val scaleMode = when (fixType) {
+                        null -> {
+                            src.scaleMode
+                        }
+                        EvaSrc.FitType.CENTER_FULL -> {
+                            "aspectFill"
+                        }
+                        EvaSrc.FitType.CENTER_FIT -> {
+                            "aspectFit"
+                        }
+                        else -> {
+                            "scaleFill"
+                        }
+                    }
+                    EvaJniUtil.setSrcBitmap(src.srcId, bitmap, address, scaleMode)
+                    ELog.i(TAG, "fetch image ${src.srcId} finish bitmap is ${bitmap?.hashCode()}")
+                    bitmap?.recycle()
                     resultCall()
                 }
             } else if (src.srcType == EvaSrc.SrcType.TXT) {
@@ -172,7 +186,7 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                         Environment.getExternalStorageDirectory().path +"/DCIM/"+System.currentTimeMillis()+".png"
                     }
                     val txtBitmap = EvaBitmapUtil.createTxtBitmap(src)
-                    EvaJniUtil.setSrcBitmap(src.srcId, txtBitmap, address)
+                    EvaJniUtil.setSrcBitmap(src.srcId, txtBitmap, address, src.scaleMode)
                     ELog.i(TAG, "fetch text ${src.srcId} finish txt is $txt")
                     txtBitmap.recycle()
                     resultCall()
