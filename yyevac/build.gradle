@@ -53,7 +53,7 @@ afterEvaluate {
                 // You can then customize attributes of the publication as shown below.
                 groupId = 'com.yy.yyeva'
                 artifactId = 'yyeva'
-                version = '1.0.0'
+                version = '2.0.0'
             }
             // Creates a Maven publication called “debug”.
             debug(MavenPublication) {
@@ -62,7 +62,7 @@ afterEvaluate {
 
                 groupId = 'com.yy.yyeva'
                 artifactId = 'yyeva-debug'
-                version = '1.0.0'
+                version = '2.0.0'
             }
         }
     }
