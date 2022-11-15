@@ -33,7 +33,12 @@ allprojects {
 
 ```groovy
 dependencies {
-	implementation 'com.github.yylive.YYEVA-Android:yyeva:1.0.1'
+	implementation 'com.github.yylive.YYEVA-Android:yyeva:1.0.11'
+}
+```
+// 2.0.0-beta版本
+dependencies {
+    implementation 'com.github.yylive.YYEVA-Android:yyeva:2.0.0-beta'
 }
 ```
 
@@ -68,6 +73,19 @@ interface IEvaAnimView {
     //是否正在运行
     fun isRunning(): Boolean
     ...
+}
+```
+
+播放使用OptionParams类配置
+```kotlin
+class OptionParams {
+    var frameRate = 30
+    var playCount = 1
+    var isMute = false
+    var isRemoteService = true  //使用多进程
+    var mp4Address = ""
+    var scaleType = 1   // 1=>裁剪居中， 2=>全屏拉伸  3=>原资源大小
+    var filterType = "" //高清算法 hermite lagrange
 }
 ```
 
