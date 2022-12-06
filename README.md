@@ -6,11 +6,17 @@
 
 ## 支持本项目
 
-请支持我们的项目，点击 GitHub Star, 让更多的人看到该项目
+请支持我们的项目，点击[⭐⭐⭐](https://github.com/yylive/YYEVA), 让更多的人看到该项目
+
+
+## 案例演示
+
+<img src="./resource/out_3.gif" width = "399" height = "428" alt="图片名称" align=center /> 
 
 ## 介绍
 
 + YYEVAPlayer 是一个轻量的动画渲染库。通过[这里](https://github.com/yylive/YYEVA/blob/main/YYEVA%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83.md)导出动画文件
++ 通过[这里](https://github.com/yylive/YYEVA/tree/main/AEP/demo_aep)可以获取设计的测试资源文件   
 + YYEVA-Android 使用Native Opengles 渲染视频，为你提供高性能、低开销的动画体验。
 
 ## 平台支持
