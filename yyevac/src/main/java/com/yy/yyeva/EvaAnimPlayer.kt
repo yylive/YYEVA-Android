@@ -44,6 +44,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     var startRunnable: Runnable? = null
     var isStartRunning = false // 启动时运行状态
     var isMute = false // 是否静音
+    var startPoint = 0L // 开启播放位置
 
 //    val configManager = AnimConfigManager(this)
     val configManager = EvaAnimConfigManager(this)
@@ -52,6 +53,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     fun onSurfaceTextureDestroyed() {
         isSurfaceAvailable = false
         isStartRunning = false
+        startPoint = 0L
         decoder?.destroy()
         evaAudioPlayer?.destroy()
     }

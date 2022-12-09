@@ -147,6 +147,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
          */
+        animView.setStartPoint(2000*1000)
         play(videoInfo)
     }
 

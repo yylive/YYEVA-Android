@@ -28,6 +28,9 @@ interface IEvaAnimView {
     //循环播放数
     fun setLoop(playLoop: Int)
 
+    //设置起始播放位置 微秒
+    fun setStartPoint(startPoint: Long)
+
     fun supportMask(isSupport: Boolean, isEdgeBlur: Boolean)
 
     fun setFps(fps: Int, speed: Float = 1.0f) //speed为倍速

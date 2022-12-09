@@ -236,6 +236,10 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
         playerEva.playLoop = playLoop
     }
 
+    override fun setStartPoint(startPoint: Long) {
+        playerEva.startPoint = startPoint
+    }
+
     override fun supportMask(isSupport : Boolean, isEdgeBlur : Boolean) {
         playerEva.supportMaskBoolean = isSupport
         playerEva.maskEdgeBlurBoolean = isEdgeBlur
@@ -272,7 +276,6 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
         ELog.e(TAG, "set mute=$isMute")
         playerEva.isMute = isMute
     }
-
 
     private fun play(videoInfo: EvaVideoEntity) {
         // 播放前强烈建议检查文件的md5是否有改变

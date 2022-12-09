@@ -114,6 +114,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
         var decoder: MediaCodec? = null
         var format: MediaFormat? = null
         var trackIndex = 0
+        var duration = 0L
 
         try {
             extractor = EvaMediaUtil.getExtractor(evaFileContainer)
@@ -142,6 +143,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
 
             videoWidth = format.getInteger(MediaFormat.KEY_WIDTH)
             videoHeight = format.getInteger(MediaFormat.KEY_HEIGHT)
+            duration = format.getLong(MediaFormat.KEY_DURATION)
             // 防止没有INFO_OUTPUT_FORMAT_CHANGED时导致alignWidth和alignHeight不会被赋值一直是0
             alignWidth = videoWidth
             alignHeight = videoHeight
@@ -197,6 +199,11 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                 }
 
                 start()
+                //跳转到需要的跳转位置
+                if (playerEva.startPoint in 1 .. duration) {
+                    extractor.seekTo(playerEva.startPoint, MediaExtractor.SEEK_TO_PREVIOUS_SYNC)
+                    ELog.e(TAG, "startPoint ${playerEva.startPoint}, sampleTime：${extractor.sampleTime}")
+                }
                 decodeThread.handler?.post {
                     try {
                         startDecode(extractor, this)
@@ -301,6 +308,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                         if (frameIndex == 0 && !isLoop) {
                             onVideoStart()
                         }
+
                         playerEva.pluginManager.onDecoding(frameIndex)
                         onVideoRender(frameIndex, playerEva.configManager.config)
                         //输出帧数据
