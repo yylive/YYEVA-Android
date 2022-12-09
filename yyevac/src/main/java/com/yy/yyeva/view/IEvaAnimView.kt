@@ -30,7 +30,7 @@ interface IEvaAnimView {
 
     fun supportMask(isSupport: Boolean, isEdgeBlur: Boolean)
 
-    fun setFps(fps: Int)
+    fun setFps(fps: Int, speed: Float = 1.0f) //speed为倍速
 
     fun setScaleType(type: ScaleType)
 
@@ -54,4 +54,6 @@ interface IEvaAnimView {
     fun updateTextureViewLayout()
     //设置背景图
     fun setBgImage(bg: Bitmap)
+
+    fun hasBgImage(): Boolean
 }

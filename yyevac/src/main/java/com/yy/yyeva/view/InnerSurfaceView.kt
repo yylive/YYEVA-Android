@@ -6,11 +6,12 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.SurfaceView
 import com.yy.yyeva.EvaAnimPlayer
+import com.yy.yyeva.util.ELog
 
 class InnerSurfaceView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : SurfaceView(context, attrs, defStyleAttr) {
-
+    val TAG = "InnerSurfaceView"
     var playerEva: EvaAnimPlayer? = null
 
     init {
@@ -20,9 +21,10 @@ class InnerSurfaceView @JvmOverloads constructor(
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        val res = playerEva?.isRunning() == true
-                && ev != null
-                && playerEva?.pluginManager?.onDispatchTouchEvent(ev) == true
-        return if (!res) super.dispatchTouchEvent(ev) else true
+        val isRunning = playerEva?.isRunning() == true
+        val isDispatch = ev != null && (playerEva?.pluginManager?.onDispatchTouchEvent(ev) == true)
+        val isHasBg = playerEva?.evaAnimView?.hasBgImage() == true //有背景也是直接拦截掉
+        ELog.i(TAG, "isRunning playerEva isRunning：$isRunning, isDispatch : $isDispatch, hasBg: $isHasBg")
+        return if (isRunning && !isDispatch && !isHasBg) super.dispatchTouchEvent(ev) else true
     }
 }

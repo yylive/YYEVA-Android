@@ -90,7 +90,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
         playerEva.configManager.config?.apply {
 //            render?.setAnimConfig(this)
             if (isDefaultConfig) {
-                EvaJniUtil.defaultConfig(videoWidth, videoHeight, defaultVideoMode)
+                EvaJniUtil.defaultConfig(playerEva.controllerId, videoWidth, videoHeight, defaultVideoMode)
                 playerEva.evaAnimListener?.onVideoConfigReady(this)
                 playerEva.evaAnimView.updateTextureViewLayout()
             } else if (jsonConfig != null) {

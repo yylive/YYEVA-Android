@@ -252,7 +252,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
         playerEva.videoMode = mode
     }
 
-    override fun setFps(fps: Int) {
+    override fun setFps(fps: Int, speed: Float) {
         ELog.i(TAG, "setFps=$fps")
         playerEva.defaultFps = fps
     }
@@ -359,9 +359,14 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
             ELog.e(TAG, "failed to release mSurfaceTexture= $surface: ${error.message}", error)
         }
         surface = null
+        bg = null
     }
 
     override fun setBgImage(bg: Bitmap) {
         this.bg = bg
+    }
+
+    override fun hasBgImage(): Boolean {
+        return bg != null
     }
 }

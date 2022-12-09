@@ -273,6 +273,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
          * 结束视频
          */
         btnStop.setOnClickListener {
+            ELog.i(TAG, "btnStop")
             animView.stopPlay()
         }
     }

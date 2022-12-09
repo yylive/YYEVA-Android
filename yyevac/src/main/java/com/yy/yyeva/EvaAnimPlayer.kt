@@ -120,9 +120,9 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     }
 
     fun isRunning(): Boolean {
+        ELog.i(TAG, "isStartRunning $isStartRunning, decoderRunning ${decoder?.isRunning?:false}")
         return isStartRunning // 启动过程运行状态
                 || (decoder?.isRunning ?: false) // 解码过程运行状态
-
     }
 
     private fun prepareDecoder() {

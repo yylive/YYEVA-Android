@@ -93,16 +93,19 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
     }
 
     override fun onDispatchTouchEvent(ev: MotionEvent): Boolean {
-        if (playerEva.configManager.config?.isMix == false || evaResourceClickListener == null) {
+        if (evaResourceClickListener == null) {
             return super.onDispatchTouchEvent(ev)
         }
-        mixTouch.onTouchEvent(ev)?.let {resource ->
-            Handler(Looper.getMainLooper()).post {
-                evaResourceClickListener?.onClick(resource)
+        mixTouch.onTouchEvent(ev).let {resource ->
+            if (playerEva.configManager.config?.isMix == true && resource != null) {
+                Handler(Looper.getMainLooper()).post {
+                    evaResourceClickListener?.onClick(resource)
+                }
+                return true
+            } else {
+                return super.onDispatchTouchEvent(ev)
             }
         }
-        // 只要注册监听则拦截所有事件
-        return true
     }
 
     private fun destroy() {

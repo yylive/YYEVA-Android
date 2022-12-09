@@ -137,6 +137,7 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
             } else {
                 bg?.let {
                     EvaJniUtil.setBgBitmap(playerEva.controllerId, it)
+                    it.recycle()
                 }
                 surfaceTexture = SurfaceTexture(textureId)
                 surfaceTexture?.setOnFrameAvailableListener(this)
@@ -252,9 +253,9 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         playerEva.videoMode = mode
     }
 
-    override fun setFps(fps: Int) {
-        ELog.i(TAG, "setFps=$fps")
-        playerEva.defaultFps = fps
+    override fun setFps(fps: Int, speed: Float) {
+        ELog.i(TAG, "setFps=$fps， speed=$speed")
+        playerEva.defaultFps = (fps * speed).toInt()
     }
 
     override fun setScaleType(type : ScaleType) {
@@ -358,6 +359,7 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
             ELog.e(TAG, "failed to release mSurfaceTexture= $surfaceTexture: ${error.message}", error)
         }
         surfaceTexture = null
+        bg = null
     }
 
     override fun updateTextureViewLayout() {
@@ -366,5 +368,9 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     override fun setBgImage(bg: Bitmap) {
         this.bg = bg
+    }
+
+    override fun hasBgImage(): Boolean {
+        return bg != null
     }
 }
