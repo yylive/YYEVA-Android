@@ -17,6 +17,7 @@ import java.io.File
 import java.util.*
 import android.text.TextPaint
 import android.util.Log
+import com.yy.yyeva.player.bean.VideoInfo
 import com.yy.yyeva.player.util.EvaDownloader
 import com.yy.yyeva.util.*
 import com.yy.yyeva.view.EvaAnimViewV3
@@ -41,7 +42,6 @@ class EvaDownloadDemoActivity : Activity(), IEvaAnimListener {
     }
 
     // 视频信息
-    data class VideoInfo(val fileName: String, val md5: String)
     private val videoInfo = VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be")
     private var evaDownloader: EvaDownloader? = null
 

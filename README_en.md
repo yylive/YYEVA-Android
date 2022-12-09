@@ -1,6 +1,10 @@
 # YY-EVA <sup>Android</sup>
 > Lightweight,High Performance,Cross Platform,MP4 Gift Player
 
+## Product show
+
+<img src="./resource/out_3.gif" width = "399" height = "428" alt="图片名称" align=center /> 
+
 ## Intruduction
 + YYEVAPlayer is a lightweight animation library with a simple yet powerful API。Reference [here](https://github.com/yylive/YYEVA/blob/main/YYEVA%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83.md) can easily export animation resources
 + YYEVA-iOS render with Metal library , providing you with a high-performance, low-cost animation experience.
@@ -27,7 +31,11 @@ allprojects {
 
 ```groovy
 dependencies {
-	implementation 'com.github.yylive.YYEVA-Android:yyeva:1.0.7'
+	implementation 'com.github.yylive.YYEVA-Android:yyeva:1.0.12'
+}
+// 2.0.0-beta
+dependencies {
+    implementation 'com.github.yylive.YYEVA-Android:yyeva:2.0.0-beta'
 }
 ```
 
@@ -68,7 +76,18 @@ interface IEvaAnimView {
     ...
 }
 ```
- 
+2.0.0-beta use OptionParams to set
+```kotlin
+class OptionParams {
+    var frameRate = 30
+    var playCount = 1
+    var isMute = false
+    var isRemoteService = true  //使用多进程
+    var mp4Address = ""
+    var scaleType = 1   // 1=>裁剪居中， 2=>全屏拉伸  3=>原资源大小
+    var filterType = "" //高清算法 hermite lagrange
+}
+```
 
 ## QQexchange group
 ![qqgroup](https://github.com/yylive/YYEVA/blob/main/img/qqgroup.png)

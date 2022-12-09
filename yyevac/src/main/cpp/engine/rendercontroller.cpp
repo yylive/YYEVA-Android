@@ -175,7 +175,11 @@ void RenderController::mixRendering(int frameIndex) {
         if (srcMap != nullptr && !srcMap->map.empty()) {
             for (EvaFrame frame: list) {
                 EvaSrc src = srcMap->map.find(frame.srcId)->second;
-                mixRender->rendFrame(videoTextureId, config, &frame, &src);
+                if (mixRender != nullptr) {
+                    mixRender->rendFrame(videoTextureId, config, &frame, &src);
+                } else {
+                    ELOGE("mixRendering mixRender is null");
+                }
             }
         }
     }

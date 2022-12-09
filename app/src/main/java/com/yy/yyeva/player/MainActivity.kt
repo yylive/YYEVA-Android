@@ -20,5 +20,8 @@ class MainActivity : AppCompatActivity() {
         btn3.setOnClickListener {
             startActivity(Intent(this, EvaDownloadDemoActivity::class.java))
         }
+        btn4.setOnClickListener {
+            startActivity(Intent(this, EvaKeyListDemoActivity::class.java))
+        }
     }
 }

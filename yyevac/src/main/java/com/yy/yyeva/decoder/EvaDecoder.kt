@@ -79,7 +79,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
     fun prepareRender(needYUV: Boolean): Boolean {
         ELog.i(TAG, "prepareRender")
         playerEva.evaAnimView.getSurface()?.apply {
-            EvaJniUtil.initRender(this, needYUV)
+            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId, this, needYUV)
             return true
         }
         return false
@@ -94,7 +94,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
                 playerEva.evaAnimListener?.onVideoConfigReady(this)
                 playerEva.evaAnimView.updateTextureViewLayout()
             } else if (jsonConfig != null) {
-                EvaJniUtil.setRenderConfig(jsonConfig.toString())
+                EvaJniUtil.setRenderConfig(playerEva.controllerId, jsonConfig.toString())
             }
         }
 
@@ -106,7 +106,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
      * 主要是没有16进制对齐的老视频
      */
     fun videoSizeChange(newWidth: Int, newHeight: Int) {
-        EvaJniUtil.videoSizeChange(newWidth,newHeight)
+        EvaJniUtil.videoSizeChange(playerEva.controllerId, newWidth,newHeight)
     }
 
 
@@ -125,7 +125,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
     fun onSurfaceSizeChanged(width: Int, height: Int) {
         surfaceWidth = width
         surfaceHeight = height
-        EvaJniUtil.updateViewPoint(width,height)
+        EvaJniUtil.updateViewPoint(playerEva.controllerId, width,height)
         Log.i(TAG, "updateViewPoint $width, $height")
     }
 

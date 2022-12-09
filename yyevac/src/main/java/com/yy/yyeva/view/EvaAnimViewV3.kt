@@ -30,7 +30,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
     TextureView.SurfaceTextureListener {
 
     companion object {
-        private const val TAG = "${EvaConstant.TAG}.AnimView"
+        private const val TAG = "${EvaConstant.TAG}.AnimViewV3"
     }
     private lateinit var playerEva: EvaAnimPlayer
 
@@ -162,12 +162,14 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
 
         playerEva.decoder?.renderThread?.handler?.post {
             s = Surface(surface)
-            val textureId = EvaJniUtil.initRender(s!!, false)
+            ELog.i(TAG, "initRender")
+            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId, s!!, false)
+            val textureId = EvaJniUtil.getExternalTexture(playerEva.controllerId)
             if (textureId < 0) {
                 Log.e(TAG, "surfaceCreated init OpenGL ES failed!")
             } else {
                 bg?.let {
-                    EvaJniUtil.setBgBitmap(it)
+                    EvaJniUtil.setBgBitmap(playerEva.controllerId, it)
                     it.recycle()
                 }
                 this.surface = SurfaceTexture(textureId)

@@ -41,9 +41,8 @@ allprojects {
 
 ```groovy
 dependencies {
-	implementation 'com.github.yylive.YYEVA-Android:yyeva:1.0.11'
+	implementation 'com.github.yylive.YYEVA-Android:yyeva:1.0.12'
 }
-```
 // 2.0.0-beta版本
 dependencies {
     implementation 'com.github.yylive.YYEVA-Android:yyeva:2.0.0-beta'

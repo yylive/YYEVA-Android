@@ -62,11 +62,11 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                 glTexture?.apply {
                     updateTexImage()
                     //渲染mp4数据
-                    EvaJniUtil.renderFrame()
+                    EvaJniUtil.renderFrame(playerEva.controllerId)
                     //元素混合
                     playerEva.pluginManager.onRendering()
                     //交换前后景数据
-                    EvaJniUtil.renderSwapBuffers()
+                    EvaJniUtil.renderSwapBuffers(playerEva.controllerId)
                 }
             } catch (e: Throwable) {
                 ELog.e(TAG, "render exception=$e", e)
@@ -164,13 +164,16 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
 
             preparePlay(videoWidth, videoHeight)
 
-            if (EvaJniUtil.getExternalTexture() != -1) {
+            if (EvaJniUtil.getExternalTexture(playerEva.controllerId) != -1) {
                 glTexture = playerEva.evaAnimView.getSurfaceTexture()?.apply {
                     setOnFrameAvailableListener(this@EvaHardDecoder)
                     setDefaultBufferSize(videoWidth, videoHeight)
                 }
+            } else {
+                ELog.e(TAG, "eva not init, can not get glTexture")
+                return
             }
-            EvaJniUtil.renderClearFrame()
+            EvaJniUtil.renderClearFrame(playerEva.controllerId)
 
         } catch (e: Throwable) {
             ELog.e(TAG, "MediaExtractor exception e=$e", e)
@@ -378,7 +381,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
 
     private fun release(decoder: MediaCodec?, extractor: MediaExtractor?) {
         renderThread.handler?.post {
-            EvaJniUtil.renderClearFrame()
+            EvaJniUtil.renderClearFrame(playerEva.controllerId)
             try {
                 ELog.i(TAG, "release")
                 decoder?.apply {
@@ -391,7 +394,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                 speedControlUtil.reset()
                 playerEva.pluginManager.onRelease()
 //                render?.releaseTexture()
-                EvaJniUtil.releaseTexture()
+                EvaJniUtil.releaseTexture(playerEva.controllerId)
             } catch (e: Throwable) {
                 ELog.e(TAG, "release e=$e", e)
             }
@@ -416,9 +419,8 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
         ELog.i(TAG, "destroyInner")
         renderThread.handler?.post {
             playerEva.pluginManager.onDestroy()
-//            render?.destroyRender()
-//            render = null
-            EvaJniUtil.destroyRender()
+            EvaJniUtil.destroyRender(playerEva.controllerId)
+            playerEva.controllerId = -1
             onVideoDestroy()
             destroyThread()
         }

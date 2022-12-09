@@ -45,7 +45,9 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
         // step 2 parse frame
         dillFrame(config)
 
-        EvaJniUtil.mixConfigCreate(config.jsonConfig.toString())
+        //返回渲染管理器id，正常返回值大于0,
+        val controllerId = EvaJniUtil.mixConfigCreate(playerEva.controllerId, config.jsonConfig.toString())
+        playerEva.controllerId = controllerId
 
         // step 3 fetch resource
         setResourceSync()
@@ -73,12 +75,12 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
     override fun onRenderCreate() {
         if (playerEva.configManager.config?.isMix == false) return
         ELog.i(TAG, "mix render init")
-        EvaJniUtil.mixRenderCreate()
+        EvaJniUtil.mixRenderCreate(playerEva.controllerId)
     }
 
     override fun onRendering(frameIndex: Int) {
         curFrameIndex = frameIndex
-        EvaJniUtil.mixRendering(frameIndex);
+        EvaJniUtil.mixRendering(playerEva.controllerId, frameIndex);
     }
 
 
@@ -116,7 +118,7 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
             }
         }
         resourceRequestEva?.releaseSrc(resources)
-        EvaJniUtil.mixRenderDestroy()
+        EvaJniUtil.mixRenderDestroy(playerEva.controllerId)
     }
 
     private fun dillSrc(config: EvaAnimConfig) {
@@ -169,7 +171,7 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                             "scaleFill"
                         }
                     }
-                    EvaJniUtil.setSrcBitmap(src.srcId, bitmap, address, scaleMode)
+                    EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, bitmap, address, scaleMode)
                     ELog.i(TAG, "fetch image ${src.srcId} finish bitmap is ${bitmap?.hashCode()}")
                     bitmap?.recycle()
                     resultCall()
@@ -186,7 +188,7 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                         Environment.getExternalStorageDirectory().path +"/DCIM/"+System.currentTimeMillis()+".png"
                     }
                     val txtBitmap = EvaBitmapUtil.createTxtBitmap(src)
-                    EvaJniUtil.setSrcBitmap(src.srcId, txtBitmap, address, src.scaleMode)
+                    EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, txtBitmap, address, src.scaleMode)
                     ELog.i(TAG, "fetch text ${src.srcId} finish txt is $txt")
                     txtBitmap.recycle()
                     resultCall()

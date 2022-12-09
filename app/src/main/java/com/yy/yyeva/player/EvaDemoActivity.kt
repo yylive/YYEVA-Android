@@ -22,6 +22,7 @@ import java.util.*
 import android.text.TextPaint
 import android.util.Log
 import com.yy.yyeva.mix.EvaSrc
+import com.yy.yyeva.player.bean.VideoInfo
 import com.yy.yyeva.view.EvaAnimViewV3
 import kotlinx.android.synthetic.main.activity_anim_simple_demo_p.*
 import kotlin.math.abs
@@ -43,7 +44,6 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
     }
 
     // 视频信息
-    data class VideoInfo(val fileName: String, val md5: String)
     private val videoInfo = VideoInfo("normal_264_mid.mp4", "400a778f258ed6bd02ec32defe8ca8be")
 
 

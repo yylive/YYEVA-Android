@@ -24,7 +24,6 @@ import com.yy.yyeva.inter.IEvaFetchResource
 import com.yy.yyeva.inter.OnEvaResourceClickListener
 import com.yy.yyeva.util.*
 import java.io.File
-import java.net.URL
 
 open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0):
     IEvaAnimView,
@@ -32,7 +31,7 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     SurfaceHolder.Callback, SurfaceTexture.OnFrameAvailableListener {
 
     companion object {
-        val TAG = "${EvaConstant.TAG}.EvaAnimViewV2"
+        val TAG = "${EvaConstant.TAG}.AnimView"
     }
     private lateinit var playerEva: EvaAnimPlayer
 
@@ -131,12 +130,13 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     @SuppressLint("LongLogTag")
     override fun surfaceCreated(holder: SurfaceHolder) {
         playerEva.decoder?.renderThread?.handler?.post {
-            val textureId = EvaJniUtil.initRender(holder.surface, false)
+            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId, holder.surface, false)
+            val textureId = EvaJniUtil.getExternalTexture(playerEva.controllerId)
             if (textureId < 0) {
                 Log.e(TAG, "surfaceCreated init OpenGL ES failed!")
             } else {
                 bg?.let {
-                    EvaJniUtil.setBgBitmap(it)
+                    EvaJniUtil.setBgBitmap(playerEva.controllerId, it)
                 }
                 surfaceTexture = SurfaceTexture(textureId)
                 surfaceTexture?.setOnFrameAvailableListener(this)
