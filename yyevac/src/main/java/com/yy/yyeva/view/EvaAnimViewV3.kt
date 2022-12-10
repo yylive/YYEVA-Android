@@ -258,7 +258,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
 
     override fun setFps(fps: Int, speed: Float) {
         ELog.i(TAG, "setFps=$fps")
-        playerEva.defaultFps = fps
+        playerEva.defaultFps = (fps * speed).toInt()
     }
 
     override fun setScaleType(type : ScaleType) {
