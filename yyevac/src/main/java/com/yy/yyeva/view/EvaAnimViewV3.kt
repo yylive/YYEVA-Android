@@ -235,9 +235,9 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
     override fun setLoop(playLoop: Int) {
         playerEva.playLoop = playLoop
     }
-
+    //硬解某些机型会有跳帧前几帧解析异常的问题，不建议使用。
     override fun setStartPoint(startPoint: Long) {
-        playerEva.startPoint = startPoint
+        playerEva.startPoint = startPoint * 1000
     }
 
     override fun supportMask(isSupport : Boolean, isEdgeBlur : Boolean) {

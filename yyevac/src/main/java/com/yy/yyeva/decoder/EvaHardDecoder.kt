@@ -14,6 +14,7 @@ import com.yy.yyeva.EvaAnimPlayer
 import com.yy.yyeva.util.EvaConstant
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.math.abs
 
 
 class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceTexture.OnFrameAvailableListener {
@@ -197,13 +198,13 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                 } else {
                     configure(format, Surface(glTexture), null, 0)
                 }
-
-                start()
                 //跳转到需要的跳转位置
                 if (playerEva.startPoint in 1 .. duration) {
-                    extractor.seekTo(playerEva.startPoint, MediaExtractor.SEEK_TO_PREVIOUS_SYNC)
+                    extractor.seekTo(playerEva.startPoint, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
                     ELog.e(TAG, "startPoint ${playerEva.startPoint}, sampleTime：${extractor.sampleTime}")
+                    extractor.advance()
                 }
+                start()
                 decodeThread.handler?.post {
                     try {
                         startDecode(extractor, this)

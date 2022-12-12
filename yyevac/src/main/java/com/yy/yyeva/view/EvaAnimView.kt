@@ -238,7 +238,7 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     override fun setStartPoint(startPoint: Long) {
-        playerEva.startPoint = startPoint
+        playerEva.startPoint = startPoint * 1000
     }
 
     override fun supportMask(isSupport : Boolean, isEdgeBlur : Boolean) {

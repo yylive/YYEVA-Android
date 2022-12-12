@@ -55,6 +55,8 @@ class EvaDownloadDemoActivity : Activity(), IEvaAnimListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_anim_simple_demo_p)
+        // 获取动画view
+        animView = playerView
         init()
     }
 

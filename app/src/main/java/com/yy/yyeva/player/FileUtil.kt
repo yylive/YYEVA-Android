@@ -1,23 +1,35 @@
 package com.yy.yyeva.player
 
 import android.content.Context
+import com.yy.yyeva.util.ELog
 import java.io.*
 import java.security.MessageDigest
 
 object FileUtil {
 
     private val hexDigits = charArrayOf('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f')
+    private val TAG = "FileUtil"
 
     fun copyAssetsToStorage(context: Context, dir: String, files: Array<String>, loadSuccess:()->Unit) {
         Thread {
             var outputStream: OutputStream
             var inputStream: InputStream
             val buf = ByteArray(4096)
+            val names = context.assets.list("")
+            if (names == null) {
+                ELog.e(TAG,"assets has no file")
+                return@Thread
+            }
             files.forEach {
                 try {
                     if (File("$dir/$it").exists()) {
                         return@forEach
                     }
+                    if (!names.contains(it)) {
+                        ELog.e(TAG,"assets has not $it")
+                        return@Thread
+                    }
+
                     inputStream = context.assets.open(it)
                     outputStream = FileOutputStream("$dir/$it")
                     var length = inputStream.read(buf)

@@ -28,7 +28,8 @@ interface IEvaAnimView {
     //循环播放数
     fun setLoop(playLoop: Int)
 
-    //设置起始播放位置 微秒
+    //设置起始播放位置 毫秒
+    //硬解某些机型会有跳帧前几帧解析异常的问题，不建议使用。
     fun setStartPoint(startPoint: Long)
 
     fun supportMask(isSupport: Boolean, isEdgeBlur: Boolean)

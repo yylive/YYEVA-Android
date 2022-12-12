@@ -57,6 +57,8 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_anim_simple_demo_p)
+        // 获取动画view
+        animView = playerView
         loadFile()
     }
 
@@ -65,8 +67,6 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         initLog()
         // 初始化调试开关
         initTestView()
-        // 获取动画view
-        animView = playerView
         // 居中（根据父布局按比例居中并裁剪）
         animView.setScaleType(ScaleType.CENTER_CROP)
         /**
@@ -147,7 +147,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
          */
-        animView.setStartPoint(2000*1000)
+//        animView.setStartPoint(8000*1000)
         play(videoInfo)
     }
 
