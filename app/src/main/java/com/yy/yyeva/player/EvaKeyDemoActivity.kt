@@ -111,7 +111,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
             ) -> Unit) {
                 val tag = resource.tag
                 if (tag == "anchor_nick") { // 此tag是已经写入到动画配置中的tag
-                    result("USERNICK", "left")
+                    result("USERNICK\uD83D\uDE04", "left")
                 } else {
                     result(null, null)
                 }

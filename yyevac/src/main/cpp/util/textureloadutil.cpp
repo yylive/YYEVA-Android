@@ -79,6 +79,8 @@ GLuint TextureLoadUtil::loadTexture(EvaSrc* src) {
     } else if (src->bitmapFormat == ANDROID_BITMAP_FORMAT_RGBA_8888) {  //RGBA四通道，例如png格式 android图片是ARGB排列，所以还是要做图片转换的
         format = GL_RGBA;
     }
+    //像素对齐，不然jpg图片会显示错位
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     //将图片数据生成一个2D纹理
     glTexImage2D(GL_TEXTURE_2D, 0, format, src->bitmapWidth, src->bitmapHeight, 0, format, GL_UNSIGNED_BYTE,
                  src->bitmap);

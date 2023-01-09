@@ -15,6 +15,7 @@
 
 std::map<int, RenderController*> renderMap;
 int renderId = 0;
+std::mutex mtx;
 
 extern "C"{
 
@@ -83,7 +84,7 @@ JNIEXPORT void JNICALL YYEVA(videoSizeChange)(
     }
     renderMap[controllerId]->videoSizeChange(newWidth, newHeight);
 }
-std::mutex mtx;
+
 JNIEXPORT jint JNICALL YYEVA(initRender)(
         JNIEnv *env, jobject instance, jint controllerId, jobject surface, jboolean isNeedYUV) {
     mtx.lock();
@@ -349,6 +350,7 @@ JNIEXPORT void JNICALL YYEVA(mixRenderCreate)(
 
 JNIEXPORT void JNICALL YYEVA(mixRendering) (
         JNIEnv *env, jobject instance, jint controllerId, jint frameIndex) {
+    mtx.lock();
     if (controllerId == -1) {
         ELOGE("mixRendering controller not init");
         return;
@@ -358,6 +360,7 @@ JNIEXPORT void JNICALL YYEVA(mixRendering) (
         return;
     }
     renderMap[controllerId]->mixRendering(frameIndex);
+    mtx.unlock();
 }
 
 JNIEXPORT void JNICALL YYEVA(mixRenderDestroy)(

@@ -54,7 +54,6 @@ void BgRender::clearFrame() {
     glClearColor(0, 0, 0, 0);
 
     glClear(GL_COLOR_BUFFER_BIT);
-//    glClearColor(1.0, 0, 0.5, 1.0);
 }
 
 void BgRender::destroyRender() {

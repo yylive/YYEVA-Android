@@ -66,14 +66,8 @@ void EvaMixRender::rendFrame(GLuint videoTextureId, EvaAnimeConfig* config, EvaF
     glUniform1i(shader->uTextureMaskUnitLocation, 1);
 
     //属性处理
-    if (src->srcType == EvaSrc::SrcType::TXT) {  //填充文字色彩
-        glUniform1i(shader->uIsFillLocation, 1);
-        float* argb = transColor(src->fontColor);
-        glUniform4f(shader->uColorLocation, argb[1],argb[2],argb[3],argb[0]);
-    } else {
-        glUniform1i(shader->uIsFillLocation, 0);
-        glUniform4f(shader->uColorLocation, 0, 0, 0, 0);
-    }
+    glUniform1i(shader->uIsFillLocation, 0);
+    glUniform4f(shader->uColorLocation, 0, 0, 0, 0);
     //启动混合
     glEnable(GL_BLEND);
     //基于alpha通道的半透明混合函数
