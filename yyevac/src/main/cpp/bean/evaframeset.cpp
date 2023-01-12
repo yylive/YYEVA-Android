@@ -12,7 +12,7 @@ EvaFrameSet::EvaFrameSet(Datas datas) {
     int i = 0;
     std::list<Data>::iterator it;
     for (it = datas.data.begin(); it != datas.data.end(); ++it) {
-        EvaFrame *frame = new EvaFrame(i, *it);
+        auto *frame = new EvaFrame(i, *it);
         list.push_back(*frame);
         i++;
     }

@@ -228,6 +228,7 @@ JNIEXPORT void JNICALL YYEVA(destroyRender)(
 
 JNIEXPORT jint JNICALL YYEVA(mixConfigCreate)(
         JNIEnv *env, jobject instance, jint controllerId, jstring json) {
+    mtx.lock();
     const char *cJson = env->GetStringUTFChars(json, JNI_FALSE);
     EvaAnimeConfig* config = EvaAnimeConfig::parse(cJson);
     int id = controllerId;
@@ -243,8 +244,8 @@ JNIEXPORT jint JNICALL YYEVA(mixConfigCreate)(
     } else {
         ELOGE("mixConfigCreate controller %d not found", controllerId);
     }
-
     env->ReleaseStringUTFChars(json, cJson);
+    mtx.unlock();
     return id;
 }
 

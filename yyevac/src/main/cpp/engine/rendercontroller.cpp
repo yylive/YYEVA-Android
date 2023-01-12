@@ -171,16 +171,23 @@ void RenderController::mixRendering(int frameIndex) {
 //        EvaSrc src = srcMap->map.find(it->srcId)->second;
 //        mixRender->rendFrame(videoTextureId, config, *it, src);
 //    }
-
-        if (srcMap != nullptr && !srcMap->map.empty()) {
-            for (EvaFrame frame: list) {
-                EvaSrc src = srcMap->map.find(frame.srcId)->second;
+        if (!list.empty()) {
+            if (srcMap != nullptr && !srcMap->map.empty()) {
                 if (mixRender != nullptr) {
-                    mixRender->rendFrame(videoTextureId, config, &frame, &src);
+                    for (EvaFrame frame: list) {
+                        if (frame.srcId.empty()) {
+                            ELOGE("mixRendering frame is empty");
+                            continue;
+                        }
+                        EvaSrc src = srcMap->map.find(frame.srcId)->second;
+                        mixRender->rendFrame(videoTextureId, config, &frame, &src);
+                    }
                 } else {
                     ELOGE("mixRendering mixRender is null");
                 }
             }
+        } else {
+            ELOGE("mixRendering mixRender list is empty");
         }
     }
 }

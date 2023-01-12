@@ -36,8 +36,28 @@ void EvaMixRender::init(EvaSrcMap* evaSrcMap) {
 }
 
 void EvaMixRender::rendFrame(GLuint videoTextureId, EvaAnimeConfig* config, EvaFrame* frame, EvaSrc* src) {
-    if (videoTextureId <= 0) return;
-    if (shader == nullptr) return;
+    if (videoTextureId <= 0) {
+        ELOGE("rendFrame videoTextureId = 0");
+        return;
+    }
+    if (shader == nullptr) {
+        ELOGE("rendFrame shader is null");
+        return;
+    }
+    if (config == nullptr) {
+        ELOGE("rendFrame config is null");
+        return;
+    }
+
+    if (frame == nullptr) {
+        ELOGE("rendFrame frame is null");
+        return;
+    }
+
+    if (src == nullptr) {
+        ELOGE("rendFrame src is null");
+        return;
+    }
     shader->useProgram();
     //定点坐标 坐标归一
     vertexArray->setArray(VertexUtil::create(config->width, config->height, frame->frame, vertexArray->array));
