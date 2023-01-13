@@ -165,6 +165,11 @@ void RenderController::mixRendering(int frameIndex) {
 
     curFrameIndex = frameIndex;
     if (frameAll!= nullptr && !frameAll->map.empty()) {
+        if (frameAll->map.size() <= frameIndex) {
+            ELOGE("mixRendering fps is error, please set fps");
+            return;
+        }
+
         list<EvaFrame> list = frameAll->map.find(frameIndex)->second.list;
 //    std::list<EvaFrame>::iterator it;
 //    for (it = list.begin(); it != list.end(); ++it) {

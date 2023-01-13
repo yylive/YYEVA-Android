@@ -74,6 +74,17 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
 
         val decoder = MediaCodec.createDecoderByType(mime).apply {
             configure(format, null, null, 0)
+            //跳转到需要的跳转位置
+            if (playerEva.startPoint > 0) {
+                //等待视频端设置sampleTime位置，因为音频和视频的p帧并不是相同，所以需要锚定以视频的时间为准
+                while (playerEva.sampleTime == 0L) {
+                    continue
+                }
+                extractor.seekTo(playerEva.sampleTime, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
+                ELog.i(TAG, "startPoint ${playerEva.startPoint}, sampleTime：${extractor.sampleTime}")
+                extractor.advance()
+            }
+
             start()
         }
         this.decoder = decoder

@@ -45,6 +45,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     var isStartRunning = false // 启动时运行状态
     var isMute = false // 是否静音
     var startPoint = 0L // 开启播放位置
+    var sampleTime = 0L // sampleTime实际播放时间
 
 //    val configManager = AnimConfigManager(this)
     val configManager = EvaAnimConfigManager(this)

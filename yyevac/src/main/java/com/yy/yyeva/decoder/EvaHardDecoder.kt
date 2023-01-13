@@ -199,7 +199,8 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                 //跳转到需要的跳转位置
                 if (playerEva.startPoint in 1 .. duration) {
                     extractor.seekTo(playerEva.startPoint, MediaExtractor.SEEK_TO_PREVIOUS_SYNC)
-                    ELog.e(TAG, "startPoint ${playerEva.startPoint}, sampleTime：${extractor.sampleTime}")
+                    ELog.i(TAG, "startPoint ${playerEva.startPoint}, sampleTime：${extractor.sampleTime}")
+                    playerEva.sampleTime = extractor.sampleTime
                     extractor.advance()
                 }
                 start()
@@ -233,7 +234,8 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
 
         if (playerEva.startPoint > 0L) {
             // 得到key对应的帧
-            frameIndex = (extractor.sampleTime / (1000 *playerEva.fps)).toInt() - 1
+            frameIndex = (extractor.sampleTime / ((1000 * 1000 / playerEva.fps))).toInt() - 1
+            ELog.e(TAG, "decode frameIndex: $frameIndex")
         }
 
         while (!outputDone) {

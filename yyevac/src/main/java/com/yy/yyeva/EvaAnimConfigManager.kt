@@ -148,7 +148,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         val jsonObj = JSONObject(jsonStr)
         config.jsonConfig = jsonObj
         val result = config!!.parse(jsonObj)
-        if (defaultFps > 0) {
+        if (config.fps == 0) {
             config.fps = defaultFps
         }
         playerEva.fps = config.fps
