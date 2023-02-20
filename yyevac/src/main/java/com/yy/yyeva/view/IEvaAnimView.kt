@@ -48,6 +48,10 @@ interface IEvaAnimView {
     fun startPlay(assetManager: AssetManager, assetsPath: String)
 
     fun startPlay(evaFileContainer: IEvaFileContainer)
+    // 暂停播放
+    fun pause()
+    // 恢复播放
+    fun resume()
     //停止播放
     fun stopPlay()
     //是否正在运行

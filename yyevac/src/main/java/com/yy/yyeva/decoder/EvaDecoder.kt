@@ -70,6 +70,10 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
         isStopReq = true
     }
 
+    abstract fun pause()
+
+    abstract fun resume()
+
     abstract fun destroy()
 
     fun prepareThread(): Boolean {

@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     android:background="@drawable/img">
 
+    
+    <com.yy.yyeva.view.EvaAnimViewV3
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"/>
 
     <LinearLayout
         android:id="@+id/btnLayout"
@@ -13,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="visible">
         <Button
             android:id="@+id/btnPlay"
             android:layout_width="wrap_content"
@@ -25,13 +31,11 @@
             android:layout_height="wrap_content"
             android:text="STOP"/>
 
+        <Button
+            android:id="@+id/btnPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pause"/>
     </LinearLayout>
-
-    
-    <com.yy.yyeva.view.EvaAnimViewV3
-        android:id="@+id/playerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"/>
     
 </FrameLayout>

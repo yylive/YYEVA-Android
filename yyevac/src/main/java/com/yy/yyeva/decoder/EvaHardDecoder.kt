@@ -36,9 +36,12 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     // 动画是否需要走YUV渲染逻辑的标志位
     private var needYUV = false
     private var outputFormat: MediaFormat? = null
+    // 暂停
+    private var isPause = false
 
     override fun start(evaFileContainer: IEvaFileContainer) {
         isStopReq = false
+        isPause = false
         needDestroy = false
         isRunning = true
         renderThread.handler?.post {
@@ -222,7 +225,17 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
         }
     }
 
-    private fun startDecode(extractor: MediaExtractor ,decoder: MediaCodec) {
+    override fun pause() {
+        ELog.i(TAG, "pause")
+        isPause = true
+    }
+
+    override fun resume() {
+        ELog.i(TAG, "resume")
+        isPause = false
+    }
+
+    private fun startDecode(extractor: MediaExtractor, decoder: MediaCodec) {
         val TIMEOUT_USEC = 10000L
         var inputChunk = 0
         var outputDone = false
@@ -243,6 +256,10 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                 ELog.i(TAG, "stop decode")
                 release(decoder, extractor)
                 return
+            }
+
+            if (isPause) {
+                continue
             }
 
             if (!inputDone) {

@@ -117,6 +117,16 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
         }
     }
 
+    fun pause() {
+        evaAudioPlayer?.pause()
+        decoder?.pause()
+    }
+
+    fun resume() {
+        evaAudioPlayer?.resume()
+        decoder?.resume()
+    }
+
     fun stopPlay() {
         decoder?.stop()
         evaAudioPlayer?.stop()

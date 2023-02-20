@@ -1,6 +1,7 @@
 package com.yy.yyeva.view
 
 import android.media.*
+import android.util.Log
 import com.yy.yyeva.EvaAnimPlayer
 import com.yy.yyeva.decoder.Decoder
 import com.yy.yyeva.decoder.HandlerHolder
@@ -24,8 +25,7 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     var playLoop = 0
     var isStopReq = false
     var needDestroy = false
-
-
+    var isPause = false
 
     private fun prepareThread(): Boolean {
         return Decoder.createThread(decodeThread, "anim_audio_thread")
@@ -42,11 +42,22 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
         decodeThread.handler?.post {
             try {
                 startPlay(evaFileContainer)
+                isPause = false
             } catch (e: Throwable) {
                 ELog.e(TAG, "Audio exception=$e", e)
                 release()
             }
         }
+    }
+
+    fun pause() {
+        ELog.i(TAG, "pause")
+        isPause = true
+    }
+
+    fun resume() {
+        ELog.i(TAG, "resume")
+        isPause = false
     }
 
     fun stop() {
@@ -109,6 +120,11 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
         val timeOutUs = 1000L
         var isEOS = false
         while (!isStopReq) {
+
+            if (isPause) {
+                continue
+            }
+
             if (!isEOS) {
                 val inputIndex = decoder.dequeueInputBuffer(timeOutUs)
                 if (inputIndex >= 0) {

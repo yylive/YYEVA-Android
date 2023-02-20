@@ -147,7 +147,8 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
          */
-//        animView.setStartPoint(8000*1000)
+        animView.setFps(24, 1.0f)
+//        animView.setStartPoint(70 * 1000)
         play(videoInfo)
     }
 
@@ -178,6 +179,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
             //循环三次
 //            animView.setLoop(3)
             animView.startPlay(file)
+            isPause = false
 //            val md5 = FileUtil.getFileMD5(file)
 //            if (videoInfo.md5 == md5) {
 //                // 开始播放动画文件
@@ -267,6 +269,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         }
     }
 
+    private var isPause = false;
 
     private fun initTestView() {
         btnLayout.visibility = View.VISIBLE
@@ -284,6 +287,18 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
          */
         btnStop.setOnClickListener {
             animView.stopPlay()
+        }
+
+        btnPause.setOnClickListener {
+            if (!isPause) {
+                isPause = true
+                animView.pause()
+                btnPause.text = "Resume"
+            } else {
+                isPause = false
+                animView.resume()
+                btnPause.text = "Pause"
+            }
         }
     }
 
