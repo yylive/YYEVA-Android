@@ -147,7 +147,10 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
          */
-        animView.setFps(24, 1.0f)
+        animView.setVideoFps(24, 1.0f)
+
+        //设置音频速度
+        animView.setAudioSpeed(1.0f)
 //        animView.setStartPoint(70 * 1000)
         play(videoInfo)
     }

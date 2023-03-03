@@ -256,9 +256,14 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
         playerEva.videoMode = mode
     }
 
-    override fun setFps(fps: Int, speed: Float) {
-        ELog.i(TAG, "setFps=$fps")
+    override fun setVideoFps(fps: Int, speed: Float) {
+        ELog.i(EvaAnimView.TAG, "setVideoFps=$fps， speed=$speed")
         playerEva.defaultFps = (fps * speed).toInt()
+    }
+
+    override fun setAudioSpeed(speed: Float) {
+        ELog.i(EvaAnimView.TAG, "setAudioSpeed=$speed")
+        playerEva.audioSpeed = speed
     }
 
     override fun setScaleType(type : ScaleType) {

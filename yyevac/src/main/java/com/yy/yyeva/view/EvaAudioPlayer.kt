@@ -104,9 +104,13 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
         var decodeOutputBuffers = decoder.outputBuffers
 
         val bufferInfo = MediaCodec.BufferInfo()
-        val sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE)
+        var sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE)
         val channelConfig = getChannelConfig(format.getInteger(MediaFormat.KEY_CHANNEL_COUNT))
 
+        if (playerEva.audioSpeed != 1.0f) { //设置音频播放速度
+            sampleRate = (sampleRate * playerEva.audioSpeed).toInt()
+        }
+        
         val bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelConfig, AudioFormat.ENCODING_PCM_16BIT)
         val audioTrack = AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, channelConfig, AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM)
         this.audioTrack = audioTrack

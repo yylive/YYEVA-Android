@@ -267,12 +267,14 @@ JNIEXPORT void JNICALL YYEVA(setBgBitmap)(
     memset(&bitmapInfo, 0, sizeof(bitmapInfo));
     int result = AndroidBitmap_getInfo(env, bitmap, &bitmapInfo);
     if (result != ANDROID_BITMAP_RESULT_SUCCESS) {
+        AndroidBitmap_unlockPixels(env, bitmap);
         return;
     }
 
     unsigned char *pixels;
     result = AndroidBitmap_lockPixels(env, bitmap, reinterpret_cast<void **>(&pixels));
     if (result != ANDROID_BITMAP_RESULT_SUCCESS) {
+        AndroidBitmap_unlockPixels(env, bitmap);
         return;
     }
 

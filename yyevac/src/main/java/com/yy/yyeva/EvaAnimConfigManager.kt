@@ -20,6 +20,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
 
     var config: EvaAnimConfig? = null
     var isParsingConfig = false // 是否正在读取配置
+    private var audioSpeed = 1.0f
 
     companion object {
         private const val TAG = "${EvaConstant.TAG}.EvaAnimConfigManager"
@@ -153,6 +154,11 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         }
         playerEva.fps = config.fps
         return result
+    }
+
+    fun setAudioSpeed(speed: Float) {
+        audioSpeed = speed
+        playerEva.audioSpeed = audioSpeed
     }
 
     /**
