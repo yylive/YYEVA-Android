@@ -84,6 +84,7 @@ class EvaAnimConfig {
                 height = descript!!.rgbFrame.h
                 alphaPointRect = descript!!.alphaFrame
                 rgbPointRect = descript!!.rgbFrame
+                fps = descript!!.fps
             }
 
             json.optJSONArray("effect")?.apply {
