@@ -67,4 +67,6 @@ interface IEvaAnimView {
     fun setBgImage(bg: Bitmap)
 
     fun hasBgImage(): Boolean
+    //是否不透明度mp4
+    fun setNormalMp4(isNormalMp4: Boolean)
 }

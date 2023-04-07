@@ -22,12 +22,14 @@ RenderController::~RenderController() {
     eglCore = nullptr;
 }
 
-GLuint RenderController::initRender(ANativeWindow *window, bool isNeedYUV) {
+GLuint RenderController::initRender(ANativeWindow *window, bool isNeedYUV, bool isNormalMp4) {
     if (eglCore != nullptr && window != nullptr) {
         eglCore->start(window);
     }
     if (window != nullptr && render == nullptr) {
-        if (isNeedYUV) {
+        if (isNormalMp4) {
+            render = new Mp4Render();
+        } else if (isNeedYUV) {
             ELOGV("use yuv render");
             render = new YUVRender();
         } else {

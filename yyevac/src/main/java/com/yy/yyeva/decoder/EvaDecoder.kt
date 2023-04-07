@@ -83,7 +83,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
     fun prepareRender(needYUV: Boolean): Boolean {
         ELog.i(TAG, "prepareRender")
         playerEva.evaAnimView.getSurface()?.apply {
-            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId, this, needYUV)
+            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId, this, needYUV, playerEva.isNormalMp4)
             return true
         }
         return false
@@ -94,7 +94,21 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
         playerEva.configManager.config?.apply {
 //            render?.setAnimConfig(this)
             if (isDefaultConfig) {
-                EvaJniUtil.defaultConfig(playerEva.controllerId, videoWidth, videoHeight, defaultVideoMode)
+                if (playerEva.isNormalMp4) {  //正常MP4播放
+                    EvaJniUtil.defaultConfig(
+                        playerEva.controllerId,
+                        videoWidth,
+                        videoHeight,
+                        -1  //正常宽高
+                    )
+                } else {
+                    EvaJniUtil.defaultConfig(
+                        playerEva.controllerId,
+                        videoWidth,
+                        videoHeight,
+                        defaultVideoMode
+                    )
+                }
                 playerEva.evaAnimListener?.onVideoConfigReady(this)
                 playerEva.evaAnimView.updateTextureViewLayout()
             } else if (jsonConfig != null) {

@@ -62,6 +62,16 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         val config = EvaAnimConfig()
         this.config = config
 
+        if (playerEva.isNormalMp4) {
+            config.apply {
+                isDefaultConfig = true
+                this.defaultVideoMode = -1
+                fps = defaultFps
+            }
+            playerEva.fps = config.fps
+            return true
+        }
+
         evaFileContainer.startRandomRead()
         val readBytes = ByteArray(512)
         var readBytesLast = ByteArray(512)

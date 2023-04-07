@@ -86,7 +86,7 @@ JNIEXPORT void JNICALL YYEVA(videoSizeChange)(
 }
 
 JNIEXPORT jint JNICALL YYEVA(initRender)(
-        JNIEnv *env, jobject instance, jint controllerId, jobject surface, jboolean isNeedYUV) {
+        JNIEnv *env, jobject instance, jint controllerId, jobject surface, jboolean isNeedYUV, jboolean isNormalMp4) {
     mtx.lock();
     //创建window
     ANativeWindow *window = ANativeWindow_fromSurface(env,surface);
@@ -99,11 +99,11 @@ JNIEXPORT jint JNICALL YYEVA(initRender)(
         renderId += 1;
         id = renderId;
         auto* controller = new RenderController();
-        controller->initRender(window, isNeedYUV);
+        controller->initRender(window, isNeedYUV, isNormalMp4);
         renderMap.insert(std::make_pair(id, controller));
     } else if (renderMap.find(controllerId) != renderMap.end()) {
         if (renderMap[controllerId]->getExternalTexture() == -1) {  //防止重复初始化
-            renderMap[controllerId]->initRender(window, isNeedYUV);
+            renderMap[controllerId]->initRender(window, isNeedYUV, isNormalMp4);
         } else {
             ELOGE("initRender init repeat");
         }

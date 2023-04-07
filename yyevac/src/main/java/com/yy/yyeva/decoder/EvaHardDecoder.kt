@@ -156,15 +156,15 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             // 但是这样直接判断有风险，后期想办法改
             needYUV = videoWidth % 16 != 0 && playerEva.enableVersion1
 
-            try {
-                if (!prepareRender(needYUV)) {
-                    throw RuntimeException("render create fail")
-                }
-            } catch (t: Throwable) {
-                onFailed(EvaConstant.REPORT_ERROR_TYPE_CREATE_RENDER, "${EvaConstant.ERROR_MSG_CREATE_RENDER} e=$t")
-                release(null, null)
-                return
-            }
+//            try {
+//                if (!prepareRender(needYUV)) {
+//                    throw RuntimeException("render create fail")
+//                }
+//            } catch (t: Throwable) {
+//                onFailed(EvaConstant.REPORT_ERROR_TYPE_CREATE_RENDER, "${EvaConstant.ERROR_MSG_CREATE_RENDER} e=$t")
+//                release(null, null)
+//                return
+//            }
 
             preparePlay(videoWidth, videoHeight)
 

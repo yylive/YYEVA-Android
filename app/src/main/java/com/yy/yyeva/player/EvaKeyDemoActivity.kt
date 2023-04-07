@@ -151,6 +151,9 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
 
         //设置音频速度
         animView.setAudioSpeed(1.0f)
+        //是否正常的不透明mp4播放
+        animView.setNormalMp4(false)
+//        animView.setScaleType(ScaleType.FIT_XY)
 //        animView.setStartPoint(70 * 1000)
         play(videoInfo)
     }

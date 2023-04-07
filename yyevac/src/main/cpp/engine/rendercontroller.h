@@ -15,13 +15,14 @@
 #include <engine/render.h>
 #include <engine/yuvrender.h>
 #include <engine/bgrender.h>
+#include <engine/mp4render.h>
 
 using namespace std;
 class RenderController {
 public:
     RenderController();
     ~RenderController();
-    GLuint initRender(ANativeWindow *window, bool isNeedYUV);
+    GLuint initRender(ANativeWindow *window, bool isNeedYUV, bool isNormalMp4);
     void destroyRender();
     void updateViewPoint(int width, int height);
     int getExternalTexture();

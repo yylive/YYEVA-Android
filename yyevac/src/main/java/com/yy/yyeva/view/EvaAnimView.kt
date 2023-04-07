@@ -130,7 +130,7 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     @SuppressLint("LongLogTag")
     override fun surfaceCreated(holder: SurfaceHolder) {
         playerEva.decoder?.renderThread?.handler?.post {
-            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId, holder.surface, false)
+            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId, holder.surface, false, playerEva.isNormalMp4)
             val textureId = EvaJniUtil.getExternalTexture(playerEva.controllerId)
             if (textureId < 0) {
                 Log.e(TAG, "surfaceCreated init OpenGL ES failed!")
@@ -260,6 +260,11 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     override fun setVideoFps(fps: Int, speed: Float) {
         ELog.i(TAG, "setVideoFps=$fps， speed=$speed")
         playerEva.defaultFps = (fps * speed).toInt()
+    }
+
+    override fun setNormalMp4(isNormalMp4: Boolean) {
+        ELog.i(TAG, "isNormalMp4=$isNormalMp4")
+        playerEva.isNormalMp4 = isNormalMp4
     }
 
     override fun setAudioSpeed(speed: Float) {

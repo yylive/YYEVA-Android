@@ -29,7 +29,7 @@ object EvaJniUtil {
      * 初始化mp4渲染
      * 返回管理器id
      */
-    external fun initRender(controllerId: Int, surface: Surface, isNeedYuv: Boolean): Int
+    external fun initRender(controllerId: Int, surface: Surface, isNeedYuv: Boolean, isNormalMp4: Boolean): Int
 
     /**
      * 设置动效json数据

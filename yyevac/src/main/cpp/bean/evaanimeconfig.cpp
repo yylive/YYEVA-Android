@@ -217,8 +217,8 @@ EvaAnimeConfig* EvaAnimeConfig::defaultConfig(int _videoWidth, int _videoHeight,
             config->rgbPointRect = new PointRect(0, 0, config->width, config->height);
             config->alphaPointRect = new PointRect(0, config->height, config->width, config->height);
             break;
-        default:
-            config->width = _videoWidth / 2;
+        default: // -1为正常的MP4参数
+            config->width = _videoWidth;
             config->height = _videoHeight;
             config->rgbPointRect= new PointRect(0, 0, config->width, config->height);
             config->alphaPointRect = new PointRect(config->width, 0, config->width, config->height);
