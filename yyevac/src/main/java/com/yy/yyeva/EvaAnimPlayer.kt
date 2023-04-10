@@ -50,6 +50,8 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
 
     var isNormalMp4 = false //是否正常的不透明的mp4
 
+    var isSetLastFrame = false //是否停留在最后一帧
+
 //    val configManager = AnimConfigManager(this)
     val configManager = EvaAnimConfigManager(this)
     val pluginManager = EvaAnimPluginManager(this)

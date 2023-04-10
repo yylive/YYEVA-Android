@@ -111,7 +111,6 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     }
 
     private fun startPlay(evaFileContainer: IEvaFileContainer) {
-
         var extractor: MediaExtractor? = null
         var decoder: MediaCodec? = null
         var format: MediaFormat? = null
@@ -349,7 +348,11 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                             onVideoRestart()
                         }
                         if (outputDone) {  //输出完成
-                            release(decoder, extractor)
+                            if (playerEva.isSetLastFrame) {
+                                notReleaseLastFrame(decoder, extractor)
+                            } else {
+                                release(decoder, extractor)
+                            }
                         }
                     }
                 }
@@ -437,11 +440,46 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
         }
     }
 
+    private fun notReleaseLastFrame(decoder: MediaCodec?, extractor: MediaExtractor?) {
+        decoder?.apply {
+            stop()
+            release()
+        }
+        extractor?.release()
+        speedControlUtil.reset()
+        playerEva.pluginManager.onRelease()
+        isRunning = false
+    }
+
+    private fun releaseLastFrame() {
+        if (playerEva.isSetLastFrame) {
+            renderThread.handler?.post {
+                EvaJniUtil.renderClearFrame(playerEva.controllerId)
+                try {
+                    ELog.i(TAG, "releaseLastFrame")
+                    glTexture?.release()
+                    glTexture = null
+//                render?.releaseTexture()
+                    EvaJniUtil.releaseTexture(playerEva.controllerId)
+                } catch (e: Throwable) {
+                    ELog.e(TAG, "release e=$e", e)
+                }
+                isRunning = false
+                onVideoComplete()
+                if (needDestroy) {
+                    destroyInner()
+                }
+                playerEva.isSetLastFrame = false
+            }
+        }
+    }
+
     override fun destroy() {
         if (isRunning) {
             needDestroy = true
             stop()
         } else {
+            releaseLastFrame()
             destroyInner()
         }
     }

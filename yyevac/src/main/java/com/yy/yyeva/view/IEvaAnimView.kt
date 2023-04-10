@@ -69,4 +69,6 @@ interface IEvaAnimView {
     fun hasBgImage(): Boolean
     //是否不透明度mp4
     fun setNormalMp4(isNormalMp4: Boolean)
+    //是否停留在最后一帧
+    fun setLastFrame(isSetLastFrame: Boolean)
 }

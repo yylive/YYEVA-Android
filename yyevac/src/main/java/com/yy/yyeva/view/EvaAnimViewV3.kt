@@ -159,7 +159,6 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
 
     override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
         ELog.i(TAG, "onSurfaceTextureAvailable width=$width height=$height")
-
         playerEva.decoder?.renderThread?.handler?.post {
             s = Surface(surface)
             ELog.i(TAG, "initRender")
@@ -243,6 +242,10 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
     override fun supportMask(isSupport : Boolean, isEdgeBlur : Boolean) {
         playerEva.supportMaskBoolean = isSupport
         playerEva.maskEdgeBlurBoolean = isEdgeBlur
+    }
+
+    override fun setLastFrame(isSetLastFrame: Boolean) {
+        playerEva.isSetLastFrame = isSetLastFrame
     }
 
     @Deprecated("Compatible older version mp4, default false")

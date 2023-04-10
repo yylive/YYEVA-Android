@@ -246,6 +246,10 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         playerEva.maskEdgeBlurBoolean = isEdgeBlur
     }
 
+    override fun setLastFrame(isSetLastFrame: Boolean) {
+        playerEva.isSetLastFrame = isSetLastFrame
+    }
+
     @Deprecated("Compatible older version mp4, default false")
     fun enableVersion1(enable: Boolean) {
         playerEva.enableVersion1 = enable
