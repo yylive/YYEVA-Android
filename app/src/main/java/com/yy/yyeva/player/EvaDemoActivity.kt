@@ -88,17 +88,23 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
                     val drawableId = R.drawable.ball_1
                     val options = BitmapFactory.Options()
                     options.inScaled = false
-                    result(BitmapFactory.decodeResource(resources, drawableId, options), null)
+                    val bitmap = BitmapFactory.decodeResource(resources, drawableId, options)
+                    result(bitmap, null)
+                    bitmap.recycle()
                 } else if (tag == "anchor_avatar2") { // 此tag是已经写入到动画配置中的tag
                     val drawableId =  R.drawable.ball_2
                     val options = BitmapFactory.Options()
                     options.inScaled = false
-                    result(BitmapFactory.decodeResource(resources, drawableId, options), null)
+                    val bitmap = BitmapFactory.decodeResource(resources, drawableId, options)
+                    result(bitmap, null)
+                    bitmap.recycle()
                 } else if (tag == "anchor_avatar3") { // 此tag是已经写入到动画配置中的tag
                     val drawableId =  R.drawable.ball_3
                     val options = BitmapFactory.Options()
                     options.inScaled = false
-                    result(BitmapFactory.decodeResource(resources, drawableId, options), null)
+                    val bitmap = BitmapFactory.decodeResource(resources, drawableId, options)
+                    result(bitmap, null)
+                    bitmap.recycle()
                 } else {
                     result(null, null)
                 }

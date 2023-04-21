@@ -105,17 +105,23 @@ class EvaKeyRecyclerAdapter():RecyclerView.Adapter<EvaKeyRecyclerAdapter.EvaKeyH
                         val drawableId = R.drawable.ball_1
                         val options = BitmapFactory.Options()
                         options.inScaled = false
-                        result(BitmapFactory.decodeResource(animView.context.resources, drawableId, options), null)
+                        val bitmap = BitmapFactory.decodeResource(animView.context.resources, drawableId, options)
+                        result(bitmap, null)
+                        bitmap.recycle()
                     } else if (tag == "anchor_avatar2") { // 此tag是已经写入到动画配置中的tag
                         val drawableId =  R.drawable.ball_2
                         val options = BitmapFactory.Options()
                         options.inScaled = false
-                        result(BitmapFactory.decodeResource(animView.context.resources, drawableId, options), null)
+                        val bitmap = BitmapFactory.decodeResource(animView.context.resources, drawableId, options)
+                        result(bitmap, null)
+                        bitmap.recycle()
                     } else if (tag == "anchor_avatar3") { // 此tag是已经写入到动画配置中的tag
                         val drawableId =  R.drawable.chang
                         val options = BitmapFactory.Options()
                         options.inScaled = false
-                        result(BitmapFactory.decodeResource(animView.context.resources, drawableId, options), EvaSrc.FitType.CENTER_FULL)
+                        val bitmap = BitmapFactory.decodeResource(animView.context.resources, drawableId, options)
+                        result(bitmap, EvaSrc.FitType.CENTER_FULL)
+                        bitmap.recycle()
                     } else {
                         result(null, null)
                     }
