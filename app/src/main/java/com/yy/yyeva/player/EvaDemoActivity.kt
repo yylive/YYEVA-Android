@@ -120,9 +120,6 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
              * 播放完毕后的资源回收
              */
             override fun releaseSrc(resources: List<EvaResource>) {
-                resources.forEach {
-                    it.bitmap?.recycle()
-                }
             }
         })
 
@@ -139,6 +136,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
 
         // 注册动画监听
         animView.setAnimListener(this)
+//        animView.setAudioSpeed(2.0f)
         /**
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView

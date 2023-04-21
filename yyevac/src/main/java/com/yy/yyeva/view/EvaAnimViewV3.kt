@@ -88,6 +88,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
         removeAllViews()
         innerTextureView = InnerTextureView(context).apply {
             playerEva = this@EvaAnimViewV3.playerEva
+//            playerEva = EvaAnimPlayer(this@EvaAnimViewV3)
             surfaceTextureListener = this@EvaAnimViewV3
             layoutParams = scaleTypeUtil.getLayoutParam(this)
         }
@@ -153,6 +154,10 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
             innerTextureView?.surfaceTextureListener = null
             innerTextureView = null
             removeAllViews()
+        }
+        if (bg != null && !bg!!.isRecycled) {
+            bg!!.recycle()
+            bg = null
         }
         return !belowKitKat()
     }

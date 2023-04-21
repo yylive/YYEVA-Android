@@ -85,7 +85,12 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
 
 
     override fun onRelease() {
-        destroy()
+        if (playerEva.configManager.config?.isMix == false) return
+        val resources = ArrayList<EvaResource>()
+        srcMap?.map?.values?.forEach {src ->
+            resources.add(EvaResource(src))
+        }
+        resourceRequestEva?.releaseSrc(resources)
     }
 
     override fun onDestroy() {
@@ -111,16 +116,6 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
     private fun destroy() {
         // 强制结束等待
         forceStopLockThread()
-        if (playerEva.configManager.config?.isMix == false) return
-        val resources = ArrayList<EvaResource>()
-        srcMap?.map?.values?.forEach {src ->
-            when(src.srcType) {
-                EvaSrc.SrcType.IMG -> resources.add(EvaResource(src))
-                EvaSrc.SrcType.TXT -> src.bitmap?.recycle()
-                else -> {}
-            }
-        }
-        resourceRequestEva?.releaseSrc(resources)
         EvaJniUtil.mixRenderDestroy(playerEva.controllerId)
     }
 
@@ -154,12 +149,7 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                     src.bitmap = if (bitmap == null) {
                         ELog.e(TAG, "fetch image ${src.srcId} bitmap return null")
                         EvaBitmapUtil.createEmptyBitmap()
-                    } else bitmap
-                    val address = if(Build.BRAND == "Xiaomi"){ // 小米手机
-                        Environment.getExternalStorageDirectory().path +"/DCIM/Camera/"+System.currentTimeMillis()+".png"
-                    }else{  // Meizu 、Oppo
-                        Environment.getExternalStorageDirectory().path +"/DCIM/"+System.currentTimeMillis()+".png"
-                    }
+                    } else bitmap.copy(Bitmap.Config.ARGB_8888, true)
                     val scaleMode = when (fixType) {
                         null -> {
                             src.scaleMode
@@ -174,9 +164,10 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                             "scaleFill"
                         }
                     }
-                    EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, bitmap, address, scaleMode)
+                    EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, bitmap, scaleMode)
                     ELog.i(TAG, "fetch image ${src.srcId} finish bitmap is ${bitmap?.hashCode()}")
-                    bitmap?.recycle()
+                    //内部创建完纹理立刻释放
+                    src.bitmap?.recycle()
                     resultCall()
                 }
             } else if (src.srcType == EvaSrc.SrcType.TXT) {
@@ -185,13 +176,8 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                     src.txt = txt ?: ""
                     src.textAlign = textAlign ?: "center"
 //                    EvaJniUtil.setSrcTxt(src.srcId, src.txt)
-                    val address = if(Build.BRAND == "Xiaomi"){ // 小米手机
-                        Environment.getExternalStorageDirectory().path +"/DCIM/Camera/"+System.currentTimeMillis()+".png"
-                    }else{  // Meizu 、Oppo
-                        Environment.getExternalStorageDirectory().path +"/DCIM/"+System.currentTimeMillis()+".png"
-                    }
                     val txtBitmap = EvaBitmapUtil.createTxtBitmap(src)
-                    EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, txtBitmap, address, src.scaleMode)
+                    EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, txtBitmap, src.scaleMode)
                     ELog.i(TAG, "fetch text ${src.srcId} finish txt is $txt")
                     txtBitmap.recycle()
                     resultCall()

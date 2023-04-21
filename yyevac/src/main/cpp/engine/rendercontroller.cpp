@@ -242,7 +242,7 @@ void RenderController::parseSrc(EvaAnimeConfig* config) {
 }
 
 void RenderController::setSrcBitmap(const char *srcId, unsigned char *bitmap,
-                                    AndroidBitmapInfo* bitmapInfo, string addr, string scaleMode) {
+                                    AndroidBitmapInfo* bitmapInfo, string scaleMode) {
     if (srcMap != nullptr && !srcMap->map.empty()) {
         string id = srcId;
 //        srcMap->map.find(id)->second.bitmap = bitmap;
@@ -267,7 +267,7 @@ void RenderController::setSrcBitmap(const char *srcId, unsigned char *bitmap,
 //            int size = bitmapInfo->width * bitmapInfo->height * sizeof(char);
             srcMap->map.find(id)->second.bitmap = new unsigned char[size];
             memset(srcMap->map.find(id)->second.bitmap, 0, size);
-            srcMap->map.find(id)->second.saveAddress = addr;
+//            srcMap->map.find(id)->second.saveAddress = addr;
 //            for(int i = 0; i < size; i++)
 //            {
 //                int pixel = bitmap[i];

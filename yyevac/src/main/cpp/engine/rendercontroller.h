@@ -41,7 +41,7 @@ public:
 
     void parseFrame(EvaAnimeConfig* config);
     void parseSrc(EvaAnimeConfig* config);
-    void setSrcBitmap(const char* srcId, unsigned char* bitmap, AndroidBitmapInfo* bitmapInfo, string addr, string scaleMode);
+    void setSrcBitmap(const char* srcId, unsigned char* bitmap, AndroidBitmapInfo* bitmapInfo, string scaleMode);
     void setSrcTxt(const char* srcId, const char* txt);
     void setBgImage(unsigned char* bitmap, AndroidBitmapInfo* bitmapInfo);
 

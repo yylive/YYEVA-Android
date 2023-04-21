@@ -94,7 +94,7 @@ EGLint* EGLCore::getAttributes() {
 EGLContext EGLCore::createContext(EGLDisplay eglDisplay, EGLConfig eglConfig) {
     //创建渲染上下文
     //只使用opengles2
-    GLint contextAttrib[] = {EGL_CONTEXT_CLIENT_VERSION, 2 ,
+    GLint contextAttrib[] = {EGL_CONTEXT_CLIENT_VERSION, 3 ,
                              EGL_NONE};
     // EGL_NO_CONTEXT表示不向其它的context共享资源
     mContext = eglCreateContext(eglDisplay, eglConfig, EGL_NO_CONTEXT, contextAttrib);
@@ -129,7 +129,7 @@ GLboolean EGLCore::buildContext(ANativeWindow *window) {
             EGL_GREEN_SIZE,6, //指定G大小
             EGL_BLUE_SIZE,5,  //指定B大小
 //            EGL_RENDERABLE_TYPE,EGL_OPENGL_ES3_BIT_KHR, //渲染类型，为相机扩展类型
-            EGL_SURFACE_TYPE,EGL_WINDOW_BIT,  //绘图类型，
+            EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,  //绘图类型，
             EGL_NONE
     };
 
@@ -195,8 +195,13 @@ void EGLCore::swapBuffer() {
 }
 
 void EGLCore::release() {
+    ELOGD("release");
     eglDestroySurface(mDisplay,mSurface);
     eglMakeCurrent(mDisplay,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
     eglDestroyContext(mDisplay,mContext);
+    eglReleaseThread();
     eglTerminate(mDisplay);
+    mDisplay = EGL_NO_DISPLAY;
+    mContext = EGL_NO_CONTEXT;
+    mSurface = EGL_NO_SURFACE;
 }

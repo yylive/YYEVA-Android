@@ -285,7 +285,7 @@ JNIEXPORT void JNICALL YYEVA(setBgBitmap)(
 
 
 JNIEXPORT void JNICALL YYEVA(setSrcBitmap)(
-        JNIEnv *env, jobject instance, jint controllerId, jstring srcId, jobject bitmap, jstring address, jstring scaleMode) {
+        JNIEnv *env, jobject instance, jint controllerId, jstring srcId, jobject bitmap, jstring scaleMode) {
     if (controllerId == -1) {
         ELOGE("setSrcBitmap controller not init");
         return;
@@ -311,9 +311,8 @@ JNIEXPORT void JNICALL YYEVA(setSrcBitmap)(
     }
 
     const char *id = env->GetStringUTFChars(srcId, JNI_FALSE);
-    const std::string addr = env->GetStringUTFChars(address, JNI_FALSE);
     const std::string scaleM = env->GetStringUTFChars(scaleMode, JNI_FALSE);
-    renderMap[controllerId]->setSrcBitmap(id, pixels, &bitmapInfo, addr, scaleM);
+    renderMap[controllerId]->setSrcBitmap(id, pixels, &bitmapInfo, scaleM);
 
     AndroidBitmap_unlockPixels(env, bitmap);
 }

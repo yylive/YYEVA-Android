@@ -46,7 +46,7 @@ object EvaJniUtil {
     /**
      * 设置动效元素bitmap数据
      */
-    external fun setSrcBitmap(controllerId: Int, srcId: String, bitmap: Bitmap?, address: String, scaleMode: String)
+    external fun setSrcBitmap(controllerId: Int, srcId: String, bitmap: Bitmap?, scaleMode: String)
 
     /**
      * 设置动效元素txt
@@ -56,27 +56,27 @@ object EvaJniUtil {
     /**
      * 进行MP4渲染
      */
-    external fun renderFrame(controllerId: Int, )
+    external fun renderFrame(controllerId: Int)
 
     /**
      * 清空MP4渲染
      */
-    external fun renderClearFrame(controllerId: Int, )
+    external fun renderClearFrame(controllerId: Int)
 
     /**
      * 清空纹理
      */
-    external fun releaseTexture(controllerId: Int, )
+    external fun releaseTexture(controllerId: Int)
 
     /**
      * 交换渲染mp4纹理数据
      */
-    external fun renderSwapBuffers(controllerId: Int, )
+    external fun renderSwapBuffers(controllerId: Int)
 
     /**
      * 销毁mp4纹理渲染
      */
-    external fun destroyRender(controllerId: Int, )
+    external fun destroyRender(controllerId: Int)
 
     /**
      * 动效元素配置
@@ -86,7 +86,7 @@ object EvaJniUtil {
     /**
      * 动效元素创建
      */
-    external fun mixRenderCreate(controllerId: Int, )
+    external fun mixRenderCreate(controllerId: Int)
 
     /**
      * 动效元素渲染

@@ -138,9 +138,6 @@ class EvaKeyRecyclerAdapter():RecyclerView.Adapter<EvaKeyRecyclerAdapter.EvaKeyH
                  * 播放完毕后的资源回收
                  */
                 override fun releaseSrc(resources: List<EvaResource>) {
-                    resources.forEach {
-                        it.bitmap?.recycle()
-                    }
                 }
             })
 

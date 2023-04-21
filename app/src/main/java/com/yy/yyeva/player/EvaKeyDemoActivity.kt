@@ -54,12 +54,15 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         Handler(Looper.getMainLooper())
     }
 
+    private var ball1: Bitmap? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_anim_simple_demo_p)
         // 获取动画view
         animView = playerView
         loadFile()
+        ball1 = BitmapFactory.decodeResource(resources, R.drawable.ball_1, BitmapFactory.Options().apply { inScaled = false })
     }
 
     private fun init() {
@@ -85,10 +88,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
                  */
                 val tag = resource.tag
                 if (tag == "anchor_avatar1") { // 此tag是已经写入到动画配置中的tag
-                    val drawableId = R.drawable.ball_1
-                    val options = BitmapFactory.Options()
-                    options.inScaled = false
-                    result(BitmapFactory.decodeResource(resources, drawableId, options), null)
+                    result(ball1, null)
                 } else if (tag == "anchor_avatar2") { // 此tag是已经写入到动画配置中的tag
                     val drawableId =  R.drawable.ball_2
                     val options = BitmapFactory.Options()
@@ -107,8 +107,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
             /**
              * 获取文字资源
              */
-            override fun setText(resource: EvaResource, result: (String?, String?
-            ) -> Unit) {
+            override fun setText(resource: EvaResource, result: (String?, String?) -> Unit) {
                 val tag = resource.tag
                 if (tag == "anchor_nick") { // 此tag是已经写入到动画配置中的tag
                     result("USERNICK\uD83D\uDE04", "left")
@@ -121,9 +120,6 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
              * 播放完毕后的资源回收
              */
             override fun releaseSrc(resources: List<EvaResource>) {
-                resources.forEach {
-                    it.bitmap?.recycle()
-                }
             }
         })
 
@@ -153,6 +149,8 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         animView.setAudioSpeed(1.0f)
         //是否正常的不透明mp4播放
         animView.setNormalMp4(false)
+
+//        animView.setLastFrame(true)
 //        animView.setScaleType(ScaleType.FIT_XY)
 //        animView.setStartPoint(70 * 1000)
         play(videoInfo)
@@ -246,13 +244,18 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         ELog.i(TAG, "onFailed errorType=$errorType errorMsg=$errorMsg")
     }
 
-
     override fun onPause() {
         super.onPause()
         // 页面切换是停止播放
         animView.stopPlay()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        if (ball1 != null && !ball1!!.isRecycled) {
+            ball1!!.recycle()
+        }
+    }
 
     private fun initLog() {
         ELog.isDebug = false
