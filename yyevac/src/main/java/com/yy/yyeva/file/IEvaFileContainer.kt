@@ -1,6 +1,7 @@
 package com.yy.yyeva.file
 
 import android.media.MediaExtractor
+import java.io.File
 
 interface IEvaFileContainer {
 
@@ -15,5 +16,8 @@ interface IEvaFileContainer {
     fun closeRandomRead()
 
     fun close()
+
+    fun getFile(): File?
+
 
 }

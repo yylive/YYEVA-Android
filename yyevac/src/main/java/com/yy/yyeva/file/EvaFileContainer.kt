@@ -42,4 +42,8 @@ class EvaFileContainer(private val file: File) : IEvaFileContainer {
 
     override fun close() {
     }
+
+    override fun getFile(): File {
+        return file
+    }
 }

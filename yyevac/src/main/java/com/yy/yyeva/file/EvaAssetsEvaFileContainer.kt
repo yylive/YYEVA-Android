@@ -5,8 +5,9 @@ import android.content.res.AssetManager
 import android.media.MediaExtractor
 import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
+import java.io.File
 
-class EvaAssetsEvaFileContainer(assetManager: AssetManager, assetsPath: String): IEvaFileContainer {
+class EvaAssetsEvaFileContainer(assetManager: AssetManager, val assetsPath: String): IEvaFileContainer {
 
     companion object {
         private const val TAG = "${EvaConstant.TAG}.FileContainer"
@@ -46,5 +47,9 @@ class EvaAssetsEvaFileContainer(assetManager: AssetManager, assetsPath: String):
     override fun close() {
         assetFd.close()
         assetsInputStream.close()
+    }
+
+    override fun getFile(): File {
+        return File(assetsPath)
     }
 }

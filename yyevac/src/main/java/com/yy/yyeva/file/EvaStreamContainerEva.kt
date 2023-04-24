@@ -4,6 +4,7 @@ import android.annotation.TargetApi
 import android.media.MediaExtractor
 import android.os.Build
 import java.io.ByteArrayInputStream
+import java.io.File
 
 @TargetApi(Build.VERSION_CODES.M)
 class EvaStreamContainerEva(private val bytes: ByteArray) : IEvaFileContainer {
@@ -31,5 +32,9 @@ class EvaStreamContainerEva(private val bytes: ByteArray) : IEvaFileContainer {
 
     override fun close() {
         stream.close()
+    }
+
+    override fun getFile(): File? {
+        return null
     }
 }

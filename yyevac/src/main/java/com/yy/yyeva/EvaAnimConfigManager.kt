@@ -1,13 +1,19 @@
 package com.yy.yyeva
 
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.media.MediaMetadataRetriever
+import android.media.MediaMetadataRetriever.OPTION_NEXT_SYNC
 import android.os.SystemClock
 import android.util.Base64
+import android.util.Log
 import com.yy.yyeva.file.IEvaFileContainer
 import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
 import com.yy.yyeva.util.PointRect
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.IOException
 import java.lang.Exception
 import java.util.zip.Inflater
@@ -142,10 +148,11 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
 
         if (!findStart || !findEnd) {
             ELog.e(TAG, "yyeffectmp4json not found")
+            getMp4Type(evaFileContainer.getFile())
             // 按照默认配置生成config
             config?.apply {
                 isDefaultConfig = true
-                this.defaultVideoMode = defaultVideoMode
+                this.defaultVideoMode = playerEva.videoMode
                 fps = defaultFps
             }
             playerEva.fps = config.fps
@@ -248,5 +255,162 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         }
         decompresser.end()
         return output
+    }
+
+    fun getMp4Type(file: File?) {
+        if(file != null && file.exists()) {
+            val mmr = MediaMetadataRetriever()
+            mmr.setDataSource(file.absolutePath)
+            //获取播放帧数
+            val count_s =
+                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_FRAME_COUNT)?.toLong()
+//            //获取播放时长
+            val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
+            if (duration != null && duration > 0) {
+                for(i in 0..5) {
+                    val bitmap =
+                        mmr.getFrameAtTime(i* duration/5 * 1000, MediaMetadataRetriever.OPTION_CLOSEST)
+                    val isJudge = getConfigManager(bitmap)
+                    bitmap?.recycle()
+                    if (isJudge) {
+                        break
+                    }
+                }
+            }
+//            val bitmap =
+//                mmr.getFrameAtTime(1000000, MediaMetadataRetriever.OPTION_CLOSEST)
+//            val isJudge = getConfigManager(bitmap)
+//            bitmap?.recycle()
+            mmr.release()
+        }
+    }
+
+    /**
+     * 返回已经判断完成
+     */
+    fun getConfigManager(bitmap: Bitmap?): Boolean {
+        if (bitmap != null) {
+            val w = bitmap.width
+            val h = bitmap.height
+
+            Log.i(TAG, "ltIsGray")
+            val ltIsGray = isGray(getArray(bitmap, 0, 0))
+            Log.i(TAG, "rtIsGray")
+            val rtIsGray = isGray(getArray(bitmap, w/2, 0))
+            Log.i(TAG, "lbIsGray")
+            val lbIsGray = isGray(getArray(bitmap, 0, h/2))
+            Log.i(TAG, "rbIsGray")
+            val rbIsGray = isGray(getArray(bitmap, w/2, h/2))
+            Log.i(TAG, "ltIsGray $ltIsGray, rtIsGray $rtIsGray, lbIsGray $lbIsGray, rbIsGray $rbIsGray")
+
+            if (!ltIsGray && !lbIsGray && !rtIsGray && !rbIsGray) {
+                //正常mp4
+                Log.i(TAG, "正常mp4")
+                playerEva.isNormalMp4 = true
+            } else if (ltIsGray && lbIsGray && !rtIsGray && !rbIsGray) {
+                //左灰右彩
+                Log.i(TAG, "左灰右彩")
+                playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL
+            } else if (!ltIsGray && !lbIsGray && rtIsGray && rbIsGray) {
+                //左彩右灰
+                Log.i(TAG, "左彩右灰")
+                playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE
+            } else if (ltIsGray && rtIsGray && !lbIsGray && !rbIsGray) {
+                //上灰下彩
+                Log.i(TAG, "上灰下彩")
+                playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_VERTICAL
+            } else if (!ltIsGray && !rtIsGray && lbIsGray && rbIsGray) {
+                //上彩下灰
+                Log.i(TAG, "上彩下灰")
+                playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_VERTICAL_REVERSE
+            } else {
+                return false
+            }
+        } else {
+            Log.e(TAG, "getConfigManager bitmap is null")
+            return false
+        }
+
+        return true
+    }
+
+    private fun getArray(bitmap: Bitmap, start_x: Int, start_y: Int): IntArray {
+        val w = bitmap.width
+        val h = bitmap.height
+        val w_i = w/8
+        val h_i = h/8
+        val a = IntArray(16)
+        a[0] = bitmap.getPixel(start_x + w_i, start_y + h_i)
+        a[1] = bitmap.getPixel(start_x + w_i*2, start_y + h_i)
+        a[2] = bitmap.getPixel(start_x + w_i*3, start_y + h_i)
+        a[3] = bitmap.getPixel(start_x + w_i, start_y + h_i*2)
+        a[4] = bitmap.getPixel(start_x + w_i*2, start_y + h_i*2)
+        a[5] = bitmap.getPixel(start_x + w_i*3, start_y + h_i*2)
+        a[6] = bitmap.getPixel(start_x + w_i, start_y + h_i*3)
+        a[7] = bitmap.getPixel(start_x + w_i*2, start_y + h_i*3)
+        a[8] = bitmap.getPixel(start_x + w_i*3, start_y + h_i*3)
+
+        //添加靠近十字中线的点
+        if (start_x < w/2 && start_y < h/2) {  //第一象限
+            //横向靠近中线的三个点
+            a[9] = bitmap.getPixel(start_x + w_i, h/2 - 3)
+            a[10] = bitmap.getPixel(start_x + w_i*2, h/2 - 3)
+            a[11] = bitmap.getPixel(start_x + w_i*3, h/2 - 3)
+            //纵向靠近中间线的三个点
+            a[12] = bitmap.getPixel(w/2 - 3, start_y + h_i)
+            a[13] = bitmap.getPixel(w/2 - 3, start_y + h_i*2)
+            a[14] = bitmap.getPixel(w/2 - 3, start_y + h_i*3)
+            //靠近重点的点
+            a[15] = bitmap.getPixel(w/2 - 3, h/2 - 3)
+        } else if (start_x <= w/2 && start_y >= h/2) {  //第二象限
+            //横向靠近中线的三个点
+            a[9] = bitmap.getPixel(start_x + w_i, h/2 - 3)
+            a[10] = bitmap.getPixel(start_x + w_i*2, h/2 - 3)
+            a[11] = bitmap.getPixel(start_x + w_i*3, h/2 - 3)
+            //纵向靠近中间线的三个点
+            a[12] = bitmap.getPixel(w/2 + 3, start_y + h_i)
+            a[13] = bitmap.getPixel(w/2 + 3, start_y + h_i*2)
+            a[14] = bitmap.getPixel(w/2 + 3, start_y + h_i*3)
+            //靠近重点的点
+            a[15] = bitmap.getPixel(w/2 + 3, h/2 - 3)
+        } else if (start_x < w/2 && start_y >= h/2) {  //第三象限
+            //横向靠近中线的三个点
+            a[9] = bitmap.getPixel(start_x + w_i, h/2 + 3)
+            a[10] = bitmap.getPixel(start_x + w_i*2, h/2 + 3)
+            a[11] = bitmap.getPixel(start_x + w_i*3, h/2 + 3)
+            //纵向靠近中间线的三个点
+            a[12] = bitmap.getPixel(w/2 - 3, start_y + h_i)
+            a[13] = bitmap.getPixel(w/2 - 3, start_y + h_i*2)
+            a[14] = bitmap.getPixel(w/2 - 3, start_y + h_i*3)
+            //靠近重点的点
+            a[15] = bitmap.getPixel(w/2 - 3, h/2 + 3)
+        } else if (start_x <= w/2 && start_y >= h/2) {  //第四象限
+            //横向靠近中线的三个点
+            a[9] = bitmap.getPixel(start_x + w_i, h/2 + 3)
+            a[10] = bitmap.getPixel(start_x + w_i*2, h/2 + 3)
+            a[11] = bitmap.getPixel(start_x + w_i*3, h/2 + 3)
+            //纵向靠近中间线的三个点
+            a[12] = bitmap.getPixel(w/2 + 3, start_y + h_i)
+            a[13] = bitmap.getPixel(w/2 + 3, start_y + h_i*2)
+            a[14] = bitmap.getPixel(w/2 + 3, start_y + h_i*3)
+            //靠近重点的点
+            a[15] = bitmap.getPixel(w/2 + 3, h/2 + 3)
+        }
+
+        return a
+    }
+
+    private fun isGray(a:IntArray): Boolean {
+        for (c in a) {
+            val hsv = FloatArray(3)
+            //通过使用HSV颜色空间中的S通道进行判断。为此，要将rgb模式转换为hsb模式再去判断，其中：h色相，s饱和度，b对比度
+            //判断饱和度，如果s<10%即可认为是灰度图，至于这个阈值是10％还是15％
+            Color.colorToHSV(c, hsv)
+            Log.i("打印选择的值","H=${hsv[0]} ,S=${hsv[1]} ,V=${hsv[2]}")
+            if (hsv[1] in 0.1..0.99) {  //s饱和度大认为是彩色 s等于1位纯色，当纯黑或纯白的时候
+                return false
+            }
+        }
+        return true
     }
 }
