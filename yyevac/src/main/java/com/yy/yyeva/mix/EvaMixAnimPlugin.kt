@@ -164,8 +164,8 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                             "scaleFill"
                         }
                     }
-                    EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, bitmap, scaleMode)
-                    ELog.i(TAG, "fetch image ${src.srcId} finish bitmap is ${bitmap?.hashCode()}")
+                    EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, src.bitmap, scaleMode)
+                    ELog.i(TAG, "fetch image ${src.srcId} finish bitmap is ${src.bitmap?.hashCode()}")
                     //内部创建完纹理立刻释放
                     src.bitmap?.recycle()
                     resultCall()
