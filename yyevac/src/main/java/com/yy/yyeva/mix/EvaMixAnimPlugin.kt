@@ -86,11 +86,6 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
 
     override fun onRelease() {
         if (playerEva.configManager.config?.isMix == false) return
-        val resources = ArrayList<EvaResource>()
-        srcMap?.map?.values?.forEach {src ->
-            resources.add(EvaResource(src))
-        }
-        resourceRequestEva?.releaseSrc(resources)
     }
 
     override fun onDestroy() {
@@ -164,17 +159,20 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                             "scaleFill"
                         }
                     }
-                    EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, bitmap, scaleMode)
-                    ELog.i(TAG, "fetch image ${src.srcId} finish bitmap is ${bitmap?.hashCode()}")
+                    EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, src.bitmap, scaleMode)
+                    ELog.i(TAG, "fetch image ${src.srcId} finish bitmap is ${src.bitmap?.hashCode()}")
                     //内部创建完纹理立刻释放
                     src.bitmap?.recycle()
                     resultCall()
                 }
             } else if (src.srcType == EvaSrc.SrcType.TXT) {
                 ELog.i(TAG, "fetch txt ${src.srcId}")
-                resourceRequestEva?.setText(EvaResource(src)) { txt, textAlign ->
+                resourceRequestEva?.setText(EvaResource(src)) { txt, textAlign , isBold->
                     src.txt = txt ?: ""
                     src.textAlign = textAlign ?: "center"
+                    isBold?.run {
+                        src.style = if (this) EvaSrc.Style.BOLD else EvaSrc.Style.DEFAULT
+                    }
 //                    EvaJniUtil.setSrcTxt(src.srcId, src.txt)
                     val txtBitmap = EvaBitmapUtil.createTxtBitmap(src)
                     EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, txtBitmap, src.scaleMode)
