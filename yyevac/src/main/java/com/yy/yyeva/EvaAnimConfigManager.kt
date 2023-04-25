@@ -17,6 +17,7 @@ import java.io.File
 import java.io.IOException
 import java.lang.Exception
 import java.util.zip.Inflater
+import kotlin.math.abs
 
 
 /**
@@ -402,12 +403,19 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
 
     private fun isGray(a:IntArray): Boolean {
         for (c in a) {
-            val hsv = FloatArray(3)
-            //通过使用HSV颜色空间中的S通道进行判断。为此，要将rgb模式转换为hsb模式再去判断，其中：h色相，s饱和度，b对比度
-            //判断饱和度，如果s<10%即可认为是灰度图，至于这个阈值是10％还是15％
-            Color.colorToHSV(c, hsv)
-            Log.i("打印选择的值","H=${hsv[0]} ,S=${hsv[1]} ,V=${hsv[2]}")
-            if (hsv[1] in 0.1..0.99) {  //s饱和度大认为是彩色 s等于1位纯色，当纯黑或纯白的时候
+//            val hsv = FloatArray(3)
+//            //通过使用HSV颜色空间中的S通道进行判断。为此，要将rgb模式转换为hsb模式再去判断，其中：h色相，s饱和度，b对比度
+//            //判断饱和度，如果s<10%即可认为是灰度图，至于这个阈值是10％还是15％
+//            Color.colorToHSV(c, hsv)
+//            Log.i("打印选择的值","H=${hsv[0]} ,S=${hsv[1]} ,V=${hsv[2]}")
+//            if (hsv[1] in 0.1..0.99) {  //s饱和度大认为是彩色 s等于1位纯色，当纯黑或纯白的时候
+//                return false
+//            }
+            val r = Color.red(c)
+            val g = Color.green(c)
+            val b = Color.blue(c)
+            //通过rgb色值差距来判断是否灰度图
+            if (abs(r-g) > 10 || abs(g-b) > 10 || abs(b-r) > 10) {
                 return false
             }
         }
