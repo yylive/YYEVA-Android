@@ -295,13 +295,13 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
             val h = bitmap.height
 
             Log.i(TAG, "ltIsGray")
-            val ltIsGray = isGray(getArray(bitmap, 0, 0))
+            val ltIsGray = isGray(getArray2(bitmap, 0, 0))
             Log.i(TAG, "rtIsGray")
-            val rtIsGray = isGray(getArray(bitmap, w/2, 0))
+            val rtIsGray = isGray(getArray2(bitmap, w/2, 0))
             Log.i(TAG, "lbIsGray")
-            val lbIsGray = isGray(getArray(bitmap, 0, h/2))
+            val lbIsGray = isGray(getArray2(bitmap, 0, h/2))
             Log.i(TAG, "rbIsGray")
-            val rbIsGray = isGray(getArray(bitmap, w/2, h/2))
+            val rbIsGray = isGray(getArray2(bitmap, w/2, h/2))
             Log.i(TAG, "ltIsGray $ltIsGray, rtIsGray $rtIsGray, lbIsGray $lbIsGray, rbIsGray $rbIsGray")
 
             if (!ltIsGray && !lbIsGray && !rtIsGray && !rbIsGray) {
@@ -334,7 +334,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
 
         return true
     }
-
+    //3*3 + 边缘3+3+1 取点
     private fun getArray(bitmap: Bitmap, start_x: Int, start_y: Int): IntArray {
         val w = bitmap.width
         val h = bitmap.height
@@ -401,6 +401,32 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         return a
     }
 
+    //4*4 *4平均取点
+    private fun getArray2(bitmap: Bitmap, start_x: Int, start_y: Int): IntArray {
+        val w = bitmap.width
+        val h = bitmap.height
+        val w_i = w/10
+        val h_i = h/10
+        val a = IntArray(16)
+        a[0] = bitmap.getPixel(start_x + w_i, start_y + h_i)
+        a[1] = bitmap.getPixel(start_x + w_i*2, start_y + h_i)
+        a[2] = bitmap.getPixel(start_x + w_i*3, start_y + h_i)
+        a[3] = bitmap.getPixel(start_x + w_i*4, start_y + h_i)
+        a[4] = bitmap.getPixel(start_x + w_i, start_y + h_i*2)
+        a[5] = bitmap.getPixel(start_x + w_i*2, start_y + h_i*2)
+        a[6] = bitmap.getPixel(start_x + w_i*3, start_y + h_i*2)
+        a[7] = bitmap.getPixel(start_x + w_i*4, start_y + h_i*2)
+        a[8] = bitmap.getPixel(start_x + w_i, start_y + h_i*3)
+        a[9] = bitmap.getPixel(start_x + w_i*2, start_y + h_i*3)
+        a[10] = bitmap.getPixel(start_x + w_i*3, start_y + h_i*3)
+        a[11] = bitmap.getPixel(start_x + w_i*4, start_y + h_i*3)
+        a[12] = bitmap.getPixel(start_x + w_i, start_y + h_i*4)
+        a[13] = bitmap.getPixel(start_x + w_i*2, start_y + h_i*4)
+        a[14] = bitmap.getPixel(start_x + w_i*3, start_y + h_i*4)
+        a[15] = bitmap.getPixel(start_x + w_i*4, start_y + h_i*4)
+        return a
+    }
+
     private fun isGray(a:IntArray): Boolean {
         for (c in a) {
 //            val hsv = FloatArray(3)
@@ -408,14 +434,19 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
 //            //判断饱和度，如果s<10%即可认为是灰度图，至于这个阈值是10％还是15％
 //            Color.colorToHSV(c, hsv)
 //            Log.i("打印选择的值","H=${hsv[0]} ,S=${hsv[1]} ,V=${hsv[2]}")
-//            if (hsv[1] in 0.1..0.99) {  //s饱和度大认为是彩色 s等于1位纯色，当纯黑或纯白的时候
+//            if (hsv[1] in 0.3..0.99) {  //s饱和度大认为是彩色 s等于1位纯色，当纯黑或纯白的时候
 //                return false
 //            }
             val r = Color.red(c)
             val g = Color.green(c)
             val b = Color.blue(c)
+            Log.i("打印选择的值","r=$r ,g=$g ,b=$b")
             //通过rgb色值差距来判断是否灰度图
-            if (abs(r-g) > 10 || abs(g-b) > 10 || abs(b-r) > 10) {
+//            if ((abs(r-g) > 30 || abs(g-b) > 30 || abs(b-r) > 30)
+//                && (r>30 && g>30 && b>30)) {
+//                return false
+//            }
+            if ((abs(r-g) > 30 || abs(g-b) > 30 || abs(b-r) > 30)) {
                 return false
             }
         }
