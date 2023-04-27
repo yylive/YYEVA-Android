@@ -447,7 +447,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
             val b = Color.blue(c)
             Log.i("打印选择的值","r=$r ,g=$g ,b=$b")
             //通过rgb色值差距来判断是否灰度图
-            if ((abs(r-g) > 30 || abs(g-b) > 30 || abs(b-r) > 30)
+            if ((abs(r-g) > 10 || abs(g-b) > 10 || abs(b-r) > 10)
                 && (r>30 && g>30 && b>30)) {
                 return false
             }
