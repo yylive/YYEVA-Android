@@ -149,10 +149,15 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
 
         if (!findStart || !findEnd) {
             ELog.e(TAG, "yyeffectmp4json not found")
-            getMp4Type(evaFileContainer.getFile())
+            if (playerEva.videoMode == -1) {// 没有设置
+                getMp4Type(evaFileContainer.getFile())
+            }
             // 按照默认配置生成config
             config?.apply {
                 isDefaultConfig = true
+                if (playerEva.videoMode == -1) {
+                    playerEva.isNormalMp4 = true //设定为正常mp4
+                }
                 this.defaultVideoMode = playerEva.videoMode
                 fps = defaultFps
             }
@@ -442,11 +447,8 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
             val b = Color.blue(c)
             Log.i("打印选择的值","r=$r ,g=$g ,b=$b")
             //通过rgb色值差距来判断是否灰度图
-//            if ((abs(r-g) > 30 || abs(g-b) > 30 || abs(b-r) > 30)
-//                && (r>30 && g>30 && b>30)) {
-//                return false
-//            }
-            if ((abs(r-g) > 30 || abs(g-b) > 30 || abs(b-r) > 30)) {
+            if ((abs(r-g) > 30 || abs(g-b) > 30 || abs(b-r) > 30)
+                && (r>30 && g>30 && b>30)) {
                 return false
             }
         }

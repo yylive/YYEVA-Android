@@ -44,7 +44,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
     }
 
     // 视频信息
-    private val videoInfo = VideoInfo("normal_264_mid.mp4", "400a778f258ed6bd02ec32defe8ca8be")
+    private val videoInfo = VideoInfo("GoldenRollsRoyce.mp4", "400a778f258ed6bd02ec32defe8ca8be")
 
 
     // 动画View
@@ -142,6 +142,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
 
         // 注册动画监听
         animView.setAnimListener(this)
+//        animView.setVideoMode(EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL)
 //        animView.setAudioSpeed(2.0f)
         /**
          * 开始播放主流程

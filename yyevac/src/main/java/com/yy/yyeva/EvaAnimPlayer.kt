@@ -39,7 +39,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     // 是否兼容老版本 默认不兼容
     var enableVersion1 : Boolean = false
     // 视频模式
-    var videoMode: Int = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE
+    var videoMode: Int = EvaConstant.VIDEO_MODE_NORMAL_MP4  // 正常mp4
     var isDetachedFromWindow = false
     var isSurfaceAvailable = false
     var startRunnable: Runnable? = null
