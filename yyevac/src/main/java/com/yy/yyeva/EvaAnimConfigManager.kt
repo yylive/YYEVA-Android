@@ -149,13 +149,13 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
 
         if (!findStart || !findEnd) {
             ELog.e(TAG, "yyeffectmp4json not found")
-            if (playerEva.videoMode == -1) {// 没有设置
+            if (playerEva.videoMode == EvaConstant.VIDEO_MODE_NORMAL_MP4) {// 没有设置,默认为正常mp4
                 getMp4Type(evaFileContainer.getFile())
             }
             // 按照默认配置生成config
             config?.apply {
                 isDefaultConfig = true
-                if (playerEva.videoMode == -1) {
+                if (playerEva.videoMode == EvaConstant.VIDEO_MODE_NORMAL_MP4) {
                     playerEva.isNormalMp4 = true //设定为正常mp4
                 }
                 this.defaultVideoMode = playerEva.videoMode

@@ -427,6 +427,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                 glTexture = null
                 speedControlUtil.reset()
                 playerEva.pluginManager.onRelease()
+                playerEva.videoMode = EvaConstant.VIDEO_MODE_NORMAL_MP4 //重置为MP4
 //                render?.releaseTexture()
                 EvaJniUtil.releaseTexture(playerEva.controllerId)
             } catch (e: Throwable) {
