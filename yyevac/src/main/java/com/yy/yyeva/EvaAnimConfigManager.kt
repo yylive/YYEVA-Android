@@ -28,6 +28,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
     var config: EvaAnimConfig? = null
     var isParsingConfig = false // 是否正在读取配置
     private var audioSpeed = 1.0f
+    private var startDetect = 0L
 
     companion object {
         private const val TAG = "${EvaConstant.TAG}.EvaAnimConfigManager"
@@ -273,20 +274,18 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
 //            //获取播放时长
             val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
             if (duration != null && duration > 0) {
-                for(i in 0..5) {
+                for(i in 1..6) {
+                    startDetect = System.currentTimeMillis()
                     val bitmap =
-                        mmr.getFrameAtTime(i* duration/5 * 1000, MediaMetadataRetriever.OPTION_CLOSEST)
+                        mmr.getFrameAtTime(i* duration/6 * 1000, MediaMetadataRetriever.OPTION_CLOSEST)
                     val isJudge = getConfigManager(bitmap)
                     bitmap?.recycle()
+                    Log.i(TAG, "detect image mp4Type ${System.currentTimeMillis() - startDetect}")
                     if (isJudge) {
                         break
                     }
                 }
             }
-//            val bitmap =
-//                mmr.getFrameAtTime(1000000, MediaMetadataRetriever.OPTION_CLOSEST)
-//            val isJudge = getConfigManager(bitmap)
-//            bitmap?.recycle()
             mmr.release()
         }
     }
@@ -313,19 +312,19 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
                 //正常mp4
                 Log.i(TAG, "正常mp4")
                 playerEva.isNormalMp4 = true
-            } else if (ltIsGray && lbIsGray && !rtIsGray && !rbIsGray) {
+            } else if (ltIsGray && lbIsGray && (!rtIsGray || !rbIsGray)) {
                 //左灰右彩
                 Log.i(TAG, "左灰右彩")
                 playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL
-            } else if (!ltIsGray && !lbIsGray && rtIsGray && rbIsGray) {
+            } else if ((!ltIsGray || !lbIsGray) && rtIsGray && rbIsGray) {
                 //左彩右灰
                 Log.i(TAG, "左彩右灰")
                 playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE
-            } else if (ltIsGray && rtIsGray && !lbIsGray && !rbIsGray) {
+            } else if (ltIsGray && rtIsGray && (!lbIsGray || !rbIsGray)) {
                 //上灰下彩
                 Log.i(TAG, "上灰下彩")
                 playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_VERTICAL
-            } else if (!ltIsGray && !rtIsGray && lbIsGray && rbIsGray) {
+            } else if ((!ltIsGray || !rtIsGray) && lbIsGray && rbIsGray) {
                 //上彩下灰
                 Log.i(TAG, "上彩下灰")
                 playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_VERTICAL_REVERSE
