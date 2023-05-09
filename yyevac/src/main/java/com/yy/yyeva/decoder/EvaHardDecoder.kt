@@ -145,6 +145,9 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             videoWidth = format.getInteger(MediaFormat.KEY_WIDTH)
             videoHeight = format.getInteger(MediaFormat.KEY_HEIGHT)
             duration = format.getLong(MediaFormat.KEY_DURATION)
+            if (!playerEva.isSetFps) {
+                playerEva.fps = format.getInteger(MediaFormat.KEY_FRAME_RATE)
+            }
             // 防止没有INFO_OUTPUT_FORMAT_CHANGED时导致alignWidth和alignHeight不会被赋值一直是0
             alignWidth = videoWidth
             alignHeight = videoHeight

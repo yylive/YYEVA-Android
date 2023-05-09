@@ -27,6 +27,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
         }
     // 设置默认的fps <= 0 表示以mp4内配置为准 > 0  表示以此设置为准
     var defaultFps: Int = 30
+    var isSetFps = false
     var audioSpeed = 1.0f  //音频速度
     var playLoop: Int = 0
         set(value) {
