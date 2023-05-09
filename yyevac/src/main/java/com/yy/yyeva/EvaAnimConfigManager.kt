@@ -73,7 +73,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
             config.apply {
                 isDefaultConfig = true
                 this.defaultVideoMode = EvaConstant.VIDEO_MODE_NORMAL_MP4
-                fps = getMp4Fps(evaFileContainer.getFile())
+                fps = defaultFps
             }
             playerEva.fps = config.fps
             return true
