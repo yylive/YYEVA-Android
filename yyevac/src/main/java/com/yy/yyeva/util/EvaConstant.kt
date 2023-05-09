@@ -3,7 +3,7 @@ package com.yy.yyeva.util
 object EvaConstant {
     const val TAG = "EvaAnimPlayer"
 
-    const val  VIDEO_MODE_NORMAL_MP4 = -1 // 正常mp4
+    const val VIDEO_MODE_NORMAL_MP4 = -1 // 正常mp4
     // 视频对齐方式 (兼容老版本视频模式)
     const val VIDEO_MODE_SPLIT_HORIZONTAL = 1 // 视频左右对齐（alpha左\rgb右）
     const val VIDEO_MODE_SPLIT_VERTICAL = 2 // 视频上下对齐（alpha上\rgb下）

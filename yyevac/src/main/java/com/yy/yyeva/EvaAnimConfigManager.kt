@@ -3,7 +3,6 @@ package com.yy.yyeva
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.media.MediaMetadataRetriever
-import android.media.MediaMetadataRetriever.OPTION_NEXT_SYNC
 import android.os.SystemClock
 import android.util.Base64
 import android.util.Log
@@ -73,8 +72,8 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         if (playerEva.isNormalMp4) {
             config.apply {
                 isDefaultConfig = true
-                this.defaultVideoMode = -1
-                fps = defaultFps
+                this.defaultVideoMode = EvaConstant.VIDEO_MODE_NORMAL_MP4
+                fps = getMp4Fps(evaFileContainer.getFile())
             }
             playerEva.fps = config.fps
             return true
@@ -150,8 +149,10 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
 
         if (!findStart || !findEnd) {
             ELog.e(TAG, "yyeffectmp4json not found")
-            if (playerEva.videoMode == EvaConstant.VIDEO_MODE_NORMAL_MP4) {// 没有设置,默认为正常mp4
+            val mp4Fps = if (playerEva.videoMode == EvaConstant.VIDEO_MODE_NORMAL_MP4) {// 没有设置,默认为正常mp4
                 getMp4Type(evaFileContainer.getFile())
+            } else {
+                playerEva.defaultFps
             }
             // 按照默认配置生成config
             config?.apply {
@@ -160,7 +161,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
                     playerEva.isNormalMp4 = true //设定为正常mp4
                 }
                 this.defaultVideoMode = playerEva.videoMode
-                fps = defaultFps
+                fps = mp4Fps
             }
             playerEva.fps = config.fps
             return true
@@ -264,15 +265,35 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         return output
     }
 
-    fun getMp4Type(file: File?) {
+    fun getMp4Fps(file: File?): Int {
+        var fps = playerEva.defaultFps
         if(file != null && file.exists()) {
             val mmr = MediaMetadataRetriever()
             mmr.setDataSource(file.absolutePath)
-            //获取播放帧数
-            val count_s =
-                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_FRAME_COUNT)?.toLong()
-//            //获取播放时长
+            //获取播放时长
             val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
+            //获取播放帧数
+            val count = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_FRAME_COUNT)?.toLong()
+            if (duration != null && count != null) {
+                fps = (1.0 / (duration / count)).toInt()
+            }
+        }
+        return fps
+    }
+
+    fun getMp4Type(file: File?): Int {
+        var fps = playerEva.defaultFps
+        if(file != null && file.exists()) {
+            val mmr = MediaMetadataRetriever()
+            mmr.setDataSource(file.absolutePath)
+            //获取播放时长
+            val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
+            //获取播放帧数
+            val count = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_FRAME_COUNT)?.toFloat()
+            if (duration != null && count != null) {
+                fps = (1.0 / (duration / count / 1000)).toInt()
+            }
+
             if (duration != null && duration > 0) {
                 for(i in 1..6) {
                     startDetect = System.currentTimeMillis()
@@ -288,6 +309,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
             }
             mmr.release()
         }
+        return fps
     }
 
     /**
