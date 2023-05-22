@@ -293,15 +293,15 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         if (bitmap != null) {
             val w = bitmap.width
             val h = bitmap.height
-
+            val count = 10
             Log.i(TAG, "ltIsGray")
-            val ltIsGray = isGray(getArray2(bitmap, 0, 0))
+            val ltIsGray = isGray(getArray(bitmap, 0, 0, count))
             Log.i(TAG, "rtIsGray")
-            val rtIsGray = isGray(getArray2(bitmap, w/2, 0))
+            val rtIsGray = isGray(getArray(bitmap, w/2, 0, count))
             Log.i(TAG, "lbIsGray")
-            val lbIsGray = isGray(getArray2(bitmap, 0, h/2))
+            val lbIsGray = isGray(getArray(bitmap, 0, h/2, count))
             Log.i(TAG, "rbIsGray")
-            val rbIsGray = isGray(getArray2(bitmap, w/2, h/2))
+            val rbIsGray = isGray(getArray(bitmap, w/2, h/2, count))
             Log.i(TAG, "ltIsGray $ltIsGray, rtIsGray $rtIsGray, lbIsGray $lbIsGray, rbIsGray $rbIsGray")
 
             if (!ltIsGray && !lbIsGray && !rtIsGray && !rbIsGray) {
@@ -401,29 +401,19 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         return a
     }
 
-    //4*4 *4平均取点
-    private fun getArray2(bitmap: Bitmap, start_x: Int, start_y: Int): IntArray {
+    //n*n n平均取点
+    private fun getArray(bitmap: Bitmap, start_x: Int, start_y: Int, count: Int): IntArray {
         val w = bitmap.width
         val h = bitmap.height
-        val w_i = w/10
-        val h_i = h/10
-        val a = IntArray(16)
-        a[0] = bitmap.getPixel(start_x + w_i, start_y + h_i)
-        a[1] = bitmap.getPixel(start_x + w_i*2, start_y + h_i)
-        a[2] = bitmap.getPixel(start_x + w_i*3, start_y + h_i)
-        a[3] = bitmap.getPixel(start_x + w_i*4, start_y + h_i)
-        a[4] = bitmap.getPixel(start_x + w_i, start_y + h_i*2)
-        a[5] = bitmap.getPixel(start_x + w_i*2, start_y + h_i*2)
-        a[6] = bitmap.getPixel(start_x + w_i*3, start_y + h_i*2)
-        a[7] = bitmap.getPixel(start_x + w_i*4, start_y + h_i*2)
-        a[8] = bitmap.getPixel(start_x + w_i, start_y + h_i*3)
-        a[9] = bitmap.getPixel(start_x + w_i*2, start_y + h_i*3)
-        a[10] = bitmap.getPixel(start_x + w_i*3, start_y + h_i*3)
-        a[11] = bitmap.getPixel(start_x + w_i*4, start_y + h_i*3)
-        a[12] = bitmap.getPixel(start_x + w_i, start_y + h_i*4)
-        a[13] = bitmap.getPixel(start_x + w_i*2, start_y + h_i*4)
-        a[14] = bitmap.getPixel(start_x + w_i*3, start_y + h_i*4)
-        a[15] = bitmap.getPixel(start_x + w_i*4, start_y + h_i*4)
+        val w_i = w/(2*(count+1))
+        val h_i = h/(2*(count+1))
+        val a = IntArray(count * count)
+        for(i in 0 until count) {
+            for(j in 0 until count) {
+                a[i*10 + j] = bitmap.getPixel(start_x + w_i * j, start_y + h_i * i)
+            }
+        }
+
         return a
     }
 
