@@ -80,8 +80,8 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         }
 
         evaFileContainer.startRandomRead()
-        val readBytes = ByteArray(512)
-        var readBytesLast = ByteArray(512)
+        val readBytes = ByteArray(1024)
+        var readBytesLast = ByteArray(1024)
         var bufStr = ""
         var bufStrS = ""
         val matchStart = "yyeffectmp4json[["
@@ -118,7 +118,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
                         }
                     }
                     //保存分段
-                    readBytesLast = readBytes
+                    readBytesLast = readBytes.clone()
                 }
             } else {
                 bufStr = String(readBytes)
@@ -127,9 +127,9 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
                     jsonStr += bufStr.substring(0, index)
                     findEnd = true
                     break
-                } else {
+                } else if(!readBytesLast.contentEquals(readBytes)) { //判定内容不一致
                     if (readBytesLast.isNotEmpty()) {
-                        bufStrS = String(readBytes + readBytesLast)
+                        bufStrS = String(readBytesLast + readBytes)
                         val indexS = bufStrS.indexOf(matchEnd)
                         if (indexS > 0) { //合并分段找到匹配结尾
                             jsonStr = jsonStr.substring(0, jsonStr.length - (indexS - readBytesLast.size) - 1)
@@ -140,7 +140,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
                     //保存数据
                     jsonStr += bufStr
                     //保存分段
-                    readBytesLast = readBytes
+                    readBytesLast = readBytes.clone()
                 }
             }
         }
