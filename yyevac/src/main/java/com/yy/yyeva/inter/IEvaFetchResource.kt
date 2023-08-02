@@ -9,7 +9,7 @@ interface IEvaFetchResource {
     fun setImage(resource: EvaResource, result:(Bitmap?, EvaSrc.FitType?) -> Unit)
 
     // 获取文字
-    fun setText(resource: EvaResource, result:(String?, String?) -> Unit)
+    fun setText(resource: EvaResource, result:(EvaResource) -> Unit)
 
     // 资源释放通知
     fun releaseSrc(resources: List<EvaResource>)

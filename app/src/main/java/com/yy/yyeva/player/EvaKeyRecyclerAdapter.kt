@@ -130,13 +130,14 @@ class EvaKeyRecyclerAdapter():RecyclerView.Adapter<EvaKeyRecyclerAdapter.EvaKeyH
                 /**
                  * 获取文字资源
                  */
-                override fun setText(resource: EvaResource, result: (String?, String?
-                ) -> Unit) {
+                override fun setText(resource: EvaResource, result: (EvaResource) -> Unit) {
                     val tag = resource.tag
                     if (tag == "anchor_nick") { // 此tag是已经写入到动画配置中的tag
-                        result("USERNICK", "left")
+                        resource.text = "USERNICK\uD83D\uDE04"
+                        resource.textAlign = "left"
+                        result(resource)
                     } else {
-                        result(null, null)
+                        result(resource)
                     }
                 }
 

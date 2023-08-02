@@ -44,7 +44,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
     }
 
     // 视频信息
-    private val videoInfo = VideoInfo("GoldenRollsRoyce.mp4", "400a778f258ed6bd02ec32defe8ca8be")
+    private val videoInfo = VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be")
 
 
     // 动画View
@@ -113,12 +113,14 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
             /**
              * 获取文字资源
              */
-            override fun setText(resource: EvaResource, result: (String?, String?) -> Unit) {
+            override fun setText(resource: EvaResource, result: (EvaResource) -> Unit) {
                 val tag = resource.tag
                 if (tag == "anchor_nick") { // 此tag是已经写入到动画配置中的tag
-                    result("USERNICK", "center")
+                    resource.text = "USERNICK"
+                    resource.textAlign = "center"
+                    result(resource)
                 } else {
-                    result(null, null)
+                    result(resource)
                 }
             }
 

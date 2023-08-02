@@ -12,7 +12,7 @@ object EvaBitmapUtil {
         }
     }
 
-    fun createTxtBitmap(src: EvaSrc): Bitmap {
+    fun createTxtBitmap(src: EvaSrc, tf: Typeface? = null): Bitmap {
         val w = src.w
         val h = src.h
         // 这里使用ALPHA_8 在opengl渲染的时候图像出现错位
@@ -37,7 +37,9 @@ object EvaBitmapUtil {
             }
             style = Paint.Style.FILL
             isAntiAlias = true
-            if (src.style == EvaSrc.Style.BOLD) {
+            if (tf != null) {
+                typeface = tf
+            } else if (src.style == EvaSrc.Style.BOLD) {
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             }
             color = src.color

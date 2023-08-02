@@ -53,22 +53,22 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
         setResourceSync()
 
         // step 4 生成文字bitmap
-        val result = createBitmap()
-        if (!result) {
-            return EvaConstant.REPORT_ERROR_TYPE_CONFIG_PLUGIN_MIX
-        }
-
-        // step 5 check resource
-        ELog.i(TAG, "load resource $resultCbCount")
-        srcMap?.map?.values?.forEach {
-            if (it.bitmap == null) {
-                ELog.e(TAG, "missing src $it")
-                return EvaConstant.REPORT_ERROR_TYPE_CONFIG_PLUGIN_MIX
-            } else if (it.bitmap?.config == Bitmap.Config.ALPHA_8) {
-                ELog.e(TAG, "src $it bitmap must not be ALPHA_8")
-                return EvaConstant.REPORT_ERROR_TYPE_CONFIG_PLUGIN_MIX
-            }
-        }
+//        val result = createBitmap()
+//        if (!result) {
+//            return EvaConstant.REPORT_ERROR_TYPE_CONFIG_PLUGIN_MIX
+//        }
+//
+//        // step 5 check resource
+//        ELog.i(TAG, "load resource $resultCbCount")
+//        srcMap?.map?.values?.forEach {
+//            if (it.bitmap == null) {
+//                ELog.e(TAG, "missing src $it")
+//                return EvaConstant.REPORT_ERROR_TYPE_CONFIG_PLUGIN_MIX
+//            } else if (it.bitmap?.config == Bitmap.Config.ALPHA_8) {
+//                ELog.e(TAG, "src $it bitmap must not be ALPHA_8")
+//                return EvaConstant.REPORT_ERROR_TYPE_CONFIG_PLUGIN_MIX
+//            }
+//        }
         return EvaConstant.OK
     }
 
@@ -172,13 +172,19 @@ class EvaMixAnimPlugin(val playerEva: EvaAnimPlayer): IEvaAnimPlugin {
                 }
             } else if (src.srcType == EvaSrc.SrcType.TXT) {
                 ELog.i(TAG, "fetch txt ${src.srcId}")
-                resourceRequestEva?.setText(EvaResource(src)) { txt, textAlign ->
-                    src.txt = txt ?: ""
-                    src.textAlign = textAlign ?: "center"
+                resourceRequestEva?.setText(EvaResource(src)) { eva ->
+                    src.txt = eva.text ?: ""
+                    src.textAlign = eva.textAlign ?: "center"
 //                    EvaJniUtil.setSrcTxt(src.srcId, src.txt)
-                    val txtBitmap = EvaBitmapUtil.createTxtBitmap(src)
+                    if (eva.textColor != -1) {
+                        src.color = eva.textColor
+                    }
+                    if (eva.fontSize > 0) {
+                        src.frontSize = eva.fontSize
+                    }
+                    val txtBitmap = EvaBitmapUtil.createTxtBitmap(src, eva.typeFace)
                     EvaJniUtil.setSrcBitmap(playerEva.controllerId, src.srcId, txtBitmap, src.scaleMode)
-                    ELog.i(TAG, "fetch text ${src.srcId} finish txt is $txt")
+                    ELog.i(TAG, "fetch text ${src.srcId} finish txt is ${src.textAlign}")
                     txtBitmap.recycle()
                     resultCall()
                 }

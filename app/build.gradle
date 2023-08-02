@@ -73,6 +73,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api project(':yyevac')
+//    implementation 'com.github.yylive.YYEVA-Android:yyeva:1.1.11'
     implementation 'androidx.appcompat:appcompat:1.4.1'
     api 'com.google.android.material:material:1.5.0'
 }

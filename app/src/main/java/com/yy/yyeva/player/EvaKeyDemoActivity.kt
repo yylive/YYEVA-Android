@@ -111,12 +111,14 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
             /**
              * 获取文字资源
              */
-            override fun setText(resource: EvaResource, result: (String?, String?) -> Unit) {
+            override fun setText(resource: EvaResource, result: (EvaResource) -> Unit) {
                 val tag = resource.tag
                 if (tag == "anchor_nick") { // 此tag是已经写入到动画配置中的tag
-                    result("USERNICK\uD83D\uDE04", "left")
+                    resource.text = "USERNICK\uD83D\uDE04"
+                    resource.textAlign = "left"
+                    result(resource)
                 } else {
-                    result(null, null)
+                    result(resource)
                 }
             }
 
@@ -147,12 +149,12 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
          */
-        animView.setVideoFps(24, 1.0f)
-
-        //设置音频速度
-        animView.setAudioSpeed(1.0f)
+//        animView.setVideoFps(24, 1.0f)
+//
+//        //设置音频速度
+//        animView.setAudioSpeed(1.0f)
         //是否正常的不透明mp4播放
-        animView.setNormalMp4(false)
+//        animView.setNormalMp4(false)
 
 //        animView.setLastFrame(true)
 //        animView.setScaleType(ScaleType.FIT_XY)
