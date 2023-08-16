@@ -115,12 +115,6 @@ void Render::draw() {
         rgbArray->setVertexAttribPointer(aTextureRgbLocation);
         //启动混合
         glEnable(GL_BLEND);
-        //基于alpha通道的半透明混合函数
-        //void glBlendFuncSeparate(GLenum srcRGB,
-        //     GLenum dstRGB,
-        //     GLenum srcAlpha,
-        //     GLenum dstAlpha);
-        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         //关闭混合
         glDisable(GL_BLEND);
