@@ -36,6 +36,10 @@ GLuint RenderController::initRender(ANativeWindow *window, bool isNeedYUV, bool 
             ELOGV("use normal render");
             render = new Render();
         }
+        //如果有背景需要开启混合
+        if (bgRender != nullptr) {
+            render->setHasBg(true);
+        }
     }
     return render->getExternalTexture();
 }
@@ -296,6 +300,9 @@ void RenderController::setBgImage(unsigned char *bitmap, AndroidBitmapInfo *bitm
     ELOGV("setBgImage");
     if (bgRender == nullptr) {
         bgRender = new BgRender();
+        if (render != nullptr) {
+            render->setHasBg(true);
+        }
     }
 
     bgRender->setBgImage(bitmap, bitmapInfo);

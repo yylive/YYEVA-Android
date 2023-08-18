@@ -1,5 +1,6 @@
 package com.yy.yyeva
 
+import android.R.attr
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.media.MediaMetadataRetriever
@@ -417,16 +418,58 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         return a
     }
 
-    private fun isGray(a:IntArray): Boolean {
-        for (c in a) {
-//            val hsv = FloatArray(3)
-//            //通过使用HSV颜色空间中的S通道进行判断。为此，要将rgb模式转换为hsb模式再去判断，其中：h色相，s饱和度，b对比度
-//            //判断饱和度，如果s<10%即可认为是灰度图，至于这个阈值是10％还是15％
-//            Color.colorToHSV(c, hsv)
-//            Log.i("打印选择的值","H=${hsv[0]} ,S=${hsv[1]} ,V=${hsv[2]}")
-//            if (hsv[1] in 0.3..0.99) {  //s饱和度大认为是彩色 s等于1位纯色，当纯黑或纯白的时候
+    //w_c*h_c 区域取点色值
+    private fun getArrayAuto(bitmap: Bitmap, start_x: Int, start_y: Int): IntArray {
+        val w = bitmap.width
+        val h = bitmap.height
+        //宽高区域取点，除以2是四分一区域
+        val w_c = bitmap.width  / 30 /2
+        val h_c = bitmap.height / 30 /2
+
+        //宽高取点间距
+        val w_i = w / (2 * (w_c + 1))
+        val h_i = h / (2 * (w_c + 1))
+        val a = IntArray(w_c * h_c)
+        for(i in 0 until w_c) {
+            for(j in 0 until h_c) {
+                //获取取点的色值
+                a[i*10 + j] = bitmap.getPixel(start_x + w_i * j, start_y + h_i * i)
+            }
+        }
+
+        return a
+    }
+
+//    private fun isGray(a:IntArray): Boolean {
+//        //一个区域里面的识别点
+//        for (c in a) {
+////            val hsv = FloatArray(3)
+////            //通过使用HSV颜色空间中的S通道进行判断。为此，要将rgb模式转换为hsb模式再去判断，其中：h色相，s饱和度，b对比度
+////            //判断饱和度，如果s<10%即可认为是灰度图，至于这个阈值是10％还是15％
+////            Color.colorToHSV(c, hsv)
+////            Log.i("打印选择的值","H=${hsv[0]} ,S=${hsv[1]} ,V=${hsv[2]}")
+////            if (hsv[1] in 0.3..0.99) {  //s饱和度大认为是彩色 s等于1位纯色，当纯黑或纯白的时候
+////                return false
+////            }
+//            //获取rgb值
+//            val r = Color.red(c)
+//            val g = Color.green(c)
+//            val b = Color.blue(c)
+//            Log.i("打印选择的值","r=$r ,g=$g ,b=$b")
+//            //通过rgb色值差距来判断是否灰度图
+//            if ((abs(r-g) > 25 || abs(g-b) > 25 || abs(b-r) > 25)
+//                && (r>30 && g>30 && b>30)) {
 //                return false
 //            }
+//        }
+//        return true
+//    }
+
+    //是否灰度区域
+    private fun isGray(a:IntArray): Boolean {
+        //一个区域里面的识别点
+        for (c in a) {
+            //获取rgb值
             val r = Color.red(c)
             val g = Color.green(c)
             val b = Color.blue(c)
@@ -438,5 +481,24 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
             }
         }
         return true
+    }
+    //获取视频的关键帧时间列表
+    fun getMp4KeyframeTimes(filePath: String?): LongArray {
+        val retriever = MediaMetadataRetriever()
+        retriever.setDataSource(filePath)
+        val durationString = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+        val duration = durationString!!.toLong() * 1000 // 转换为毫秒
+        val numFramesString =
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_FRAME_COUNT)
+        val numFrames = numFramesString!!.toInt()
+        val keyframeTimes = LongArray(numFrames)
+        for (i in 0 until numFrames) {
+            val timeString =
+                retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CAPTURE_FRAMERATE)
+            val time = (timeString!!.toFloat() * i * 1000).toLong() // 转换为毫秒
+            keyframeTimes[i] = time.coerceAtMost(duration)
+        }
+        retriever.release()
+        return keyframeTimes
     }
 }

@@ -26,6 +26,7 @@ public:
     GLuint getExternalTexture();
     void releaseTexture();
     void swapBuffers();
+    void setHasBg(bool hasBg) {}
     void setYUVData(int width, int height, char *y, char *u, char *v);
 
 private:

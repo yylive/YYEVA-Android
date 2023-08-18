@@ -28,6 +28,7 @@ public:
     void releaseTexture();
     void swapBuffers();
     void updateViewPort(int width, int height);
+    void setHasBg(bool hasBg);
     void draw();
 
 private:
@@ -49,6 +50,7 @@ private:
     int surfaceWidth = 0;
     int surfaceHeight = 0;
     bool surfaceSizeChanged = false;
+    bool hasBg = false;
 
 //    string VERTEX_SHADER = string("attribute vec4 vPosition;\n") +
 //                              "attribute vec4 vTexCoordinateAlpha;\n" +

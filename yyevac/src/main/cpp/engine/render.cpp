@@ -114,9 +114,18 @@ void Render::draw() {
         alphaArray->setVertexAttribPointer(aTextureAlphaLocation);
         rgbArray->setVertexAttribPointer(aTextureRgbLocation);
         //启动混合
-        glEnable(GL_BLEND);
+        if (hasBg) { //如果有背景需要开启混合
+            glEnable(GL_BLEND);
+        }
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         //关闭混合
-        glDisable(GL_BLEND);
+        if (hasBg) {
+            glDisable(GL_BLEND);
+        }
     }
+}
+
+//如果有背景需要开启混合
+void Render::setHasBg(bool hasBg) {
+    this->hasBg = hasBg;
 }
