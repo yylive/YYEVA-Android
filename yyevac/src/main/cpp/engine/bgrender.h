@@ -37,6 +37,7 @@ public:
     void releaseTexture();
     void swapBuffers();
     void updateViewPort(int width, int height);
+    void setHasBg(bool hasBg){};
     void draw();
 
 private:
