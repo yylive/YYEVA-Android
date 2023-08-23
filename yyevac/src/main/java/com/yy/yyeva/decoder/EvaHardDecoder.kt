@@ -453,6 +453,8 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
         speedControlUtil.reset()
         playerEva.pluginManager.onRelease()
         isRunning = false
+        //播放到最后一帧，也认为播放完成
+        onVideoComplete()
     }
 
     private fun releaseLastFrame() {
