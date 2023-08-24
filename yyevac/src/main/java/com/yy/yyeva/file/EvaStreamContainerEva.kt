@@ -37,4 +37,22 @@ class EvaStreamContainerEva(private val bytes: ByteArray) : IEvaFileContainer {
     override fun getFile(): File? {
         return null
     }
+
+    override fun getMd5(): String {
+        return ""
+    }
+
+    override fun setEvaJson(json: String) {
+    }
+
+    override fun getEvaJson(): String? {
+        return ""
+    }
+
+    override fun setEvaMp4Type(type: Int) {
+    }
+
+    override fun getEvaMp4Type(): Int {
+        return -2
+    }
 }

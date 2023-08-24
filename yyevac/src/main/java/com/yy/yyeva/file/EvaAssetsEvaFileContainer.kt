@@ -16,9 +16,12 @@ class EvaAssetsEvaFileContainer(assetManager: AssetManager, val assetsPath: Stri
     private val assetFd: AssetFileDescriptor = assetManager.openFd(assetsPath)
     private val assetsInputStream: AssetManager.AssetInputStream =
         assetManager.open(assetsPath, AssetManager.ACCESS_STREAMING) as AssetManager.AssetInputStream
+    var f: File
+    private var md5 = ""
 
     init {
         ELog.i(TAG, "AssetsFileContainer init")
+        f = File(assetsPath)
     }
 
     override fun setDataSource(extractor: MediaExtractor) {
@@ -50,6 +53,29 @@ class EvaAssetsEvaFileContainer(assetManager: AssetManager, val assetsPath: Stri
     }
 
     override fun getFile(): File {
-        return File(assetsPath)
+        return f
+    }
+
+    override fun getMd5(): String {
+        if (md5.isEmpty()) {
+            md5 = FileUtil.getFileMD5(f)?: ""
+        }
+        return md5
+    }
+
+    override fun setEvaJson(json: String) {
+        EvaPref.setEvaJson(f.name, getMd5(), json)
+    }
+
+    override fun getEvaJson(): String? {
+        return EvaPref.getEvaJson(getMd5())
+    }
+
+    override fun setEvaMp4Type(type: Int) {
+        EvaPref.setEvaMp4Type(f.name, getMd5(), type)
+    }
+
+    override fun getEvaMp4Type(): Int {
+        return EvaPref.getEvaMp4Type(getMd5())
     }
 }

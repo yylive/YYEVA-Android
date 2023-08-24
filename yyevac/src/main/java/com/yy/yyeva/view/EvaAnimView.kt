@@ -18,6 +18,7 @@ import com.yy.yyeva.EvaAnimConfig
 import com.yy.yyeva.EvaAnimPlayer
 import com.yy.yyeva.file.EvaAssetsEvaFileContainer
 import com.yy.yyeva.file.EvaFileContainer
+import com.yy.yyeva.file.EvaPref
 import com.yy.yyeva.file.IEvaFileContainer
 import com.yy.yyeva.inter.IEvaAnimListener
 import com.yy.yyeva.inter.IEvaFetchResource
@@ -111,9 +112,9 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     init {
         hide()
-
         playerEva = EvaAnimPlayer(this)
         playerEva.evaAnimListener = animProxyListener
+        EvaPref.init(context.applicationContext)
     }
 
     override fun prepareTextureView() {

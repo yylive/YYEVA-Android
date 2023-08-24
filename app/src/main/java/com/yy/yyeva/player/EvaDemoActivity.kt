@@ -44,7 +44,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
     }
 
     // 视频信息
-    private val videoInfo = VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be")
+    private val videoInfo = VideoInfo("wolf.mp4", "400a778f258ed6bd02ec32defe8ca8be")
 
 
     // 动画View

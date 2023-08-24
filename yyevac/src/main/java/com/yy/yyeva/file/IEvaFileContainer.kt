@@ -19,5 +19,14 @@ interface IEvaFileContainer {
 
     fun getFile(): File?
 
+    fun getMd5(): String
+
+    fun setEvaJson(json: String)
+
+    fun getEvaJson(): String?
+
+    fun setEvaMp4Type(type: Int)
+
+    fun getEvaMp4Type(): Int
 
 }

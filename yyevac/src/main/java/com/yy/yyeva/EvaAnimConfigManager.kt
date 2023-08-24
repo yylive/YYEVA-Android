@@ -1,6 +1,5 @@
 package com.yy.yyeva
 
-import android.R.attr
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.media.MediaMetadataRetriever
@@ -13,7 +12,6 @@ import com.yy.yyeva.util.ELog
 import com.yy.yyeva.util.PointRect
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
-import java.io.File
 import java.io.IOException
 import java.lang.Exception
 import java.util.zip.Inflater
@@ -23,7 +21,7 @@ import kotlin.math.abs
 /**
  * 配置管理
  */
-class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
+class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
 
     var config: EvaAnimConfig? = null
     var isParsingConfig = false // 是否正在读取配置
@@ -71,108 +69,104 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         this.config = config
 
         if (playerEva.isNormalMp4) {
-            config.apply {
-                isDefaultConfig = true
-                this.defaultVideoMode = EvaConstant.VIDEO_MODE_NORMAL_MP4
-                fps = defaultFps
-            }
-            playerEva.fps = config.fps
+            setNormalMp4(defaultFps)
             return true
         }
-
-        evaFileContainer.startRandomRead()
-        val readBytes = ByteArray(1024)
-        var readBytesLast = ByteArray(1024)
-        var bufStr = ""
-        var bufStrS = ""
-        val matchStart = "yyeffectmp4json[["
-        val matchEnd = "]]yyeffectmp4json"
-        var findStart = false
-        var findEnd = false
-        var jsonStr = ""
-        while (evaFileContainer.read(readBytes, 0, readBytes.size) > 0) {
-            if (!findStart) { //没找到开头
-                bufStr = String(readBytes)
-                var index = bufStr.indexOf(matchStart)
-                if (index > 0) { //分段1找到匹配开头
-                    jsonStr = bufStr.substring(index + matchStart.length)
-                    findStart = true
-                    index = jsonStr.indexOf(matchEnd)
-                    if (index > 0) { //同时包含结尾段进行截取
-                        findEnd = true
-                        jsonStr = jsonStr.substring(0, index)
-                        break
+        var jsonStr = evaFileContainer.getEvaJson() ?: ""  //读取sp缓存
+        if (jsonStr.isEmpty()) {
+            evaFileContainer.startRandomRead()
+            val readBytes = ByteArray(1024)
+            var readBytesLast = ByteArray(1024)
+            var bufStr = ""
+            var bufStrS = ""
+            val matchStart = "yyeffectmp4json[["
+            val matchEnd = "]]yyeffectmp4json"
+            var findStart = false
+            var findEnd = false
+            while (evaFileContainer.read(readBytes, 0, readBytes.size) > 0) {
+                if (!findStart) { //没找到开头
+                    bufStr = String(readBytes)
+                    var index = bufStr.indexOf(matchStart)
+                    if (index > 0) { //分段1找到匹配开头
+                        jsonStr = bufStr.substring(index + matchStart.length)
+                        findStart = true
+                        index = jsonStr.indexOf(matchEnd)
+                        if (index > 0) { //同时包含结尾段进行截取
+                            findEnd = true
+                            jsonStr = jsonStr.substring(0, index)
+                            break
+                        }
+                    } else {
+                        if (readBytesLast.isNotEmpty()) {
+                            bufStrS = String(readBytes + readBytesLast)
+                            var indexS = bufStrS.indexOf(matchStart)
+                            if (indexS > 0) { //合并分段找到匹配开头
+                                jsonStr = bufStrS.substring(indexS + matchStart.length)
+                                findStart = true
+                                indexS = jsonStr.indexOf(matchEnd)
+                                if (indexS > 0) { // 同时包含结尾段进行截取
+                                    findEnd = true
+                                    jsonStr = jsonStr.substring(0, indexS)
+                                    break
+                                }
+                            }
+                        }
+                        //保存分段
+                        readBytesLast = readBytes.clone()
                     }
                 } else {
-                    if (readBytesLast.isNotEmpty()) {
-                        bufStrS = String(readBytes + readBytesLast)
-                        var indexS = bufStrS.indexOf(matchStart)
-                        if (indexS > 0) { //合并分段找到匹配开头
-                            jsonStr = bufStrS.substring(indexS + matchStart.length)
-                            findStart = true
-                            indexS = jsonStr.indexOf(matchEnd)
-                            if (indexS > 0) { // 同时包含结尾段进行截取
+                    bufStr = String(readBytes)
+                    val index = bufStr.indexOf(matchEnd)
+                    if (index > 0) { //分段1找到匹配结尾
+                        jsonStr += bufStr.substring(0, index)
+                        findEnd = true
+                        break
+                    } else if (!readBytesLast.contentEquals(readBytes)) { //判定内容不一致
+                        if (readBytesLast.isNotEmpty()) {
+                            bufStrS = String(readBytesLast + readBytes)
+                            val indexS = bufStrS.indexOf(matchEnd)
+                            if (indexS > 0) { //合并分段找到匹配结尾
+                                jsonStr = jsonStr.substring(
+                                    0,
+                                    jsonStr.length - (indexS - readBytesLast.size) - 1
+                                )
                                 findEnd = true
-                                jsonStr = jsonStr.substring(0, indexS)
                                 break
                             }
                         }
+                        //保存数据
+                        jsonStr += bufStr
+                        //保存分段
+                        readBytesLast = readBytes.clone()
                     }
-                    //保存分段
-                    readBytesLast = readBytes.clone()
                 }
+            }
+
+            evaFileContainer.closeRandomRead()
+
+            if (!findStart || !findEnd) {
+                ELog.e(TAG, "yyeffectmp4json not found")
+                evaFileContainer.setEvaJson("none") //检测后认为资源不存在json,不重复检测
+                setNoJson(evaFileContainer, defaultFps)
+                return true
             } else {
-                bufStr = String(readBytes)
-                val index = bufStr.indexOf(matchEnd)
-                if (index > 0) { //分段1找到匹配结尾
-                    jsonStr += bufStr.substring(0, index)
-                    findEnd = true
-                    break
-                } else if(!readBytesLast.contentEquals(readBytes)) { //判定内容不一致
-                    if (readBytesLast.isNotEmpty()) {
-                        bufStrS = String(readBytesLast + readBytes)
-                        val indexS = bufStrS.indexOf(matchEnd)
-                        if (indexS > 0) { //合并分段找到匹配结尾
-                            jsonStr = jsonStr.substring(0, jsonStr.length - (indexS - readBytesLast.size) - 1)
-                            findEnd = true
-                            break
-                        }
-                    }
-                    //保存数据
-                    jsonStr += bufStr
-                    //保存分段
-                    readBytesLast = readBytes.clone()
-                }
+                //先用base64解密，再用zlib解密
+                jsonStr =
+                    zlib(Base64.decode(jsonStr.toByteArray(), Base64.DEFAULT)).decodeToString()
+                ELog.d(TAG, "jsonStr:$jsonStr")
+                evaFileContainer.setEvaJson(jsonStr) //检测后认为资源存在json,保存缓存
             }
-        }
-
-        evaFileContainer.closeRandomRead()
-
-        if (!findStart || !findEnd) {
-            ELog.e(TAG, "yyeffectmp4json not found")
-            if (playerEva.videoMode == EvaConstant.VIDEO_MODE_NORMAL_MP4) {// 没有设置,默认为正常mp4
-                getMp4Type(evaFileContainer.getFile())
-            }
-            // 按照默认配置生成config
-            config?.apply {
-                isDefaultConfig = true
-                if (playerEva.videoMode == EvaConstant.VIDEO_MODE_NORMAL_MP4) {
-                    playerEva.isNormalMp4 = true //设定为正常mp4
-                }
-                this.defaultVideoMode = playerEva.videoMode
-                fps = defaultFps
-            }
-            playerEva.fps = config.fps
+        } else if (jsonStr == "none") {  //检测过后，认为是null
+            ELog.i(TAG, "${evaFileContainer.getFile()?.path} 不存在json")
+            setNoJson(evaFileContainer, defaultFps)
             return true
         } else {
-            //先用base64解密，再用zlib解密
-            jsonStr = zlib(Base64.decode(jsonStr.toByteArray(), Base64.DEFAULT)).decodeToString()
-            ELog.d(TAG, "jsonStr:$jsonStr")
+            ELog.i(TAG, "检测正常，使用缓存json $jsonStr")
         }
 
         val jsonObj = JSONObject(jsonStr)
         config.jsonConfig = jsonObj
-        val result = config!!.parse(jsonObj)
+        val result = config.parse(jsonObj)
         if (config.fps == 0) {
             config.fps = defaultFps
         }
@@ -180,9 +174,24 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         return result
     }
 
-    fun setAudioSpeed(speed: Float) {
-        audioSpeed = speed
-        playerEva.audioSpeed = audioSpeed
+    private fun setNoJson(evaFileContainer: IEvaFileContainer, defaultFps: Int) {
+        if (playerEva.videoMode == EvaConstant.VIDEO_MODE_NORMAL_MP4) {// 没有设置,默认为正常mp4
+            getMp4Type(evaFileContainer)
+        }
+        // 按照默认配置生成config
+        setNormalMp4(defaultFps)
+    }
+
+    private fun setNormalMp4(defaultFps: Int) {
+        config?.apply {
+            isDefaultConfig = true
+            if (playerEva.videoMode == EvaConstant.VIDEO_MODE_NORMAL_MP4) {
+                playerEva.isNormalMp4 = true //设定为正常mp4
+            }
+            this.defaultVideoMode = playerEva.videoMode
+            fps = defaultFps
+        }
+        playerEva.fps = config?.fps ?: defaultFps
     }
 
     /**
@@ -264,7 +273,15 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
         return output
     }
 
-    fun getMp4Type(file: File?) {
+    fun getMp4Type(evaFileContainer: IEvaFileContainer) {
+        val type = evaFileContainer.getEvaMp4Type()
+        if (type > EvaConstant.VIDEO_MODE_NORMAL_MP4_NONE) {  //判断已经检测过
+            ELog.i(TAG, "已经检测过，getMp4Type $type")
+            playerEva.videoMode = type
+            return
+        }
+
+        val file = evaFileContainer.getFile()
         if(file != null && file.exists()) {
             val mmr = MediaMetadataRetriever()
             mmr.setDataSource(file.absolutePath)
@@ -282,6 +299,8 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer){
                         break
                     }
                 }
+                Log.i(TAG, "detect mp4Type ${playerEva.videoMode}")
+                evaFileContainer.setEvaMp4Type(playerEva.videoMode)
             }
             mmr.release()
         }
