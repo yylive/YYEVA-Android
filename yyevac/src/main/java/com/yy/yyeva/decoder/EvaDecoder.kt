@@ -162,9 +162,9 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
         playerEva.evaAnimListener?.onVideoRender(frameIndex, config)
     }
 
-    override fun onVideoComplete() {
+    override fun onVideoComplete(lastFrame: Boolean) {
         ELog.i(TAG, "onVideoComplete")
-        playerEva.evaAnimListener?.onVideoComplete()
+        playerEva.evaAnimListener?.onVideoComplete(lastFrame)
     }
 
     override fun onVideoDestroy() {

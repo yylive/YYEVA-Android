@@ -445,6 +445,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     }
 
     private fun notReleaseLastFrame(decoder: MediaCodec?, extractor: MediaExtractor?) {
+        ELog.i(TAG, "notReleaseLastFrame")
         decoder?.apply {
             stop()
             release()
@@ -454,7 +455,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
         playerEva.pluginManager.onRelease()
         isRunning = false
         //播放到最后一帧，也认为播放完成
-        onVideoComplete()
+        onVideoComplete(true)
     }
 
     private fun releaseLastFrame() {

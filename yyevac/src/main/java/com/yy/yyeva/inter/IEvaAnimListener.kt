@@ -32,7 +32,7 @@ interface IEvaAnimListener {
     /**
      * 视频播放结束
      */
-    fun onVideoComplete()
+    fun onVideoComplete(lastFrame: Boolean = false)
 
     /**
      * 视频被销毁

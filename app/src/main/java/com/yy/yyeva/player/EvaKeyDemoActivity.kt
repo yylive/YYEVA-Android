@@ -229,7 +229,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
     /**
      * 视频播放结束(失败也会回调)
      */
-    override fun onVideoComplete() {
+    override fun onVideoComplete(lastFrame: Boolean) {
         ELog.i(TAG, "onVideoComplete")
     }
 

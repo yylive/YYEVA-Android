@@ -172,12 +172,12 @@ class EvaKeyRecyclerAdapter():RecyclerView.Adapter<EvaKeyRecyclerAdapter.EvaKeyH
                 override fun onVideoRender(frameIndex: Int, config: EvaAnimConfig?) {
                 }
 
-                override fun onVideoComplete() {
+                override fun onVideoComplete(lastFrame: Boolean) {
                     ELog.i(TAG, "onVideoComplete")
                 }
 
                 override fun onVideoDestroy() {
-                    ELog.i(TAG, "onVideoComplete")
+                    ELog.i(TAG, "onVideoDestroy")
                 }
 
                 override fun onFailed(errorType: Int, errorMsg: String?) {

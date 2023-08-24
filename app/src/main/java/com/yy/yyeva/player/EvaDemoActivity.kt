@@ -146,6 +146,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
         animView.setAnimListener(this)
 //        animView.setVideoMode(EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL)
 //        animView.setAudioSpeed(2.0f)
+//        animView.setLastFrame(true)
         /**
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
@@ -217,7 +218,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
     /**
      * 视频播放结束(失败也会回调)
      */
-    override fun onVideoComplete() {
+    override fun onVideoComplete(lastFrame: Boolean) {
         ELog.i(TAG, "onVideoComplete")
     }
 
