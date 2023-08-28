@@ -188,7 +188,7 @@ class EvaKeyRecyclerAdapter():RecyclerView.Adapter<EvaKeyRecyclerAdapter.EvaKeyH
              * 开始播放主流程
              * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
              */
-            play()
+//            play()
         }
 
         fun play() {

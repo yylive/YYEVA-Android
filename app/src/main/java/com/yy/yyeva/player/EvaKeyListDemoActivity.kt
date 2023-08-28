@@ -12,6 +12,7 @@ import com.yy.yyeva.inter.IEvaAnimListener
 import com.yy.yyeva.util.ELog
 import com.yy.yyeva.util.IELog
 import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yy.yyeva.player.bean.VideoInfo
@@ -50,21 +51,20 @@ class EvaKeyListDemoActivity : Activity(), IEvaAnimListener {
         layoutManager = LinearLayoutManager(this)
         eva_recycler.layoutManager = layoutManager
         eva_recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            var dy = 0
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0) { //下滑
-                    if (layoutManager.findLastVisibleItemPosition() != findLastVisibleItemPosition) {
-                        findLastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
-                        ELog.i(TAG, "downscroll viewholder $findLastVisibleItemPosition")
-                        val viewHolder = eva_recycler.findViewHolderForAdapterPosition(findLastVisibleItemPosition) as EvaKeyRecyclerAdapter.EvaKeyHolder
-                        viewHolder.play()
-                    }
-                } else if (dy < 0) { //上划
-                    if (layoutManager.findFirstVisibleItemPosition() != findFirstVisibleItemPosition) {
-                        findFirstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
-                        ELog.i(TAG, "upscroll viewholder $findFirstVisibleItemPosition")
-                        val viewHolder = eva_recycler.findViewHolderForAdapterPosition(findFirstVisibleItemPosition) as EvaKeyRecyclerAdapter.EvaKeyHolder
-                        viewHolder.play()
+                this.dy = dy
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    findLastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                    findFirstVisibleItemPosition = layoutManager.findFirstCompletelyVisibleItemPosition()
+                    for (i in findFirstVisibleItemPosition..findLastVisibleItemPosition) {
+                        val viewHolder = eva_recycler.findViewHolderForAdapterPosition(i) as? EvaKeyRecyclerAdapter.EvaKeyHolder
+                        viewHolder?.play()
                     }
                 }
             }
@@ -84,7 +84,28 @@ class EvaKeyListDemoActivity : Activity(), IEvaAnimListener {
         adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
         adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
         adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
+        adapter?.addBean(VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be"))
         adapter?.notifyDataSetChanged()
+        eva_recycler.post {
+            val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+            val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+            ELog.i(TAG, "firstVisibleItemPosition $firstVisibleItemPosition, lastVisibleItemPosition $lastVisibleItemPosition")
+            for (i in firstVisibleItemPosition..lastVisibleItemPosition) {
+                val viewHolder = eva_recycler.findViewHolderForAdapterPosition(i) as? EvaKeyRecyclerAdapter.EvaKeyHolder
+                viewHolder?.play()
+            }
+        }
     }
 
     /**
