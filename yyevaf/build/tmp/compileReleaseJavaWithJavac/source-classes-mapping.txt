@@ -1,0 +1,2 @@
+com/yy/yyeva/BuildConfig.java
+ com.yy.yyeva.BuildConfig

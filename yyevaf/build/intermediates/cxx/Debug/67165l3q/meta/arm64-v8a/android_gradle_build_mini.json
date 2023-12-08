@@ -1,0 +1,51 @@
+{
+  "buildFiles": [
+    "G:\\project\\YYEVA-A\\yyevaf\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "E:\\AndroidSdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
+      "-C",
+      "G:\\project\\YYEVA-A\\yyevaf\\.cxx\\Debug\\67165l3q\\arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "E:\\AndroidSdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
+    "-C",
+    "G:\\project\\YYEVA-A\\yyevaf\\.cxx\\Debug\\67165l3q\\arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "parson-Debug-arm64-v8a": {
+      "artifactName": "parson",
+      "buildCommandComponents": [
+        "E:\\AndroidSdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
+        "-C",
+        "G:\\project\\YYEVA-A\\yyevaf\\.cxx\\Debug\\67165l3q\\arm64-v8a",
+        "parson"
+      ],
+      "abi": "arm64-v8a",
+      "output": "G:\\project\\YYEVA-A\\yyevaf\\.cxx\\Debug\\67165l3q\\arm64-v8a\\libparson.a",
+      "runtimeFiles": []
+    },
+    "yyevaf-Debug-arm64-v8a": {
+      "artifactName": "yyevaf",
+      "buildCommandComponents": [
+        "E:\\AndroidSdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
+        "-C",
+        "G:\\project\\YYEVA-A\\yyevaf\\.cxx\\Debug\\67165l3q\\arm64-v8a",
+        "yyevaf"
+      ],
+      "abi": "arm64-v8a",
+      "output": "G:\\project\\YYEVA-A\\yyevaf\\jniLibs\\arm64-v8a\\libyyevaf.so",
+      "runtimeFiles": [
+        "G:\\project\\YYEVA-A\\yyevaf\\src\\main\\jniLibs\\arm64-v8a\\libavcodec.so",
+        "G:\\project\\YYEVA-A\\yyevaf\\src\\main\\jniLibs\\arm64-v8a\\libavutil.so",
+        "G:\\project\\YYEVA-A\\yyevaf\\src\\main\\jniLibs\\arm64-v8a\\libavformat.so",
+        "G:\\project\\YYEVA-A\\yyevaf\\src\\main\\jniLibs\\arm64-v8a\\libswscale.so",
+        "G:\\project\\YYEVA-A\\yyevaf\\src\\main\\jniLibs\\arm64-v8a\\libswresample.so"
+      ]
+    }
+  }
+}

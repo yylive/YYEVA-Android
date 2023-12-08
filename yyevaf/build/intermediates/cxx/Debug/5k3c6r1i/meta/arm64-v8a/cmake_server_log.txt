@@ -1,0 +1,556 @@
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"supportedProtocolVersions\":[{\"isExperimental\":true,\"major\":1,\"minor\":1}],\"type\":\"hello\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\n  \"type\": \"handshake\",\n  \"cookie\": \"gradle-cmake-cookie\",\n  \"protocolVersion\": {\n    \"isExperimental\": true,\n    \"major\": 1,\n    \"minor\": 1\n  },\n  \"sourceDirectory\": \"G:/project/YYEVA-A/yyevaf\",\n  \"buildDirectory\": \"G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a\",\n  \"generator\": \"Ninja\"\n}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"gradle-cmake-cookie\",\"inReplyTo\":\"handshake\",\"type\":\"reply\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\n  \"type\": \"configure\",\n  \"cacheArguments\": [\n    \"\",\n    \"-DCMAKE_SYSTEM_NAME\\u003dAndroid\",\n    \"-DCMAKE_EXPORT_COMPILE_COMMANDS\\u003dON\",\n    \"-DCMAKE_SYSTEM_VERSION\\u003d21\",\n    \"-DANDROID_PLATFORM\\u003dandroid-21\",\n    \"-DANDROID_ABI\\u003darm64-v8a\",\n    \"-DCMAKE_ANDROID_ARCH_ABI\\u003darm64-v8a\",\n    \"-DANDROID_NDK\\u003dG:\\\\AndroidSdk\\\\ndk\\\\22.1.7171670\",\n    \"-DCMAKE_ANDROID_NDK\\u003dG:\\\\AndroidSdk\\\\ndk\\\\22.1.7171670\",\n    \"-DCMAKE_TOOLCHAIN_FILE\\u003dG:\\\\AndroidSdk\\\\ndk\\\\22.1.7171670\\\\build\\\\cmake\\\\android.toolchain.cmake\",\n    \"-DCMAKE_MAKE_PROGRAM\\u003dG:\\\\AndroidSdk\\\\cmake\\\\3.10.2.4988404\\\\bin\\\\ninja.exe\",\n    \"-DCMAKE_CXX_FLAGS\\u003d-std\\u003dc++11 -fexceptions\",\n    \"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\\u003dG:\\\\project\\\\YYEVA-A\\\\yyevaf\\\\build\\\\intermediates\\\\cxx\\\\Debug\\\\5k3c6r1i\\\\obj\\\\arm64-v8a\",\n    \"-DCMAKE_RUNTIME_OUTPUT_DIRECTORY\\u003dG:\\\\project\\\\YYEVA-A\\\\yyevaf\\\\build\\\\intermediates\\\\cxx\\\\Debug\\\\5k3c6r1i\\\\obj\\\\arm64-v8a\",\n    \"-DCMAKE_BUILD_TYPE\\u003dDebug\"\n  ]\n}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineSystem.cmake:94 (include)\\n  CMakeLists.txt\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineSystem.cmake:94 (include)\r\n  CMakeLists.txt\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineSystem.cmake:94 (include)\r\n  CMakeLists.txt\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Check for working C compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Check for working C compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe"
+
+CMAKE SERVER: message: "Check for working C compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":33,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Check for working C compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe -- works\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Check for working C compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe -- works"
+
+CMAKE SERVER: message: "Check for working C compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang.exe -- works"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting C compiler ABI info\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Detecting C compiler ABI info"
+
+CMAKE SERVER: message: "Detecting C compiler ABI info"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":65,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting C compiler ABI info - done\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Detecting C compiler ABI info - done"
+
+CMAKE SERVER: message: "Detecting C compiler ABI info - done"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting C compile features\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Detecting C compile features"
+
+CMAKE SERVER: message: "Detecting C compile features"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":96,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":126,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":155,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting C compile features - done\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Detecting C compile features - done"
+
+CMAKE SERVER: message: "Detecting C compile features - done"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Check for working CXX compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Check for working CXX compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+
+CMAKE SERVER: message: "Check for working CXX compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":184,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Check for working CXX compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe -- works\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Check for working CXX compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe -- works"
+
+CMAKE SERVER: message: "Check for working CXX compiler: G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/bin/clang++.exe -- works"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting CXX compiler ABI info\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Detecting CXX compiler ABI info"
+
+CMAKE SERVER: message: "Detecting CXX compiler ABI info"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":211,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting CXX compiler ABI info - done\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Detecting CXX compiler ABI info - done"
+
+CMAKE SERVER: message: "Detecting CXX compiler ABI info - done"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting CXX compile features\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Detecting CXX compile features"
+
+CMAKE SERVER: message: "Detecting CXX compile features"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":237,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":262,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":287,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\\n  An old version of CMake is being used that cannot automatically detect\\n  compiler attributes.  Compiler identification is being bypassed.  Some\\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\\n  CMake\'s built-in compiler identification.\\nCall Stack (most recent call first):\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\\n\\n\",\"title\":\"Warning\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: level: WARN
+message: "CMake Warning at G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake:449 (message):\r\n  An old version of CMake is being used that cannot automatically detect\r\n  compiler attributes.  Compiler identification is being bypassed.  Some\r\n  values may be wrong or missing.  Update to CMake 3.19 or newer to use\r\n  CMake\'s built-in compiler identification.\r\nCall Stack (most recent call first):\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake:6 (include)\r\n  G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/CMakeTmp/CMakeLists.txt:2 (project)\r\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":311,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Detecting CXX compile features - done\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Detecting CXX compile features - done"
+
+CMAKE SERVER: message: "Detecting CXX compile features - done"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"USE_FFMPEG: true\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "USE_FFMPEG: true"
+
+CMAKE SERVER: message: "USE_FFMPEG: true"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"USE_FFMPEG: true, link ffmpeg so\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "USE_FFMPEG: true, link ffmpeg so"
+
+CMAKE SERVER: message: "USE_FFMPEG: true, link ffmpeg so"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"progressCurrent\":1000,\"progressMaximum\":1000,\"progressMessage\":\"Configuring\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"message\":\"Configuring done\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Configuring done"
+
+CMAKE SERVER: message: "Configuring done"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"configure\",\"type\":\"reply\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"type\":\"compute\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"compute\",\"progressCurrent\":1000,\"progressMaximum\":1000,\"progressMessage\":\"Generating\",\"progressMinimum\":0,\"type\":\"progress\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"compute\",\"message\":\"Generating done\",\"type\":\"message\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "Generating done"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"compute\",\"type\":\"reply\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"type\":\"cmakeInputs\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"\",\"name\":\"dirty\",\"type\":\"signal\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"cookie\":\"\",\"inReplyTo\":\"\",\"name\":\"fileChange\",\"path\":\"G:/project/YYEVA-A/yyevaf/src/main/cpp/config.h.in\",\"properties\":[\"change\"],\"type\":\"signal\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"buildFiles\":[{\"isCMake\":true,\"isTemporary\":false,\"sources\":[\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineSystem.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Determine.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeSystem.cmake.in\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeSystemSpecificInitialize.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Initialize.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCCompiler.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompiler.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Determine-C.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android/Determine-Compiler.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeFindBinUtils.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-FindBinUtils.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCCompiler.cmake.in\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCXXCompiler.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompiler.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Determine-CXX.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android/Determine-Compiler.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeFindBinUtils.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-FindBinUtils.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCXXCompiler.cmake.in\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeSystemSpecificInformation.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeGenericSystem.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Linux.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/UnixPaths.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCInformation.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeLanguageInformation.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-C.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/CMakeCommonCompilerMacros.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/GNU.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/CMakeCommonCompilerMacros.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Clang-C.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Clang.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCommonLanguageInclude.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeTestCCompiler.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeTestCompilerCommon.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompilerABI.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeParseImplicitLinkInfo.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCCompilerABI.c\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompileFeatures.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Internal/FeatureTesting.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-C-FeatureTests.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-C-FeatureTests.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-C-FeatureTests.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCCompiler.cmake.in\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCXXInformation.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeLanguageInformation.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Clang-CXX.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Platform/Android-Clang.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCommonLanguageInclude.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeTestCXXCompiler.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeTestCompilerCommon.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompilerABI.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeParseImplicitLinkInfo.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCXXCompilerABI.cpp\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeDetermineCompileFeatures.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Internal/FeatureTesting.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-FeatureTests.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-TestableFeatures.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-FeatureTests.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-TestableFeatures.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-FeatureTests.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-TestableFeatures.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-FeatureTests.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/Compiler/Clang-CXX-TestableFeatures.cmake\",\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10/Modules/CMakeCXXCompiler.cmake.in\"]},{\"isCMake\":false,\"isTemporary\":false,\"sources\":[\"CMakeLists.txt\",\"G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake\",\"G:/AndroidSdk/ndk/22.1.7171670/build/cmake/platforms.cmake\",\"G:/AndroidSdk/ndk/22.1.7171670/build/cmake/compiler_id.cmake\",\"G:/AndroidSdk/ndk/22.1.7171670/build/cmake/android.toolchain.cmake\",\"src/main/cpp/config.h.in\"]},{\"isCMake\":false,\"isTemporary\":true,\"sources\":[\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeSystem.cmake\",\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeCCompiler.cmake\",\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeCXXCompiler.cmake\",\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/feature_tests.c\",\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/feature_tests.c\",\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/feature_tests.c\",\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeCCompiler.cmake\",\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/feature_tests.cxx\",\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/feature_tests.cxx\",\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/feature_tests.cxx\",\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/feature_tests.cxx\",\".cxx/Debug/5k3c6r1i/arm64-v8a/CMakeFiles/3.10.2/CMakeCXXCompiler.cmake\"]}],\"cmakeRootDirectory\":\"G:/AndroidSdk/cmake/3.10.2.4988404/share/cmake-3.10\",\"cookie\":\"\",\"inReplyTo\":\"cmakeInputs\",\"sourceDirectory\":\"G:/project/YYEVA-A/yyevaf\",\"type\":\"reply\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"type\":\"codemodel\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+
+CMAKE SERVER: message: "\n"
+
+CMAKE SERVER: message: "[== \"CMake Server\" ==[\n"
+
+CMAKE SERVER: message: "{\"configurations\":[{\"name\":\"Debug\",\"projects\":[{\"buildDirectory\":\"G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a\",\"name\":\"Project\",\"sourceDirectory\":\"G:/project/YYEVA-A/yyevaf\",\"targets\":[{\"artifacts\":[\"G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a/libparson.a\"],\"buildDirectory\":\"G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a\",\"fileGroups\":[{\"compileFlags\":\"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -O0 -fno-limit-debug-info  -fPIC  \",\"includePath\":[{\"path\":\"G:/project/YYEVA-A/yyevaf\"},{\"path\":\"G:/project/YYEVA-A/yyevaf/src/main/cpp\"},{\"path\":\"G:/project/YYEVA-A/yyevaf/src/main/cpp/ffmpeg/include\"}],\"isGenerated\":false,\"language\":\"C\",\"sources\":[\"src/main/cpp/util/parson.c\"]}],\"fullName\":\"libparson.a\",\"linkerLanguage\":\"C\",\"name\":\"parson\",\"sourceDirectory\":\"G:/project/YYEVA-A/yyevaf\",\"sysroot\":\"G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/sysroot\",\"type\":\"STATIC_LIBRARY\"},{\"artifacts\":[\"G:/project/YYEVA-A/yyevaf/jniLibs/arm64-v8a/libyyevaf.so\"],\"buildDirectory\":\"G:/project/YYEVA-A/yyevaf/.cxx/Debug/5k3c6r1i/arm64-v8a\",\"fileGroups\":[{\"isGenerated\":false,\"sources\":[\"src/main/cpp/media/const.h\",\"src/main/cpp/media/render/audio/audio_render.h\",\"src/main/cpp/media/render/video/video_render.h\",\"src/main/cpp/media/decoder/decode_state.h\",\"src/main/cpp/media/decoder/i_decoder.h\",\"src/main/cpp/media/render/video/opengl_render/opengl_pixel_receiver.h\",\"src/main/cpp/media/one_frame.h\"]},{\"compileFlags\":\"-g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++11 -fexceptions -O0 -fno-limit-debug-info  -fPIC  \",\"defines\":[\"yyevaf_EXPORTS\"],\"includePath\":[{\"path\":\"G:/project/YYEVA-A/yyevaf\"},{\"path\":\"G:/project/YYEVA-A/yyevaf/src/main/cpp\"},{\"path\":\"G:/project/YYEVA-A/yyevaf/src/main/cpp/ffmpeg/include\"}],\"isGenerated\":false,\"language\":\"CXX\",\"sources\":[\"src/main/cpp/yyevaf.cpp\",\"src/main/cpp/bean/effect.cpp\",\"src/main/cpp/bean/evaanimeconfig.cpp\",\"src/main/cpp/bean/evasrc.cpp\",\"src/main/cpp/bean/evasrcmap.cpp\",\"src/main/cpp/bean/evaframe.cpp\",\"src/main/cpp/bean/evaframeall.cpp\",\"src/main/cpp/bean/evaframeset.cpp\",\"src/main/cpp/egl/eglcore.cpp\",\"src/main/cpp/engine/yuvrender.cpp\",\"src/main/cpp/engine/render.cpp\",\"src/main/cpp/engine/mp4render.cpp\",\"src/main/cpp/engine/bgrender.cpp\",\"src/main/cpp/engine/rendercontroller.cpp\",\"src/main/cpp/engine/evaengine.cpp\",\"src/main/cpp/util/shaderutil.cpp\",\"src/main/cpp/util/glfloatarray.cpp\",\"src/main/cpp/util/vertexutil.cpp\",\"src/main/cpp/util/texcoordsutil.cpp\",\"src/main/cpp/util/textureloadutil.cpp\",\"src/main/cpp/mix/evamixrender.cpp\",\"src/main/cpp/mix/mixshader.cpp\",\"src/main/cpp/media/render/audio/opensl_render.cpp\",\"src/main/cpp/media/decoder/base_decoder.cpp\",\"src/main/cpp/media/decoder/i_decode_state_cb.cpp\",\"src/main/cpp/media/decoder/video/v_decoder.cpp\",\"src/main/cpp/media/decoder/audio/a_decoder.cpp\",\"src/main/cpp/media/player/gl_player/gl_player.cpp\",\"src/main/cpp/media/render/video/opengl_render/opengl_render.cpp\",\"src/main/cpp/opengl/drawer/drawer.cpp\",\"src/main/cpp/opengl/drawer/video_drawer.cpp\",\"src/main/cpp/opengl/drawer/proxy/def_drawer_proxy_impl.cpp\",\"src/main/cpp/opengl/drawer/proxy/drawer_proxy.cpp\",\"src/main/cpp/opengl/egl/egl_core.cpp\",\"src/main/cpp/opengl/egl/egl_surface.cpp\"]}],\"fullName\":\"libyyevaf.so\",\"linkFlags\":\"-Wl,--exclude-libs,libgcc.a -Wl,--exclude-libs,libgcc_real.a -Wl,--exclude-libs,libatomic.a -static-libstdc++ -Wl,--build-id=sha1 -Wl,--no-rosegment -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments\",\"linkLibraries\":\"-landroid -lGLESv2 -lEGL -lOpenSLES -ljnigraphics libparson.a ..\\\\..\\\\..\\\\..\\\\src\\\\main\\\\jniLibs\\\\arm64-v8a\\\\libavcodec.so ..\\\\..\\\\..\\\\..\\\\src\\\\main\\\\jniLibs\\\\arm64-v8a\\\\libavutil.so ..\\\\..\\\\..\\\\..\\\\src\\\\main\\\\jniLibs\\\\arm64-v8a\\\\libavformat.so ..\\\\..\\\\..\\\\..\\\\src\\\\main\\\\jniLibs\\\\arm64-v8a\\\\libswscale.so ..\\\\..\\\\..\\\\..\\\\src\\\\main\\\\jniLibs\\\\arm64-v8a\\\\libswresample.so -lz -llog -latomic -lm\",\"linkerLanguage\":\"CXX\",\"name\":\"yyevaf\",\"sourceDirectory\":\"G:/project/YYEVA-A/yyevaf\",\"sysroot\":\"G:/AndroidSdk/ndk/22.1.7171670/toolchains/llvm/prebuilt/windows-x86_64/sysroot\",\"type\":\"SHARED_LIBRARY\"}]}]}],\"cookie\":\"\",\"inReplyTo\":\"codemodel\",\"type\":\"reply\"}\n"
+
+CMAKE SERVER: message: "]== \"CMake Server\" ==]\n"
+

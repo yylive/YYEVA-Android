@@ -1,0 +1,167 @@
+{
+  "abi": "ARM64_V8A",
+  "info": {
+    "abi": "ARM64_V8A",
+    "bitness": 64,
+    "deprecated": false,
+    "default": true
+  },
+  "cxxBuildFolder": "G:\\project\\YYEVA-A\\yyevaf\\.cxx\\Debug\\5k3c6r1i\\arm64-v8a",
+  "soFolder": "G:\\project\\YYEVA-A\\yyevaf\\build\\intermediates\\cxx\\Debug\\5k3c6r1i\\obj\\arm64-v8a",
+  "soRepublishFolder": "G:\\project\\YYEVA-A\\yyevaf\\build\\intermediates\\cmake\\debug\\obj\\arm64-v8a",
+  "abiPlatformVersion": 21,
+  "cmake": {
+    "effectiveConfiguration": {
+      "inheritEnvironments": [],
+      "variables": []
+    }
+  },
+  "variant": {
+    "buildSystemArgumentList": [],
+    "cFlagsList": [],
+    "cppFlagsList": [
+      "-std\u003dc++11 -fexceptions"
+    ],
+    "variantName": "debug",
+    "soFolder": "G:\\project\\YYEVA-A\\yyevaf\\build\\intermediates\\cxx\\Debug\\5k3c6r1i\\obj",
+    "soRepublishFolder": "G:\\project\\YYEVA-A\\yyevaf\\build\\intermediates\\cmake\\debug\\obj",
+    "cxxBuildFolder": "G:\\project\\YYEVA-A\\yyevaf\\.cxx\\Debug\\5k3c6r1i",
+    "intermediatesFolder": "G:\\project\\YYEVA-A\\yyevaf\\build\\intermediates\\cxx\\Debug\\5k3c6r1i",
+    "isDebuggableEnabled": true,
+    "validAbiList": [
+      "ARMEABI_V7A",
+      "ARM64_V8A"
+    ],
+    "buildTargetSet": [],
+    "implicitBuildTargetSet": [],
+    "cmakeSettingsConfiguration": "android-gradle-plugin-predetermined-name",
+    "module": {
+      "cxxFolder": "G:\\project\\YYEVA-A\\yyevaf\\.cxx",
+      "intermediatesBaseFolder": "G:\\project\\YYEVA-A\\yyevaf\\build\\intermediates",
+      "intermediatesFolder": "G:\\project\\YYEVA-A\\yyevaf\\build\\intermediates\\cxx",
+      "gradleModulePathName": ":yyevaf",
+      "moduleRootFolder": "G:\\project\\YYEVA-A\\yyevaf",
+      "moduleBuildFile": "G:\\project\\YYEVA-A\\yyevaf\\build.gradle",
+      "makeFile": "G:\\project\\YYEVA-A\\yyevaf\\CMakeLists.txt",
+      "buildSystem": "CMAKE",
+      "ndkFolder": "G:\\AndroidSdk\\ndk\\22.1.7171670",
+      "ndkVersion": "22.1.7171670",
+      "ndkSupportedAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultAbiList": [
+        "ARMEABI_V7A",
+        "ARM64_V8A",
+        "X86",
+        "X86_64"
+      ],
+      "ndkDefaultStl": "LIBCXX_STATIC",
+      "ndkMetaPlatforms": {
+        "min": 16,
+        "max": 30,
+        "aliases": {
+          "20": 19,
+          "25": 24,
+          "J": 16,
+          "J-MR1": 17,
+          "J-MR2": 18,
+          "K": 19,
+          "L": 21,
+          "L-MR1": 22,
+          "M": 23,
+          "N": 24,
+          "N-MR1": 24,
+          "O": 26,
+          "O-MR1": 27,
+          "P": 28,
+          "Q": 29,
+          "R": 30
+        }
+      },
+      "ndkMetaAbiList": [
+        {
+          "abi": "ARMEABI_V7A",
+          "bitness": 32,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "ARM64_V8A",
+          "bitness": 64,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "X86",
+          "bitness": 32,
+          "deprecated": false,
+          "default": true
+        },
+        {
+          "abi": "X86_64",
+          "bitness": 64,
+          "deprecated": false,
+          "default": true
+        }
+      ],
+      "cmakeToolchainFile": "G:\\AndroidSdk\\ndk\\22.1.7171670\\build\\cmake\\android.toolchain.cmake",
+      "cmake": {
+        "isValidCmakeAvailable": true,
+        "cmakeExe": "G:\\AndroidSdk\\cmake\\3.10.2.4988404\\bin\\cmake.exe",
+        "minimumCmakeVersion": "3.10.2",
+        "ninjaExe": "G:\\AndroidSdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe"
+      },
+      "stlSharedObjectMap": {
+        "LIBCXX_SHARED": {
+          "ARMEABI_V7A": "G:\\AndroidSdk\\ndk\\22.1.7171670\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\arm-linux-androideabi\\libc++_shared.so",
+          "ARM64_V8A": "G:\\AndroidSdk\\ndk\\22.1.7171670\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\aarch64-linux-android\\libc++_shared.so",
+          "X86": "G:\\AndroidSdk\\ndk\\22.1.7171670\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\i686-linux-android\\libc++_shared.so",
+          "X86_64": "G:\\AndroidSdk\\ndk\\22.1.7171670\\toolchains\\llvm\\prebuilt\\windows-x86_64\\sysroot\\usr\\lib\\x86_64-linux-android\\libc++_shared.so"
+        },
+        "LIBCXX_STATIC": {},
+        "NONE": {},
+        "SYSTEM": {}
+      },
+      "project": {
+        "rootBuildGradleFolder": "G:\\project\\YYEVA-A",
+        "sdkFolder": "G:\\AndroidSdk",
+        "isBuildOnlyTargetAbiEnabled": true,
+        "isCmakeBuildCohabitationEnabled": false,
+        "isPrefabEnabled": false
+      },
+      "nativeBuildOutputLevel": "QUIET"
+    },
+    "prefabClassPathFileCollection": [],
+    "prefabPackageDirectoryListFileCollection": [],
+    "stlType": "c++_static",
+    "optimizationTag": "Debug"
+  },
+  "buildSettings": {
+    "environmentVariables": []
+  },
+  "prefabFolder": "G:\\project\\YYEVA-A\\yyevaf\\.cxx\\Debug\\5k3c6r1i\\prefab\\arm64-v8a",
+  "isActiveAbi": true,
+  "fullConfigurationHash": "5k3c6r1i1s1p454x5u5i3h75p6h1g4o174f4w676i6w5x734e2q1o1f1qmw5x",
+  "configurationArguments": [
+    "-HG:\\project\\YYEVA-A\\yyevaf",
+    "-DCMAKE_SYSTEM_NAME\u003dAndroid",
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS\u003dON",
+    "-DCMAKE_SYSTEM_VERSION\u003d21",
+    "-DANDROID_PLATFORM\u003dandroid-21",
+    "-DANDROID_ABI\u003darm64-v8a",
+    "-DCMAKE_ANDROID_ARCH_ABI\u003darm64-v8a",
+    "-DANDROID_NDK\u003dG:\\AndroidSdk\\ndk\\22.1.7171670",
+    "-DCMAKE_ANDROID_NDK\u003dG:\\AndroidSdk\\ndk\\22.1.7171670",
+    "-DCMAKE_TOOLCHAIN_FILE\u003dG:\\AndroidSdk\\ndk\\22.1.7171670\\build\\cmake\\android.toolchain.cmake",
+    "-DCMAKE_MAKE_PROGRAM\u003dG:\\AndroidSdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe",
+    "-DCMAKE_CXX_FLAGS\u003d-std\u003dc++11 -fexceptions",
+    "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY\u003dG:\\project\\YYEVA-A\\yyevaf\\build\\intermediates\\cxx\\Debug\\5k3c6r1i\\obj\\arm64-v8a",
+    "-DCMAKE_RUNTIME_OUTPUT_DIRECTORY\u003dG:\\project\\YYEVA-A\\yyevaf\\build\\intermediates\\cxx\\Debug\\5k3c6r1i\\obj\\arm64-v8a",
+    "-DCMAKE_BUILD_TYPE\u003dDebug",
+    "-BG:\\project\\YYEVA-A\\yyevaf\\.cxx\\Debug\\5k3c6r1i\\arm64-v8a",
+    "-GNinja"
+  ]
+}
