@@ -3,7 +3,7 @@
 
 # Sets the minimum version of CMake required to build the native library.
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.10.2)
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
@@ -12,12 +12,12 @@ cmake_minimum_required(VERSION 3.4.1)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/jniLibs/${ANDROID_ABI})
 
 # 定义 so 库和头文件所在目录，方便后面使用
-set(ffmpeg_lib_dir ${CMAKE_CURRENT_SOURCE_DIR}/../jni/${ANDROID_ABI})
-set(ffmpeg_head_dir ${CMAKE_CURRENT_SOURCE_DIR})
+set(ffmpeg_lib_dir ${CMAKE_CURRENT_SOURCE_DIR}/src/main/jni/${ANDROID_ABI})
+set(ffmpeg_head_dir ${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp)
 
 # 2. 添加头文件目录
 include_directories(${ffmpeg_head_dir}/include)
-include_directories(${ffmpeg_head_dir}/yyevav2)
+include_directories(${ffmpeg_head_dir}/player)
 
 link_directories(
         ${PROJECT_SOURCE_DIR}/jni/${ANDROID_ABI})
@@ -29,7 +29,7 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        src/main/cpp/yyevajni.cpp
+        src/main/cpp/yyeva_ff.cpp
         src/main/cpp/bean/effect.cpp
         src/main/cpp/bean/evaanimeconfig.cpp
         src/main/cpp/bean/evasrc.cpp
@@ -37,6 +37,7 @@ add_library( # Sets the name of the library.
         src/main/cpp/bean/evaframe.cpp
         src/main/cpp/bean/evaframeall.cpp
         src/main/cpp/bean/evaframeset.cpp
+        src/main/cpp/bean/optionparams.cpp
         src/main/cpp/egl/eglcore.cpp
         src/main/cpp/engine/yuvrender.cpp
         src/main/cpp/engine/render.cpp
@@ -52,6 +53,18 @@ add_library( # Sets the name of the library.
         src/main/cpp/mix/evamixrender.cpp
         src/main/cpp/mix/mixshader.cpp
         src/main/cpp/vulkan_wrapper/vulkan_wrapper.cpp
+
+        src/main/cpp/player/queue/BufferQueueContext.cpp
+        src/main/cpp/player/queue/AVBufferProducer.cpp
+        src/main/cpp/player/queue/AVBufferConsumer.cpp
+        src/main/cpp/player/queue/FrameQueue.cpp
+        src/main/cpp/player/queue/PacketQueue.cpp
+        src/main/cpp/util/ELog.cpp
+        src/main/cpp/util/thread.cpp
+        src/main/cpp/player/decoder/BaseDecoder.cpp
+        src/main/cpp/player/decoder/AudioDecoder.cpp
+        src/main/cpp/player/decoder/VideoDecoder.cpp
+        src/main/cpp/player/decoder/DecoderController.cpp
         )
 
 # 添加FFmpeg相关的so库
@@ -123,11 +136,12 @@ target_link_libraries( # Specifies the target library.
         avformat
         swscale
         swresample
-        oboe
         GLESv2
         EGL
         jnigraphics
         parson
+        -landroid
+        z
 
         # Links the target library to the log library
         # included in the NDK.
