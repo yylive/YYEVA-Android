@@ -11,7 +11,9 @@
 namespace yyeva {
     class EvaPlayerContext {
     public:
-        EvaPlayerContext(): config(nullptr),
+        EvaPlayerContext(): config(nullptr), params() {
+
+        }
 
         ~EvaPlayerContext() {
             config = nullptr;
@@ -20,7 +22,7 @@ namespace yyeva {
         long id = 0; //播放器id
         int64_t duration = 0; //动画时长
         int64_t totalFrames = 0; //动画帧数
-        EvaAnimateConfig *config; //mp4头部信息
+        EvaAnimeConfig *config; //mp4头部信息
         OptionParams params; //播放器配置信息
     };
 }

@@ -3,6 +3,11 @@
 //
 
 #include "thread.h"
+#include <src/main/cpp/player/common/easy.h>
+
+void free_thread(Thread **thread) {
+    SAFE_DELETE(*thread);
+}
 
 Thread::Thread(const char *name, std::function<void()> task):
     task(task),
@@ -37,5 +42,23 @@ void Thread::start() {
 }
 
 void *Thread::run(void *arg) {
-    return nullptr;
+    Thread *thread = (Thread*) arg;
+    std::function<void()> task;
+    std::unique_lock<std::mutex> lock(thread->mutex);
+    thread->condition.wait(lock, [thread] {
+        ELOGD(TAG_THREAD, "wait start, id:%ld, name:%s", thread->id, thread->name);
+        return (thread->is_created && thread->is_start) || thread->is_stop; //等待start
+    });
+
+    if (thread->is_stop || !thread->task) {
+        pthread_exit(nullptr); //退出线程
+    }
+    task = std::move(thread->task);
+    if (task) {
+        ELOGD(TAG_THREAD, "run task, id:%ld, name:%s", thread->id, thread->name);
+        task(); //开始执行任务
+    }
+    thread->is_stop = true;
+    ELOGD(TAG_THREAD, "run finished, id:%ld, name:%s", thread->id, thread->name);
+    pthread_exit(nullptr); //退出线程
 }

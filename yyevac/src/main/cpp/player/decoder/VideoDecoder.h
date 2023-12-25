@@ -8,6 +8,8 @@
 #include <decoder/BaseDecoder.h>
 #include <src/main/cpp/util/thread.h>
 
+#define TAG_VIDEO_DECODER "VIDEO_DECODER"
+
 namespace yyeva {
     class VideoDecoder : public BaseDecoder {
 

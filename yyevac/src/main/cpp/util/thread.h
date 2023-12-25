@@ -34,5 +34,7 @@ private:
     const char *name;
 };
 
+void free_thread(Thread **thread);
+
 
 #endif //YYEVA_THREAD_H
