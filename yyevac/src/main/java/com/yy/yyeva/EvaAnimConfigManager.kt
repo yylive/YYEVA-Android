@@ -126,10 +126,17 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
                             bufStrS = String(readBytesLast + readBytes)
                             val indexS = bufStrS.indexOf(matchEnd)
                             if (indexS > 0) { //合并分段找到匹配结尾
-                                jsonStr = jsonStr.substring(
-                                    0,
-                                    jsonStr.length - (indexS - readBytesLast.size) - 1
-                                )
+                                jsonStr = if (indexS > readBytesLast.size) {
+                                    jsonStr.substring(
+                                        0,
+                                        jsonStr.length - (indexS - readBytesLast.size) - 1
+                                    )
+                                } else {
+                                    jsonStr.substring(
+                                        0,
+                                        jsonStr.length - (readBytesLast.size - indexS) - 1
+                                    )
+                                }
                                 findEnd = true
                                 break
                             }
