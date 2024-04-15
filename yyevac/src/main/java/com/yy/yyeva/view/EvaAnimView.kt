@@ -418,5 +418,6 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     override fun setLog(log: IELog) {
         ELog.log = log
+        EvaJniUtil.setLog(log)
     }
 }
