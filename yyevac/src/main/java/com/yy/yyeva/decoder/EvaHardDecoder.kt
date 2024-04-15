@@ -453,6 +453,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             if (needDestroy) {
                 destroyInner()
             }
+            playLoop = 1
         }
     }
 

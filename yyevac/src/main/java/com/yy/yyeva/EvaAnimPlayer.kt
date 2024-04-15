@@ -15,7 +15,7 @@ import com.yy.yyeva.view.IEvaAnimView
 class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
 
     companion object {
-        private const val TAG = "AnimPlayer"
+        private const val TAG = "EvaAnimPlayer"
     }
     @Volatile var controllerId = -1 //底层Native管理器id
     var evaAnimListener: IEvaAnimListener? = null

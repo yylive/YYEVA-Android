@@ -354,15 +354,15 @@ EGLContext yyeva::RenderController::getEglContext() {
 }
 
 void yyeva::RenderController::setVideoRecord(bool videoRecord) {
-    this->videoRecord = videoRecord;
-    if (videoRecord && width > 0 && height > 0) {
+    if (videoRecord && width > 0 && height > 0) { //设置为录制
         initRecordFrameBuffer(width, height);
         fbRender = make_shared<FbRender>();
         fbRender->setTextureId(mFrameBufferTextures);
-    } else {
+    } else if (this->videoRecord && !videoRecord) { //之前需要录制，现在设置不录制
         destroyRecordFrameBuffer();
         fbRender = nullptr;
     }
+    this->videoRecord = videoRecord;
 }
 
 GLuint yyeva::RenderController::getRecordFramebufferId() {
