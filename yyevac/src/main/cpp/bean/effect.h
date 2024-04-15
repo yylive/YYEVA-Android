@@ -1,10 +1,8 @@
 //
 // Created by zengjiale on 2022/4/15.
 //
+#pragma once
 #include "string"
-
-#ifndef YYEVA_EFFECT_H
-#define YYEVA_EFFECT_H
 
 class Effect {
 public:
@@ -22,4 +20,3 @@ public:
     ~Effect();
 };
 
-#endif

@@ -6,6 +6,7 @@ import com.yy.yyeva.decoder.EvaHardDecoder
 import com.yy.yyeva.file.IEvaFileContainer
 import com.yy.yyeva.inter.IEvaAnimListener
 import com.yy.yyeva.plugin.EvaAnimPluginManager
+import com.yy.yyeva.recorder.EvaMediaRecorder
 import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
 import com.yy.yyeva.view.EvaAudioPlayer
@@ -20,6 +21,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     var evaAnimListener: IEvaAnimListener? = null
     var decoder: Decoder? = null
     var evaAudioPlayer: EvaAudioPlayer? = null
+    var mediaRecorder: EvaMediaRecorder = EvaMediaRecorder()
     var fps: Int = 0
         set(value) {
             decoder?.fps = value
@@ -29,10 +31,18 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     var defaultFps: Int = 30
     var isSetFps = false
     var audioSpeed = 1.0f  //音频速度
-    var playLoop: Int = 0
+    var playLoop: Int = 1
         set(value) {
+            ELog.i(TAG, "playLoop $value")
             decoder?.playLoop = value
             evaAudioPlayer?.playLoop = value
+            field = value
+        }
+    var isLoop = false
+        set(value) {
+            ELog.i(TAG, "isLoop $value")
+            decoder?.isLoop = value
+            evaAudioPlayer?.isLoop = value
             field = value
         }
     var supportMaskBoolean : Boolean = false
@@ -52,6 +62,8 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     var isNormalMp4 = false //是否正常的不透明的mp4
 
     var isSetLastFrame = false //是否停留在最后一帧
+
+    var isVideoRecord = false //是否开启录制
 
 //    val configManager = AnimConfigManager(this)
     val configManager = EvaAnimConfigManager(this)
@@ -148,12 +160,14 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
         if (decoder == null) {
             decoder = EvaHardDecoder(this).apply {
                 playLoop = this@EvaAnimPlayer.playLoop
+                isLoop = this@EvaAnimPlayer.isLoop
                 fps = this@EvaAnimPlayer.fps
             }
         }
         if (evaAudioPlayer == null) {
             evaAudioPlayer = EvaAudioPlayer(this).apply {
                 playLoop = this@EvaAnimPlayer.playLoop
+                isLoop = this@EvaAnimPlayer.isLoop
             }
         }
     }

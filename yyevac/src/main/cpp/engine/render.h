@@ -1,10 +1,7 @@
 //
 // Created by zengjiale on 2022/4/18.
 //
-
-#ifndef YYEVA_RENDER_H
-#define YYEVA_RENDER_H
-
+#pragma once
 
 #include "irender.h"
 #include "src/main/cpp/egl/eglcore.h"
@@ -15,42 +12,55 @@
 #include "src/main/cpp/util/vertexutil.h"
 #include "src/main/cpp/util/texcoordsutil.h"
 
-class Render: public IRender {
-public:
-    Render();
-    ~Render();
-    void initRender();
-    void renderFrame();
-    void clearFrame();
-    void destroyRender();
-    void setAnimeConfig(EvaAnimeConfig* config);
-    GLuint getExternalTexture();
-    void releaseTexture();
-    void swapBuffers();
-    void updateViewPort(int width, int height);
-    void setHasBg(bool hasBg);
-    void draw();
+namespace yyeva {
+    class Render : public IRender {
+    public:
+        Render();
 
-private:
-    GlFloatArray *vertexArray = new GlFloatArray();
-    GlFloatArray *alphaArray = new GlFloatArray();
-    GlFloatArray *rgbArray = new GlFloatArray();
+        ~Render();
 
-    GLuint shaderProgram;
-    //shader
-    GLuint textureId;
-    //顶点位置
-    GLint uTextureLocation;
-    //rgb纹理位置
-    GLint aPositionLocation;
-    //alpha纹理位置
-    GLint aTextureAlphaLocation;
-    GLint aTextureRgbLocation;
+        void initRender();
 
-    int surfaceWidth = 0;
-    int surfaceHeight = 0;
-    bool surfaceSizeChanged = false;
-    bool hasBg = false;
+        void renderFrame();
+
+        void clearFrame();
+
+        void destroyRender();
+
+        void setAnimeConfig(shared_ptr<EvaAnimeConfig> config);
+
+        GLuint getExternalTexture();
+
+        void releaseTexture();
+
+        void swapBuffers();
+
+        void updateViewPort(int width, int height);
+
+        void setHasBg(bool hasBg);
+
+        void draw();
+
+    private:
+        shared_ptr<GlFloatArray> vertexArray;
+        shared_ptr<GlFloatArray> alphaArray;
+        shared_ptr<GlFloatArray> rgbArray;
+
+        GLuint shaderProgram;
+        //shader
+        GLuint textureId;
+        //顶点位置
+        GLint uTextureLocation;
+        //rgb纹理位置
+        GLint aPositionLocation;
+        //alpha纹理位置
+        GLint aTextureAlphaLocation;
+        GLint aTextureRgbLocation;
+
+        int surfaceWidth = 0;
+        int surfaceHeight = 0;
+        bool surfaceSizeChanged = false;
+        bool hasBg = false;
 
 //    string VERTEX_SHADER = string("attribute vec4 vPosition;\n") +
 //                              "attribute vec4 vTexCoordinateAlpha;\n" +
@@ -88,7 +98,5 @@ private:
 //                                "    vec4 rgbColor = texture2D(texture, v_TexCoordinateRgb);\n" +
 //                                "    gl_FragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);\n" +
 //                                "}";
-};
-
-
-#endif //YYEVA_RENDER_H
+    };
+}

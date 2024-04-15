@@ -2,12 +2,12 @@
 // Created by zengjiale on 2022/4/18.
 //
 #include "src/main/cpp/util/vertexutil.h"
-#include "android/log.h"
+
 
 #define LOG_TAG "VertexUtil"
-#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
 
-float* VertexUtil::create(int width, int height, PointRect* rect, float *array) {
+float* VertexUtil::create(int width, int height, std::shared_ptr<PointRect> rect, float *array) {
     if (array == nullptr) {
         ELOGE("array is null");
         return array;

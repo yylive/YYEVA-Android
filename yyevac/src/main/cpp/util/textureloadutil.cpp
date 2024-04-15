@@ -9,8 +9,8 @@
 
 
 #define LOG_TAG "TextureLoadUtil"
-#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
+#define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
 
 GLuint TextureLoadUtil::loadTexture(unsigned char *bitmap, AndroidBitmapInfo* info) {
     if (bitmap == nullptr) {
@@ -50,7 +50,7 @@ GLuint TextureLoadUtil::loadTexture(unsigned char *bitmap, AndroidBitmapInfo* in
     return textureObjectIds;
 }
 
-GLuint TextureLoadUtil::loadTexture(EvaSrc* src) {
+GLuint TextureLoadUtil::loadTexture(shared_ptr<EvaSrc> src) {
     if (src->bitmap == nullptr) {
         ELOGE("bitmap = null");
         return 0;

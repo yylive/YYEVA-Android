@@ -23,6 +23,7 @@ import android.util.Log
 import com.yy.yyeva.inter.IEvaFetchResource
 import com.yy.yyeva.mix.EvaSrc
 import com.yy.yyeva.player.bean.VideoInfo
+import com.yy.yyeva.util.EvaJniUtil
 import com.yy.yyeva.view.EvaAnimViewV3
 import kotlinx.android.synthetic.main.activity_anim_simple_demo_p.*
 import kotlin.math.abs
@@ -265,7 +266,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
 
     private fun initLog() {
         ELog.isDebug = false
-        ELog.log = object : IELog {
+        val log = object : IELog {
             override fun i(tag: String, msg: String) {
                 Log.i(tag, msg)
             }
@@ -282,6 +283,8 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
                 Log.e(tag, msg, tr)
             }
         }
+        ELog.log = log
+        EvaJniUtil.setLog(log)
     }
 
     private var isPause = false;

@@ -5,44 +5,43 @@
 #include "render.h"
 
 #define LOG_TAG "Render"
-#define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
-#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
+#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
 
-Render::Render() {
+yyeva::Render::Render(): vertexArray(make_shared<GlFloatArray>()), alphaArray(make_shared<GlFloatArray>()), rgbArray(make_shared<GlFloatArray>()) {
     initRender();
 }
 
-Render::~Render() {
-    vertexArray = nullptr;
-    alphaArray = nullptr;
-    rgbArray = nullptr;
+yyeva::Render::~Render() {
 }
 
-void Render::initRender() {
-    char VERTEX_SHADER[] = "attribute vec4 vPosition;\n"
-                           "attribute vec4 vTexCoordinateAlpha;\n"
-                           "attribute vec4 vTexCoordinateRgb;\n"
-                           "varying vec2 v_TexCoordinateAlpha;\n"
-                           "varying vec2 v_TexCoordinateRgb;\n"
-                           "\n"
-                           "void main() {\n"
-                           "    v_TexCoordinateAlpha = vec2(vTexCoordinateAlpha.x, vTexCoordinateAlpha.y);\n"
-                           "    v_TexCoordinateRgb = vec2(vTexCoordinateRgb.x, vTexCoordinateRgb.y);\n"
-                           "    gl_Position = vPosition;\n"
-                           "}";
+void yyeva::Render::initRender() {
+    char VERTEX_SHADER[] = R"(
+            attribute vec4 vPosition;
+            attribute vec4 vTexCoordinateAlpha;
+            attribute vec4 vTexCoordinateRgb;
+            varying vec2 v_TexCoordinateAlpha;
+            varying vec2 v_TexCoordinateRgb;
+            void main() {
+                v_TexCoordinateAlpha = vec2(vTexCoordinateAlpha.x, vTexCoordinateAlpha.y);
+                v_TexCoordinateRgb = vec2(vTexCoordinateRgb.x, vTexCoordinateRgb.y);
+                gl_Position = vPosition;
+            }
+    )";
 
-    char FRAGMENT_SHADER[] = "#extension GL_OES_EGL_image_external : require\n"
-                             "precision mediump float;\n"
-                             "uniform samplerExternalOES texture;\n"
-                             "varying vec2 v_TexCoordinateAlpha;\n"
-                             "varying vec2 v_TexCoordinateRgb;\n"
-                             "\n"
-                             "void main () {\n"
-                             "    vec4 alphaColor = texture2D(texture, v_TexCoordinateAlpha);\n"
-                             "    vec4 rgbColor = texture2D(texture, v_TexCoordinateRgb);\n"
-                             "    gl_FragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);\n"
-//                             "    gl_FragColor = vec4(1.0,0.2,0.5,1.0);\n"
-                             "}";
+    char FRAGMENT_SHADER[] = R"(
+        #extension GL_OES_EGL_image_external : require
+        precision mediump float;
+        uniform samplerExternalOES texture;
+        varying vec2 v_TexCoordinateAlpha;
+        varying vec2 v_TexCoordinateRgb;
+        void main () {
+            vec4 alphaColor = texture2D(texture, v_TexCoordinateAlpha);
+            vec4 rgbColor = texture2D(texture, v_TexCoordinateRgb);
+            gl_FragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);
+        }
+    )";
+
     shaderProgram = ShaderUtil::createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
     uTextureLocation = glGetUniformLocation(shaderProgram, "texture");
     aPositionLocation = glGetAttribLocation(shaderProgram, "vPosition");
@@ -57,7 +56,7 @@ void Render::initRender() {
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
-void Render::renderFrame() {
+void yyeva::Render::renderFrame() {
     if (surfaceSizeChanged && surfaceWidth > 0 && surfaceHeight > 0) {
         surfaceSizeChanged = false;
         glViewport(0, 0, surfaceWidth, surfaceHeight);
@@ -65,44 +64,44 @@ void Render::renderFrame() {
     draw();
 }
 
-void Render::clearFrame() {
+void yyeva::Render::clearFrame() {
     glClearColor(0, 0, 0, 0);
 //    glClearColor(1.0, 0, 0.5, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void Render::destroyRender() {
+void yyeva::Render::destroyRender() {
     releaseTexture();
 }
 
-void Render::setAnimeConfig(EvaAnimeConfig* config) {
-    vertexArray->setArray(VertexUtil::create(config->width, config->height, new PointRect(0, 0, config->width, config->height), vertexArray->array));
+void yyeva::Render::setAnimeConfig(shared_ptr<EvaAnimeConfig> config) {
+    vertexArray->setArray(VertexUtil::create(config->width, config->height, make_shared<PointRect>(0, 0, config->width, config->height), vertexArray->array));
     float* alpha = TexCoordsUtil::create(config->videoWidth, config->videoHeight, config->alphaPointRect, alphaArray->array);
     float* rgb = TexCoordsUtil::create(config->videoWidth, config->videoHeight, config->rgbPointRect, rgbArray->array);
     alphaArray->setArray(alpha);
     rgbArray->setArray(rgb);
 }
 
-GLuint Render::getExternalTexture() {
+GLuint yyeva::Render::getExternalTexture() {
     return textureId;
 }
 
-void Render::releaseTexture() {
+void yyeva::Render::releaseTexture() {
     glDeleteTextures(1, &textureId);
 }
 
-void Render::updateViewPort(int width, int height) {
+void yyeva::Render::updateViewPort(int width, int height) {
     if (width <= 0 || height <= 0) return;
     surfaceSizeChanged = true;
     surfaceWidth = width;
     surfaceHeight = height;
 }
 
-void Render::swapBuffers() {
+void yyeva::Render::swapBuffers() {
 
 }
 
-void Render::draw() {
+void yyeva::Render::draw() {
     if (textureId != -1) {
         glUseProgram(shaderProgram);
         vertexArray->setVertexAttribPointer(aPositionLocation);
@@ -126,6 +125,6 @@ void Render::draw() {
 }
 
 //如果有背景需要开启混合
-void Render::setHasBg(bool hasBg) {
+void yyeva::Render::setHasBg(bool hasBg) {
     this->hasBg = hasBg;
 }

@@ -10,6 +10,7 @@ import com.yy.yyeva.util.EvaJniUtil
 import com.yy.yyeva.util.EvaMediaUtil
 import android.graphics.Bitmap
 import android.opengl.GLES20
+import android.os.Environment
 import com.yy.yyeva.EvaAnimPlayer
 import com.yy.yyeva.util.EvaConstant
 import java.nio.ByteBuffer
@@ -67,6 +68,10 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                     EvaJniUtil.renderFrame(playerEva.controllerId)
                     //元素混合
                     playerEva.pluginManager.onRendering()
+                    //录制
+                    if (playerEva.isVideoRecord) {
+                        playerEva.mediaRecorder.encodeFrameInThread(false, timestamp)
+                    }
                     //交换前后景数据
                     EvaJniUtil.renderSwapBuffers(playerEva.controllerId)
                 }
@@ -314,9 +319,13 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                     else -> {  //正常解析
                         var loop = 0
                         if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
-                            loop = --playLoop
-                            playerEva.playLoop = playLoop // 消耗loop次数 自动恢复后能有正确的loop次数
-                            outputDone = playLoop <= 0
+                            if (this.isLoop) {
+                                loop = 1
+                            } else {
+                                loop = --playLoop
+                                playerEva.playLoop = playLoop // 消耗loop次数 自动恢复后能有正确的loop次数
+                                outputDone = playLoop <= 0
+                            }
                         }
                         val doRender = !outputDone
                         if (doRender) { //控制帧率时间
@@ -438,6 +447,9 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             }
             isRunning = false
             onVideoComplete()
+            if (playerEva.isVideoRecord) {
+                playerEva.mediaRecorder.stopCodecRecordInThread()
+            }
             if (needDestroy) {
                 destroyInner()
             }
@@ -496,6 +508,9 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
         renderThread.handler?.post {
             playerEva.pluginManager.onDestroy()
             EvaJniUtil.destroyRender(playerEva.controllerId)
+            if (playerEva.isVideoRecord) {
+                playerEva.mediaRecorder.stopCodecRecordInThread()
+            }
             playerEva.controllerId = -1
             onVideoDestroy()
             destroyThread()

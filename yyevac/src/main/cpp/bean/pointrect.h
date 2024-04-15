@@ -1,10 +1,9 @@
 //
 // Created by zengjiale on 2022/4/15.
 //
+#pragma once
 
-#ifndef YYEVA_POINTRECT_H
-#define YYEVA_POINTRECT_H
-
+#include <util/elog.h>
 
 class PointRect {
 public:
@@ -19,6 +18,3 @@ public:
         this->h = h;
     }
 };
-
-
-#endif //YYEVA_POINTRECT_H

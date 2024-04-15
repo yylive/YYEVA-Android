@@ -10,10 +10,10 @@
 #include "evaanimeconfig.h"
 
 #define LOG_TAG "EvaAnimeConfig"
-#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
+#define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
 
-EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
+shared_ptr<EvaAnimeConfig> EvaAnimeConfig::parse(const char* json) {
     if (json == nullptr) return nullptr;
 
     char g_log_info[200];
@@ -22,7 +22,7 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
     // 获取根类型 object/array
     JSON_Value_Type jsonValueType = json_value_get_type(root_value);
     if (jsonValueType == JSONObject) {
-        auto* config = new EvaAnimeConfig();
+        auto config = make_shared<EvaAnimeConfig>();
 
         JSON_Object *jsonObject = json_value_get_object(root_value);
 
@@ -34,7 +34,7 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
         if (descript != nullptr) {
             JSON_Object *descriptJsonObject = json_value_get_object(descript);
 //            JSON_Object *descriptJsonObject = json_object(json_parse_string(descript));
-            config->descript = new Descript();
+            config->descript = make_shared<Descript>();
             const double width = json_object_get_number(descriptJsonObject, "width");
             config->descript->width = (int)width;
             config->videoWidth = config->descript->width;
@@ -52,7 +52,7 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
                 if (json_array_get_count(rgbFrameJsonArray) != 4) { //设定为4个数据
                     ELOGV("rgbFrame size not 4");
                 } else {
-                    config->descript->rgbFrame = new PointRect((int)json_array_get_number(rgbFrameJsonArray, 0),
+                    config->descript->rgbFrame = make_shared<PointRect>((int)json_array_get_number(rgbFrameJsonArray, 0),
                                                                (int)json_array_get_number(rgbFrameJsonArray, 1),
                                                                (int)json_array_get_number(rgbFrameJsonArray, 2),
                                                                (int)json_array_get_number(rgbFrameJsonArray, 3));
@@ -68,11 +68,11 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
                 if (json_array_get_count(alphaFrameJsonArray) != 4) { //设定为4个数据
                     ELOGV("alphaFrame size not 4");
                 } else {
-                    config->descript->alphaFrame = new PointRect((int)json_array_get_number(alphaFrameJsonArray, 0),
+                    config->descript->alphaFrame = make_shared<PointRect>((int)json_array_get_number(alphaFrameJsonArray, 0),
                                                                (int)json_array_get_number(alphaFrameJsonArray, 1),
                                                                (int)json_array_get_number(alphaFrameJsonArray, 2),
                                                                (int)json_array_get_number(alphaFrameJsonArray, 3));
-                    config->alphaPointRect=config->descript->alphaFrame;
+                    config->alphaPointRect = config->descript->alphaFrame;
                 }
             }
         }
@@ -89,7 +89,7 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
 //            JSON_Array *effectJsonArray = json_array(json_parse_string(effectJson));
             for (int i = 0; i < json_array_get_count(effectJsonArray); ++i) {
                 JSON_Object *effectTmp = json_array_get_object(effectJsonArray, i);
-                auto* effect = new Effect();
+                auto effect = make_shared<Effect>();
                 effect->effectWidth = (int)json_object_get_number(effectTmp, "effectWidth");
                 effect->effectHeight = (int)json_object_get_number(effectTmp, "effectHeight");
                 effect->effectId= (int)json_object_get_number(effectTmp, "effectId");
@@ -118,7 +118,7 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
                 }
 
                 effect->fontSize = (int)json_object_get_number(effectTmp, "fontSize");
-                config->effects.push_back(*effect);
+                config->effects.push_back(effect);
             }
             if (json_array_get_count(effectJsonArray) > 0) {
                 config->isMix = true;
@@ -135,7 +135,7 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
 //            JSON_Array *datasJsonArray = json_array(json_parse_string(datasJson));
             for (int i = 0; i < json_array_get_count(datasJsonArray); ++i) {
                 JSON_Object *datasTmp = json_array_get_object(datasJsonArray, i);
-                auto* datas = new Datas();
+                auto datas = make_shared<Datas>();
                 datas->frameIndex = (int)json_object_get_number(datasTmp, "frameIndex");
                 // 获取其中一个参数
                 JSON_Array *dataJsonArray = json_object_get_array(datasTmp, "data");
@@ -145,7 +145,7 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
 //                    JSON_Array *dataJsonArray = json_array(json_parse_string(dataJson));
                     for (int i = 0; i < json_array_get_count(dataJsonArray); ++i) {
                         JSON_Object *dataTmp = json_array_get_object(dataJsonArray, i);
-                        Data* data = new Data();
+                        auto data = make_shared<Data>();
 //                        const char *renderFrame = json_object_get_string(dataTmp, "renderFrame");
                         JSON_Array *renderFrameJsonArray = json_object_get_array(dataTmp, "renderFrame");
                         if (renderFrameJsonArray != nullptr) {
@@ -153,7 +153,7 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
                             if (json_array_get_count(renderFrameJsonArray) != 4) { //设定为4个数据
                                 ELOGV("rgbFrame size not 4");
                             } else {
-                                data->renderFrame = new PointRect((int)json_array_get_number(renderFrameJsonArray, 0),
+                                data->renderFrame = make_shared<PointRect>((int)json_array_get_number(renderFrameJsonArray, 0),
                                                                            (int)json_array_get_number(renderFrameJsonArray, 1),
                                                                            (int)json_array_get_number(renderFrameJsonArray, 2),
                                                                            (int)json_array_get_number(renderFrameJsonArray, 3));
@@ -167,16 +167,16 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
                             if (json_array_get_count(outputFrameJsonArray) != 4) { //设定为4个数据
                                 ELOGV("alphaFrame size not 4");
                             } else {
-                                data->outputFrame = new PointRect((int)json_array_get_number(outputFrameJsonArray, 0),
+                                data->outputFrame = make_shared<PointRect>((int)json_array_get_number(outputFrameJsonArray, 0),
                                                                              (int)json_array_get_number(outputFrameJsonArray, 1),
                                                                              (int)json_array_get_number(outputFrameJsonArray, 2),
                                                                              (int)json_array_get_number(outputFrameJsonArray, 3));
                             }
                         }
-                        datas->data.push_back(*data);
+                        datas->data.push_back(data);
                     }
                 }
-                config->datas.push_back(*datas);
+                config->datas.push_back(datas);
             }
 //            json_value_free(descript);
 //            json_value_free(effectValue);
@@ -188,40 +188,40 @@ EvaAnimeConfig* EvaAnimeConfig::parse(const char* json) {
     return nullptr;
 }
 
-EvaAnimeConfig* EvaAnimeConfig::defaultConfig(int _videoWidth, int _videoHeight, int defaultVideoMode) {
-    auto* config = new EvaAnimeConfig();
+shared_ptr<EvaAnimeConfig> EvaAnimeConfig::defaultConfig(int _videoWidth, int _videoHeight, int defaultVideoMode) {
+    auto config = make_shared<EvaAnimeConfig>();
     config->videoWidth = _videoWidth;
     config->videoHeight = _videoHeight;
     switch (defaultVideoMode) {
         case 1: // 视频对齐方式 (兼容老版本视频模式) // 视频左右对齐（alpha左\rgb右）
             config->width = _videoWidth / 2;
             config->height = _videoHeight;
-            config->alphaPointRect = new PointRect(0, 0, config->width, config->height);
-            config->rgbPointRect = new PointRect(config->width, 0, config->width, config->height);
+            config->alphaPointRect = make_shared<PointRect>(0, 0, config->width, config->height);
+            config->rgbPointRect = make_shared<PointRect>(config->width, 0, config->width, config->height);
             break;
         case 2:// 视频左右对齐（alpha左\rgb右）
             config->width = _videoWidth;
             config->height = _videoHeight / 2;
-            config->alphaPointRect = new PointRect(0, 0, config->width, config->height);
-            config->rgbPointRect = new PointRect(0, config->height, config->width, config->height);
+            config->alphaPointRect = make_shared<PointRect>(0, 0, config->width, config->height);
+            config->rgbPointRect = make_shared<PointRect>(0, config->height, config->width, config->height);
             break;
         case 3: // 视频左右对齐（rgb左\alpha右）
             config->width = _videoWidth / 2;
             config->height = _videoHeight;
-            config->rgbPointRect = new PointRect(0, 0, config->width, config->height);
-            config->alphaPointRect = new PointRect(config->width, 0, config->width, config->height);
+            config->rgbPointRect = make_shared<PointRect>(0, 0, config->width, config->height);
+            config->alphaPointRect = make_shared<PointRect>(config->width, 0, config->width, config->height);
             break;
         case 4: // 视频上下对齐（rgb上\alpha下）
             config->width = _videoWidth;
             config->height = _videoHeight / 2;
-            config->rgbPointRect = new PointRect(0, 0, config->width, config->height);
-            config->alphaPointRect = new PointRect(0, config->height, config->width, config->height);
+            config->rgbPointRect = make_shared<PointRect>(0, 0, config->width, config->height);
+            config->alphaPointRect = make_shared<PointRect>(0, config->height, config->width, config->height);
             break;
         default: // -1为正常的MP4参数
             config->width = _videoWidth;
             config->height = _videoHeight;
-            config->rgbPointRect= new PointRect(0, 0, config->width, config->height);
-            config->alphaPointRect = new PointRect(config->width, 0, config->width, config->height);
+            config->rgbPointRect = make_shared<PointRect>(0, 0, config->width, config->height);
+            config->alphaPointRect = make_shared<PointRect>(config->width, 0, config->width, config->height);
             break;
     }
     return config;

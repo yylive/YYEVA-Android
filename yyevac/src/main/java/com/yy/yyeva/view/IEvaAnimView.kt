@@ -8,6 +8,7 @@ import com.yy.yyeva.file.IEvaFileContainer
 import com.yy.yyeva.inter.IEvaAnimListener
 import com.yy.yyeva.inter.IEvaFetchResource
 import com.yy.yyeva.inter.OnEvaResourceClickListener
+import com.yy.yyeva.util.IELog
 import com.yy.yyeva.util.IScaleType
 import com.yy.yyeva.util.ScaleType
 import java.io.File
@@ -27,6 +28,9 @@ interface IEvaAnimView {
     fun setOnResourceClickListener(evaResourceClickListener: OnEvaResourceClickListener?)
     //循环播放数
     fun setLoop(playLoop: Int)
+
+    //设置无限循环
+    fun setLoop(isLoop: Boolean)
 
     //设置起始播放位置 毫秒
     //硬解某些机型会有跳帧前几帧解析异常的问题，不建议使用。
@@ -71,4 +75,7 @@ interface IEvaAnimView {
     fun setNormalMp4(isNormalMp4: Boolean)
     //是否停留在最后一帧
     fun setLastFrame(isSetLastFrame: Boolean)
+
+    //设置日志打印
+    fun setLog(log: IELog)
 }

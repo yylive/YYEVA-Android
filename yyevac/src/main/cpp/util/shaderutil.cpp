@@ -2,11 +2,11 @@
 // Created by asus on 2022/4/17.
 //
 #include "shaderutil.h"
-#include <android/log.h>
+
 
 #define LOG_TAG "ShareUtil"
-#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
+#define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
 
 GLuint ShaderUtil::createProgram(string vertexSource, string fragmentSource) {
     GLuint vertexShaderHandle = compileShader(GL_VERTEX_SHADER, vertexSource.c_str());
@@ -45,10 +45,10 @@ GLuint ShaderUtil::compileShader(GLenum shaderType, const char* shaderSource) {
     } else {
         GLint infoLen = 0;
         glGetShaderiv(shaderHandle,GL_INFO_LOG_LENGTH,&infoLen);
-        if(infoLen >1){
+        if (infoLen > 1) {
             char *infoLog= (char*)malloc(sizeof(char*) *infoLen);
             glGetShaderInfoLog(shaderHandle,infoLen,NULL,infoLog);
-            ELOGE("Error create shader:[%s]",infoLog);
+            ELOGE("Error create shader:[%s]", infoLog);
             free(infoLog);
         }
         ELOGE("Error create shader");

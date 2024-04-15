@@ -1,6 +1,7 @@
 //
 // Created by zengjiale on 2022/4/15.
 //
+#pragma once
 #include "irender.h"
 #include "src/main/cpp/egl/eglcore.h"
 #include "src/main/cpp/util/shaderutil.h"
@@ -22,7 +23,7 @@ public:
     void renderFrame();
     void clearFrame();
     void destroyRender();
-    void setAnimeConfig(EvaAnimeConfig* config);
+    void setAnimeConfig(shared_ptr<EvaAnimeConfig> config);
     GLuint getExternalTexture();
     void releaseTexture();
     void swapBuffers();
@@ -30,9 +31,9 @@ public:
     void setYUVData(int width, int height, char *y, char *u, char *v);
 
 private:
-    GlFloatArray *vertexArray = new GlFloatArray();
-    GlFloatArray *alphaArray = new GlFloatArray();
-    GlFloatArray *rgbArray = new GlFloatArray();
+    shared_ptr<GlFloatArray> vertexArray;
+    shared_ptr<GlFloatArray> alphaArray;
+    shared_ptr<GlFloatArray> rgbArray;
 
     GLuint shaderProgram;
     //顶点位置

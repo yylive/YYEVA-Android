@@ -1,7 +1,8 @@
 //
-// Created by zengjiale on 2022/10/11.
+// Created by Cangwang on 2024/3/6.
 //
 #pragma once
+
 
 #include <engine/irender.h>
 #include <egl/eglcore.h>
@@ -14,47 +15,43 @@
 #include <util/textureloadutil.h>
 #include <android/bitmap.h>
 
-#define LOG_TAG "Mp4Render"
+#define LOG_TAG "FbRender"
 #define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
 #define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
 
-
 using namespace std;
 namespace yyeva {
-    class Mp4Render : public IRender {
+    class FbRender : public IRender {
     public:
-        Mp4Render();
-
-        ~Mp4Render();
-
+        FbRender();
+        ~FbRender();
         void initRender();
-
-        void setBgImage(unsigned char *bitmap, AndroidBitmapInfo *bitmapInfo);
-
         void renderFrame();
-
         void clearFrame();
-
         void destroyRender();
-
-        void setAnimeConfig(shared_ptr<EvaAnimeConfig> config);
-
+        void setAnimeConfig(shared_ptr<EvaAnimeConfig> config) {};
         GLuint getExternalTexture();
-
         void releaseTexture();
-
         void swapBuffers();
-
         void updateViewPort(int width, int height);
-
-        void setHasBg(bool hasBg) {};
-
         void draw();
-
+        void setHasBg(bool hasBg){};
+        void setTextureId(GLuint textureId);
     private:
-        shared_ptr<GlFloatArray> vertexArray;
-        shared_ptr<GlFloatArray> rgbaArray;
-
+//        GlFloatArray *vertexArray = new GlFloatArray();
+//        GlFloatArray *rgbaArray = new GlFloatArray();
+        GLfloat textureVertices[8] = {
+                -1.0f, -1.0f, // bot left
+                -1.0f, 1.0f, // top left
+                1.0f, -1.0f, // bot right
+                1.0f, 1.0f, // top right
+        };
+        GLfloat texture[8] = {
+                0.0f, 0.0f, // bot left
+                0.0f, 1.0f, // top left
+                1.0f, 0.0f, // bot right
+                1.0f, 1.0f, // top right
+        };
         GLuint shaderProgram;
         //shader
         GLuint textureId;

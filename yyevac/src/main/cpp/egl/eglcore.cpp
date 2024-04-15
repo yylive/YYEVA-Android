@@ -2,8 +2,8 @@
 #include "eglcore.h"
 
 #define LOG_TAG "EGLCore"
-#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define ELOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
+#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
+#define ELOGD(...) yyeva::ELog::get()->d(LOG_TAG, __VA_ARGS__)
 
 /**
  * EGL是介于诸如OpenGL 或OpenVG的Khronos渲染API与底层本地平台窗口系统的接口。它被用于处理图形管理、表面/缓冲捆绑、渲染同步及支援使用其他Khronos API进行的高效、加速、混合模式2D和3D渲染。
@@ -54,6 +54,52 @@ void EGLCore::start(ANativeWindow *window) {
     ELOGD("eglMakeCurrent success");
 }
 
+void EGLCore::start(EGLContext context, ANativeWindow *window) {
+    mDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    if (mDisplay == EGL_NO_DISPLAY){
+        ELOGE("eglGetDisplay failed: %d", eglGetError());
+        return;
+    }
+    GLint majorVersion;
+    GLint minorVersion;
+    //获取支持最低和最高版本
+    if (!eglInitialize(mDisplay,&majorVersion,&minorVersion)){
+        ELOGE("eglInitialize failed: %d",eglGetError());
+        return;
+    }
+    ELOGD("eglInitialize success");
+    EGLConfig config = chooseRecordConfig();
+    ELOGD("chooseConfig success");
+    //创建EGL上下文
+    // 3 share_context: 共享上下文 传绘制线程(GLThread)中的EGL上下文 达到共享资源的目的 发生关系
+    mContext = createContext(mDisplay, config, context);
+    ELOGD("createContext success");
+    EGLint format = 0;
+    if (!eglGetConfigAttrib(mDisplay,config,EGL_NATIVE_VISUAL_ID,&format)){
+        ELOGE("eglGetConfigAttrib failed: %d",eglGetError());
+    }
+    ELOGD("eglGetConfigAttrib success");
+    ANativeWindow_setBuffersGeometry(window,0,0,format);
+    ELOGD("setBuffersGeometry success");
+    //创建On-Screen 渲染区域
+    mSurface = eglCreateWindowSurface(mDisplay, config,window,0);
+    if (mSurface == nullptr || mSurface == EGL_NO_SURFACE){
+        ELOGE("eglCreateWindowSurface failed: %d",eglGetError());
+        return;
+    }
+    ELOGD("eglCreateWindowSurface success");
+    if (!eglMakeCurrent(mDisplay, mSurface, mSurface, mContext)) {
+        ELOGE("make current error:${Integer.toHexString(egl?.eglGetError() ?: 0)}");
+    }
+    ELOGD("eglMakeCurrent success");
+    // 获取eglPresentationTimeANDROID方法的地址
+    eglPresentationTimeANDROID = (EGL_PRESENTATION_TIME_ANDROIDPROC) eglGetProcAddress("eglPresentationTimeANDROID");
+    if (!eglPresentationTimeANDROID) {
+        ELOGE("eglPresentationTimeANDROID is not available!");
+    }
+    ELOGD("buildVideoContext Succeed");
+}
+
 EGLConfig EGLCore::chooseConfig() {
     int configsCount = 0;
     EGLConfig configs;
@@ -66,6 +112,30 @@ EGLConfig EGLCore::chooseConfig() {
              EGL_ALPHA_SIZE, 8,
              EGL_DEPTH_SIZE, 0,
              EGL_STENCIL_SIZE, 0,
+             EGL_NONE
+            };
+    int configSize = 1;
+    if (eglChooseConfig(mDisplay, attributes, &configs, configSize, &configsCount) == true) {
+        return configs;
+    } else {
+        ELOGE("eglChooseConfig failed: %d",eglGetError());
+    }
+    return nullptr;
+}
+
+EGLConfig EGLCore::chooseRecordConfig() {
+    int configsCount = 0;
+    EGLConfig configs;
+//    EGLint* attributes = getAttributes();
+    EGLint attributes[] =
+            {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, //指定渲染api类别
+             EGL_RED_SIZE, 8,
+             EGL_GREEN_SIZE, 8,
+             EGL_BLUE_SIZE, 8,
+             EGL_ALPHA_SIZE, 8,
+             EGL_DEPTH_SIZE, 0,
+             EGL_STENCIL_SIZE, 0,
+             EGL_RECORDABLE_ANDROID,EGL_ANDROID_recordable,
              EGL_NONE
             };
     int configSize = 1;
@@ -100,6 +170,21 @@ EGLContext EGLCore::createContext(EGLDisplay eglDisplay, EGLConfig eglConfig) {
     mContext = eglCreateContext(eglDisplay, eglConfig, EGL_NO_CONTEXT, contextAttrib);
     if (mContext == EGL_NO_CONTEXT){
         ELOGE("eglCreateContext failed: %d",eglGetError());
+        return GL_FALSE;
+    }
+    return mContext;
+}
+
+//创建共享纹理
+EGLContext EGLCore::createContext(EGLDisplay eglDisplay, EGLConfig eglConfig, EGLContext context) {
+    //创建渲染上下文
+    //只使用opengles2
+    GLint contextAttrib[] = {EGL_CONTEXT_CLIENT_VERSION, 3 ,
+                             EGL_NONE};
+    // EGL_NO_CONTEXT表示不向其它的context共享资源
+    mContext = eglCreateContext(eglDisplay, eglConfig, context, contextAttrib);
+    if (mContext == EGL_NO_CONTEXT){
+        ELOGE("eglCreateContext failed: %d", eglGetError());
         return GL_FALSE;
     }
     return mContext;
@@ -204,4 +289,18 @@ void EGLCore::release() {
     mDisplay = EGL_NO_DISPLAY;
     mContext = EGL_NO_CONTEXT;
     mSurface = EGL_NO_SURFACE;
+}
+
+/**
+ * 设置显示时间戳pts
+ * @param nsecs
+ */
+void EGLCore::setPresentationTime(uint64_t nsecs) {
+    if (mDisplay && mSurface && eglPresentationTimeANDROID) {
+        eglPresentationTimeANDROID(mDisplay, mSurface, nsecs);
+    }
+}
+
+EGLContext EGLCore::getEglContext() {
+    return mContext;
 }

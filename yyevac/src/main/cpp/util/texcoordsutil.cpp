@@ -4,7 +4,7 @@
 
 #include "texcoordsutil.h"
 
-float* TexCoordsUtil::create(int width, int height, PointRect* rect, float* array) {
+float* TexCoordsUtil::create(int width, int height, std::shared_ptr<PointRect> rect, float* array) {
     //x0
     array[0] = (float) rect->x / width;
     //y0

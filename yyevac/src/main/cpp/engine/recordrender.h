@@ -1,5 +1,5 @@
 //
-// Created by zengjiale on 2022/10/11.
+// Created by Cangwang on 2024/2/27.
 //
 #pragma once
 
@@ -14,43 +14,27 @@
 #include <util/textureloadutil.h>
 #include <android/bitmap.h>
 
-#define LOG_TAG "Mp4Render"
+#define LOG_TAG "RecordRender"
 #define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
 #define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
 
-
-using namespace std;
 namespace yyeva {
-    class Mp4Render : public IRender {
+    class RecordRender : public IRender {
     public:
-        Mp4Render();
-
-        ~Mp4Render();
-
+        RecordRender();
+        ~RecordRender();
         void initRender();
-
-        void setBgImage(unsigned char *bitmap, AndroidBitmapInfo *bitmapInfo);
-
         void renderFrame();
-
         void clearFrame();
-
         void destroyRender();
-
-        void setAnimeConfig(shared_ptr<EvaAnimeConfig> config);
-
+        void setAnimeConfig(EvaAnimeConfig* config);
         GLuint getExternalTexture();
-
         void releaseTexture();
-
         void swapBuffers();
-
         void updateViewPort(int width, int height);
-
-        void setHasBg(bool hasBg) {};
-
+        void setHasBg(bool hasBg);
         void draw();
-
+        void setTextureId(GLuint textureId);
     private:
         shared_ptr<GlFloatArray> vertexArray;
         shared_ptr<GlFloatArray> rgbaArray;
@@ -58,7 +42,7 @@ namespace yyeva {
         GLuint shaderProgram;
         //shader
         GLuint textureId;
-        //顶点位置
+        //顶点位置Tex
         GLint uTextureLocation;
         //纹理位置
         GLint positionLocation;

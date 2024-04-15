@@ -8,11 +8,11 @@ EvaSrcMap::EvaSrcMap() {
 
 }
 
-EvaSrcMap::EvaSrcMap(list<Effect> effects) {
-    for (Effect effect: effects) {
-        EvaSrc *src = new EvaSrc(&effect);
+EvaSrcMap::EvaSrcMap(list<shared_ptr<Effect>> effects) {
+    for (shared_ptr<Effect> effect: effects) {
+        auto src = make_shared<EvaSrc>(effect);
         if (src->srcType != EvaSrc::UNKNOWN) {
-            map[src->srcId] = *src;
+            map[src->srcId] = src;
         } else {
             src = nullptr;
         }

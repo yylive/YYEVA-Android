@@ -12,7 +12,6 @@ import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
 import com.yy.yyeva.util.EvaJniUtil
 import com.yy.yyeva.util.SpeedControlUtil
-import org.json.JSONObject
 
 
 abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
@@ -37,11 +36,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
 
         fun quitSafely(thread: HandlerThread?): HandlerThread? {
             thread?.apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    thread.quitSafely()
-                } else {
-                    thread.quit()
-                }
+                thread.quitSafely()
             }
             return null
         }
@@ -58,7 +53,8 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
             speedControlUtil.setFixedPlaybackRate(value)
             field = value
         }
-    var playLoop = 0 // 循环播放次数
+    var playLoop = 1 // 循环播放次数
+    var isLoop = false //无限循环
     var isRunning = false // 是否正在运行
     var isStopReq = false // 是否需要停止
     val speedControlUtil by lazy { SpeedControlUtil() }
@@ -83,7 +79,8 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
     fun prepareRender(needYUV: Boolean): Boolean {
         ELog.i(TAG, "prepareRender")
         playerEva.evaAnimView.getSurface()?.apply {
-            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId, this, needYUV, playerEva.isNormalMp4)
+            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId,
+                this, needYUV, playerEva.isNormalMp4, playerEva.isVideoRecord)
             return true
         }
         return false
@@ -113,6 +110,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
                 playerEva.evaAnimView.updateTextureViewLayout()
             } else if (jsonConfig != null) {
                 EvaJniUtil.setRenderConfig(playerEva.controllerId, jsonConfig.toString())
+//                playerEva.mediaRecorder.setRecordRenderConfig(playerEva.controllerId, jsonConfig.toString())
             }
         }
 

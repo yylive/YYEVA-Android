@@ -1,13 +1,11 @@
 //
 // Created by zengjiale on 2022/4/19.
 //
+#pragma once
 #include <string>
 #include <android/bitmap.h>
 #include <GLES2/gl2.h>
 #include "src/main/cpp/bean/effect.h"
-
-#ifndef YYEVA_EVASRC_H
-#define YYEVA_EVASRC_H
 
 using namespace std;
 
@@ -55,10 +53,7 @@ public:
 
     EvaSrc();
 
-    EvaSrc(Effect* effect);
+    EvaSrc(shared_ptr<Effect> effect);
 
     ~EvaSrc();
 };
-
-
-#endif //YYEVA_EVASRC_H

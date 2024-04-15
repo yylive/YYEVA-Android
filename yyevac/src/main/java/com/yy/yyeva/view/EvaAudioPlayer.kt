@@ -1,7 +1,6 @@
 package com.yy.yyeva.view
 
 import android.media.*
-import android.util.Log
 import com.yy.yyeva.EvaAnimPlayer
 import com.yy.yyeva.decoder.Decoder
 import com.yy.yyeva.decoder.HandlerHolder
@@ -22,7 +21,8 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     var audioTrack: AudioTrack? = null
     val decodeThread = HandlerHolder(null, null)
     var isRunning = false
-    var playLoop = 0
+    var playLoop = 1
+    var isLoop = false //无限循环
     var isStopReq = false
     var needDestroy = false
     var isPause = false
@@ -158,7 +158,7 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
             }
 
             if (isEOS && bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
-                if (--playLoop > 0) {
+                if (isLoop || --playLoop > 0) {
                     ELog.d(TAG, "Reached EOS, looping -> playLoop")
                     extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
                     decoder.flush()

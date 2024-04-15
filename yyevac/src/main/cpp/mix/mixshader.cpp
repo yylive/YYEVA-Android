@@ -4,7 +4,7 @@
 
 #include "mixshader.h"
 
-MixShader::MixShader() {
+yyeva::MixShader::MixShader() {
     char VERTEX[] =  "attribute vec4 a_Position;  \n"
                      "attribute vec2 a_TextureSrcCoordinates;\n"
                      "attribute vec2 a_TextureMaskCoordinates;\n"
@@ -47,10 +47,10 @@ MixShader::MixShader() {
     aTextureMaskCoordinatesLocation = glGetAttribLocation(program, A_TEXTURE_MASK_COORDINATES);
 }
 
-MixShader::~MixShader() {
+yyeva::MixShader::~MixShader() {
 
 }
 
-void MixShader::useProgram() {
+void yyeva::MixShader::useProgram() {
     glUseProgram(program);
 }

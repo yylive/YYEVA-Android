@@ -1,6 +1,7 @@
 //
 // Created by zengjiale on 2022/4/18.
 //
+#pragma once
 #include <bean/evaframe.h>
 #include <bean/evasrc.h>
 #include "bean/evasrcmap.h"
@@ -11,29 +12,32 @@
 #include "src/main/cpp/bean/evaanimeconfig.h"
 #include "mixshader.h"
 
-
-#ifndef YYEVA_EVAMIXRENDER_H
-#define YYEVA_EVAMIXRENDER_H
-
 using namespace std;
-class EvaMixRender {
-public:
-    MixShader* shader;
-    GlFloatArray* vertexArray = new GlFloatArray();
-    GlFloatArray* srcArray = new GlFloatArray();
-    GlFloatArray* maskArray = new GlFloatArray();
+namespace yyeva {
+    class EvaMixRender {
+    public:
+        shared_ptr<MixShader> shader;
+        GlFloatArray *vertexArray = new GlFloatArray();
+        GlFloatArray *srcArray = new GlFloatArray();
+        GlFloatArray *maskArray = new GlFloatArray();
 
-    EvaMixRender();
-    ~EvaMixRender();
-    void init(EvaSrcMap* evaSrcMap);
-    void rendFrame(GLuint videoTextureId, EvaAnimeConfig* config, EvaFrame* frame, EvaSrc* src);
-    void release(GLuint textureId);
+        EvaMixRender();
 
-private:
-    float* genSrcCoordsArray(float* array, int fw, int fh, int sw, int sh, EvaSrc::FitType fitType);
-    float* transColor(int color);
-    float* transColor(string color);
-};
+        ~EvaMixRender();
 
+        void init(shared_ptr<EvaSrcMap> evaSrcMap);
 
-#endif //YYEVA_EVAMIXRENDER_H
+        void rendFrame(GLuint videoTextureId, shared_ptr<EvaAnimeConfig> config,
+                       shared_ptr<EvaFrame> frame, shared_ptr<EvaSrc> src);
+
+        void release(GLuint textureId);
+
+    private:
+        float *
+        genSrcCoordsArray(float *array, int fw, int fh, int sw, int sh, EvaSrc::FitType fitType);
+
+        float *transColor(int color);
+
+        float *transColor(string color);
+    };
+}

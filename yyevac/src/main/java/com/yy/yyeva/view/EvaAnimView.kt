@@ -133,7 +133,8 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     @SuppressLint("LongLogTag")
     override fun surfaceCreated(holder: SurfaceHolder) {
         playerEva.decoder?.renderThread?.handler?.post {
-            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId, holder.surface, false, playerEva.isNormalMp4)
+            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId,
+                holder.surface, false, playerEva.isNormalMp4, playerEva.isVideoRecord)
             val textureId = EvaJniUtil.getExternalTexture(playerEva.controllerId)
             if (textureId < 0) {
                 Log.e(TAG, "surfaceCreated init OpenGL ES failed!")
@@ -240,6 +241,10 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         playerEva.playLoop = playLoop
     }
 
+    override fun setLoop(isLoop: Boolean) {
+        playerEva.isLoop = isLoop
+    }
+
     override fun setStartPoint(startPoint: Long) {
         playerEva.startPoint = startPoint * 1000
     }
@@ -294,6 +299,14 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     override fun setMute(isMute: Boolean) {
         ELog.e(TAG, "set mute=$isMute")
         playerEva.isMute = isMute
+    }
+
+    /**
+     * 开启录制
+     */
+    fun setVideoRecord(isVideoRecord: Boolean) {
+        ELog.i(TAG, "setVideoRecord=$isVideoRecord")
+        playerEva.isVideoRecord = isVideoRecord
     }
 
     private fun play(videoInfo: EvaVideoEntity) {
@@ -401,5 +414,9 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     override fun hasBgImage(): Boolean {
         return bg != null
+    }
+
+    override fun setLog(log: IELog) {
+        ELog.log = log
     }
 }

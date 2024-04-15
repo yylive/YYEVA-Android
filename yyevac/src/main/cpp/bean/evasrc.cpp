@@ -8,7 +8,7 @@ EvaSrc::EvaSrc() {
 
 }
 
-EvaSrc::EvaSrc(Effect* effect) {
+EvaSrc::EvaSrc(shared_ptr<Effect> effect) {
     srcId = to_string(effect->effectId);
     w = effect->effectWidth;
     h = effect->effectHeight;

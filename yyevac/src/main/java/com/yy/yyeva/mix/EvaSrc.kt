@@ -2,11 +2,13 @@ package com.yy.yyeva.mix
 
 import android.graphics.Bitmap
 import android.graphics.Color
+import androidx.annotation.Keep
 import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.EvaAnimConfig
 import com.yy.yyeva.util.ELog
 import org.json.JSONObject
 
+@Keep
 class EvaSrc {
     companion object {
         private const val TAG = "${EvaConstant.TAG}.EvaSrc"
