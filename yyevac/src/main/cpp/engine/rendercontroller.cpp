@@ -97,6 +97,8 @@ void yyeva::RenderController::updateViewPoint(int width, int height) {
     }
     if (render != nullptr) {
         render->updateViewPort(width, height);
+    } else {
+        ELOGE("render is null");
     }
 }
 

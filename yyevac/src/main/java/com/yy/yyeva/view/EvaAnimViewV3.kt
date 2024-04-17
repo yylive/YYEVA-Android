@@ -147,8 +147,10 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {
-        ELog.i(TAG, "onSurfaceTextureSizeChanged $width x $height")
-        playerEva.onSurfaceTextureSizeChanged(width, height)
+        playerEva.decoder?.renderThread?.handler?.post {
+            ELog.i(TAG, "onSurfaceTextureSizeChanged $width x $height")
+            playerEva.onSurfaceTextureSizeChanged(width, height)
+        }
     }
 
     override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
@@ -156,7 +158,9 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
 
     override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
         ELog.i(TAG, "onSurfaceTextureDestroyed")
-        playerEva.onSurfaceTextureDestroyed()
+        playerEva.decoder?.renderThread?.handler?.post {
+            playerEva.onSurfaceTextureDestroyed()
+        }
         uiHandler.post {
             innerTextureView?.surfaceTextureListener = null
             innerTextureView = null
@@ -197,8 +201,8 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
                     }
                 }
             }
+            playerEva.onSurfaceTextureAvailable(getWidth(), getHeight())
         }
-        playerEva.onSurfaceTextureAvailable(width, height)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
