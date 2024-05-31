@@ -7,11 +7,11 @@
 
 class PointRect {
 public:
-    int x;
-    int y;
-    int w;
-    int h;
-    PointRect(int x, int y, int w, int h) {
+    float x;
+    float y;
+    float w;
+    float h;
+    PointRect(float x, float y, float w, float h) {
         this->x = x;
         this->y = y;
         this->w = w;

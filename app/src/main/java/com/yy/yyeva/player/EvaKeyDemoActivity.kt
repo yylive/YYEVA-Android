@@ -72,7 +72,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         // 初始化调试开关
         initTestView()
         // 居中（根据父布局按比例居中并裁剪）
-        animView.setScaleType(ScaleType.CENTER_CROP)
+        animView.setScaleType(ScaleType.FIT_CENTER)
         /**
          * 注册资源获取类
          */
@@ -88,7 +88,14 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
                  * 比如：一个素材里需要显示多个头像，则需要定义多个不同的tag，表示不同位置，需要显示不同的头像，文字类似
                  */
                 val tag = resource.tag
-                if (tag == "anchor_avatar1") { // 此tag是已经写入到动画配置中的tag
+                if (tag == "祝福语") { // 此tag是已经写入到动画配置中的tag
+                    val drawableId = R.drawable.tip
+                    val options = BitmapFactory.Options()
+                    options.inScaled = false
+                    val bitmap = BitmapFactory.decodeResource(resources, drawableId, options)
+                    result(bitmap, null)
+                    bitmap.recycle()
+                } else if (tag == "anchor_avatar1") { // 此tag是已经写入到动画配置中的tag
                     result(ball1, null)
                 } else if (tag == "anchor_avatar2") { // 此tag是已经写入到动画配置中的tag
                     val drawableId =  R.drawable.ball_2

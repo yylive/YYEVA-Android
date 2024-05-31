@@ -34,7 +34,7 @@ namespace yyeva {
 
     private:
         float *
-        genSrcCoordsArray(float *array, int fw, int fh, int sw, int sh, EvaSrc::FitType fitType);
+        genSrcCoordsArray(float *array, float fw, float fh, float sw, float sh, EvaSrc::FitType fitType);
 
         float *transColor(int color);
 

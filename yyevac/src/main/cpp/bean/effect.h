@@ -6,8 +6,8 @@
 
 class Effect {
 public:
-    int effectWidth;
-    int effectHeight;
+    float effectWidth;
+    float effectHeight;
     int effectId;
     std::string effectTag;
     std::string effectType;

@@ -8,7 +8,7 @@
 class TexCoordsUtil {
 public:
 
-    static float* create(int width, int height, std::shared_ptr<PointRect> rect, float* array);
+    static float* create(float width, float height, std::shared_ptr<PointRect> rect, float* array);
 
     static float* rotate90(float* array);
 

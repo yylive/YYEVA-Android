@@ -95,7 +95,11 @@ void yyeva::EvaMixRender::rendFrame(GLuint videoTextureId, shared_ptr<EvaAnimeCo
     //     GLenum dstRGB,
     //     GLenum srcAlpha,
     //     GLenum dstAlpha);
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    if (src->srcType == EvaSrc::SrcType::TXT) {  //文字图片不进行预乘，因为已经带有透明度
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    } else {
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    }
     //绘制
     glDrawArrays(GL_TRIANGLE_STRIP,0, 4);
     //关闭混合
@@ -118,7 +122,7 @@ void yyeva::EvaMixRender::release(GLuint textureId) {
  * @param fitType 缩放模型
  * @return
  */
-float *yyeva::EvaMixRender::genSrcCoordsArray(float *array, int fw, int fh, int sw, int sh,
+float *yyeva::EvaMixRender::genSrcCoordsArray(float *array, float fw, float fh, float sw, float sh,
                                        EvaSrc::FitType fitType) {
     float* srcArray = nullptr;
     if (fitType == EvaSrc::FitType::CENTER_FULL) { //aspectFill
@@ -157,16 +161,16 @@ float *yyeva::EvaMixRender::genSrcCoordsArray(float *array, int fw, int fh, int 
             float sScale = float(sw) / sh;
             shared_ptr<PointRect> srcRect;
             if (fScale < sScale) {
-                int w = sw;
-                int x = 0;
-                int h = int(sw / fScale);
-                int y = (sh - h) / 2;
+                float w = sw;
+                float x = 0;
+                float h = sw / fScale;
+                float y = (sh - h) / 2.0;
                 srcRect = make_shared<PointRect>(x, y, w, h);
             } else {
-                int h = sh;
-                int y = 0;
-                int w = int(sh * fScale);
-                int x = (sw - w) / 2;
+                float h = sh;
+                float y = 0;
+                float w = sh * fScale;
+                float x = (sw - w) / 2.0;
                 srcRect = make_shared<PointRect>(x, y, w, h);
             }
             srcArray = TexCoordsUtil::create(sw, sh, srcRect, array);

@@ -8,7 +8,7 @@
 using namespace std;
 class VertexUtil {
 public:
-    static float* create(int width, int height, std::shared_ptr<PointRect> rect, float* array);
+    static float* create(float width, float height, std::shared_ptr<PointRect> rect, float* array);
     static float switchX(float x);
     static float switchY(float y);
 };

@@ -17,10 +17,10 @@ public:
         effects.clear();
         datas.clear();
     };
-    int width = 0;
-    int height = 0;
-    int videoWidth = 0;
-    int videoHeight = 0;
+    float width = 0;
+    float height = 0;
+    float videoWidth = 0;
+    float videoHeight = 0;
     shared_ptr<Descript> descript;
     list<shared_ptr<Effect>> effects;
     list<shared_ptr<Datas>> datas;

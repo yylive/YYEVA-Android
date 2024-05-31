@@ -36,10 +36,10 @@ shared_ptr<EvaAnimeConfig> EvaAnimeConfig::parse(const char* json) {
 //            JSON_Object *descriptJsonObject = json_object(json_parse_string(descript));
             config->descript = make_shared<Descript>();
             const double width = json_object_get_number(descriptJsonObject, "width");
-            config->descript->width = (int)width;
+            config->descript->width = width;
             config->videoWidth = config->descript->width;
             const double height = json_object_get_number(descriptJsonObject, "height");
-            config->descript->height = (int)height;
+            config->descript->height = height;
             config->videoHeight = config->descript->height;
             const bool isEffect = json_object_get_boolean(descriptJsonObject, "isEffect");
             config->descript->isEffect = isEffect;
@@ -52,10 +52,10 @@ shared_ptr<EvaAnimeConfig> EvaAnimeConfig::parse(const char* json) {
                 if (json_array_get_count(rgbFrameJsonArray) != 4) { //设定为4个数据
                     ELOGV("rgbFrame size not 4");
                 } else {
-                    config->descript->rgbFrame = make_shared<PointRect>((int)json_array_get_number(rgbFrameJsonArray, 0),
-                                                               (int)json_array_get_number(rgbFrameJsonArray, 1),
-                                                               (int)json_array_get_number(rgbFrameJsonArray, 2),
-                                                               (int)json_array_get_number(rgbFrameJsonArray, 3));
+                    config->descript->rgbFrame = make_shared<PointRect>(json_array_get_number(rgbFrameJsonArray, 0),
+                                                               json_array_get_number(rgbFrameJsonArray, 1),
+                                                               json_array_get_number(rgbFrameJsonArray, 2),
+                                                               json_array_get_number(rgbFrameJsonArray, 3));
                     config->width = config->descript->rgbFrame->w;
                     config->height = config->descript->rgbFrame->h;
                     config->rgbPointRect=config->descript->rgbFrame;
@@ -68,10 +68,10 @@ shared_ptr<EvaAnimeConfig> EvaAnimeConfig::parse(const char* json) {
                 if (json_array_get_count(alphaFrameJsonArray) != 4) { //设定为4个数据
                     ELOGV("alphaFrame size not 4");
                 } else {
-                    config->descript->alphaFrame = make_shared<PointRect>((int)json_array_get_number(alphaFrameJsonArray, 0),
-                                                               (int)json_array_get_number(alphaFrameJsonArray, 1),
-                                                               (int)json_array_get_number(alphaFrameJsonArray, 2),
-                                                               (int)json_array_get_number(alphaFrameJsonArray, 3));
+                    config->descript->alphaFrame = make_shared<PointRect>(json_array_get_number(alphaFrameJsonArray, 0),
+                                                               json_array_get_number(alphaFrameJsonArray, 1),
+                                                               json_array_get_number(alphaFrameJsonArray, 2),
+                                                               json_array_get_number(alphaFrameJsonArray, 3));
                     config->alphaPointRect = config->descript->alphaFrame;
                 }
             }
@@ -90,8 +90,8 @@ shared_ptr<EvaAnimeConfig> EvaAnimeConfig::parse(const char* json) {
             for (int i = 0; i < json_array_get_count(effectJsonArray); ++i) {
                 JSON_Object *effectTmp = json_array_get_object(effectJsonArray, i);
                 auto effect = make_shared<Effect>();
-                effect->effectWidth = (int)json_object_get_number(effectTmp, "effectWidth");
-                effect->effectHeight = (int)json_object_get_number(effectTmp, "effectHeight");
+                effect->effectWidth = json_object_get_number(effectTmp, "effectWidth");
+                effect->effectHeight = json_object_get_number(effectTmp, "effectHeight");
                 effect->effectId= (int)json_object_get_number(effectTmp, "effectId");
                 effect->effectTag = json_object_get_string(effectTmp, "effectTag");
                 const char* effectType = json_object_get_string(effectTmp, "effectType");
@@ -153,10 +153,10 @@ shared_ptr<EvaAnimeConfig> EvaAnimeConfig::parse(const char* json) {
                             if (json_array_get_count(renderFrameJsonArray) != 4) { //设定为4个数据
                                 ELOGV("rgbFrame size not 4");
                             } else {
-                                data->renderFrame = make_shared<PointRect>((int)json_array_get_number(renderFrameJsonArray, 0),
-                                                                           (int)json_array_get_number(renderFrameJsonArray, 1),
-                                                                           (int)json_array_get_number(renderFrameJsonArray, 2),
-                                                                           (int)json_array_get_number(renderFrameJsonArray, 3));
+                                data->renderFrame = make_shared<PointRect>(json_array_get_number(renderFrameJsonArray, 0),
+                                                                           json_array_get_number(renderFrameJsonArray, 1),
+                                                                           json_array_get_number(renderFrameJsonArray, 2),
+                                                                           json_array_get_number(renderFrameJsonArray, 3));
                             }
                         }
                         data->effectId= (int)json_object_get_number(dataTmp, "effectId");
@@ -167,10 +167,10 @@ shared_ptr<EvaAnimeConfig> EvaAnimeConfig::parse(const char* json) {
                             if (json_array_get_count(outputFrameJsonArray) != 4) { //设定为4个数据
                                 ELOGV("alphaFrame size not 4");
                             } else {
-                                data->outputFrame = make_shared<PointRect>((int)json_array_get_number(outputFrameJsonArray, 0),
-                                                                             (int)json_array_get_number(outputFrameJsonArray, 1),
-                                                                             (int)json_array_get_number(outputFrameJsonArray, 2),
-                                                                             (int)json_array_get_number(outputFrameJsonArray, 3));
+                                data->outputFrame = make_shared<PointRect>(json_array_get_number(outputFrameJsonArray, 0),
+                                                                             json_array_get_number(outputFrameJsonArray, 1),
+                                                                             json_array_get_number(outputFrameJsonArray, 2),
+                                                                             json_array_get_number(outputFrameJsonArray, 3));
                             }
                         }
                         datas->data.push_back(data);
