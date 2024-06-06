@@ -64,7 +64,7 @@ GLuint yyeva::FbRender::getExternalTexture() {
 }
 
 void yyeva::FbRender::releaseTexture() {
-
+    glDeleteProgram(shaderProgram);
 }
 
 void yyeva::FbRender::swapBuffers() {

@@ -80,6 +80,7 @@ void yyeva::RecordRender::releaseTexture() {
     if (textureId != -1) {
         glDeleteTextures(1, &textureId);
     }
+    glDeleteProgram(shaderProgram);
 }
 
 void yyeva::RecordRender::swapBuffers() {

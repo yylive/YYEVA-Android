@@ -88,6 +88,7 @@ GLuint yyeva::Render::getExternalTexture() {
 
 void yyeva::Render::releaseTexture() {
     glDeleteTextures(1, &textureId);
+    glDeleteProgram(shaderProgram);
 }
 
 void yyeva::Render::updateViewPort(int width, int height) {

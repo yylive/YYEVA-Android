@@ -48,7 +48,7 @@ yyeva::MixShader::MixShader() {
 }
 
 yyeva::MixShader::~MixShader() {
-
+    glDeleteProgram(program);
 }
 
 void yyeva::MixShader::useProgram() {

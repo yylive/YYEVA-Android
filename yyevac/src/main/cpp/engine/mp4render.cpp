@@ -79,6 +79,7 @@ GLuint yyeva::Mp4Render::getExternalTexture() {
 
 void yyeva::Mp4Render::releaseTexture() {
     glDeleteTextures(1, &textureId);
+    glDeleteProgram(shaderProgram);
 }
 
 void yyeva::Mp4Render::swapBuffers() {

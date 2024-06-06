@@ -158,6 +158,7 @@ GLuint YUVRender::getExternalTexture() {
 
 void YUVRender::releaseTexture() {
     glDeleteTextures(sizeof(textureId)/sizeof(GLuint), textureId);
+    glDeleteProgram(shaderProgram);
 }
 
 void YUVRender::swapBuffers() {

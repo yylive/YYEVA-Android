@@ -69,6 +69,7 @@ GLuint yyeva::BgRender::getExternalTexture() {
 
 void yyeva::BgRender::releaseTexture() {
     glDeleteTextures(1, &textureId);
+    glDeleteProgram(shaderProgram);
 }
 
 void yyeva::BgRender::swapBuffers() {
