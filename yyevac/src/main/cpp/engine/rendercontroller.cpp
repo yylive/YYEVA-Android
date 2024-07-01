@@ -225,7 +225,10 @@ void yyeva::RenderController::mixRendering(int frameIndex) {
                             continue;
                         }
                         auto src = srcMap->map.find(frame->srcId)->second;
-                        mixRender->rendFrame(videoTextureId, config, frame, src);
+                        if (frame->frame->w > 0 && frame->frame->h > 0
+                            && frame->mFrame->w > 0 && frame->mFrame->h > 0) {
+                            mixRender->rendFrame(videoTextureId, config, frame, src);
+                        }
                     }
                     if (videoRecord) {
                         //获取录制使用的FrameBuffer
