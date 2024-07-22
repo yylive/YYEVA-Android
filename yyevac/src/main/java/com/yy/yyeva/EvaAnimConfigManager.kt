@@ -264,7 +264,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
             while (!decompresser.finished()) {
                 val i: Int = decompresser.inflate(buf)
                 o.write(buf, 0, i)
-                if (buf.isEmpty()) {
+                if (i == 0) {
                     break
                 }
             }
