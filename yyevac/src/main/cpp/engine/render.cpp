@@ -118,6 +118,12 @@ void yyeva::Render::draw() {
             glEnable(GL_BLEND);
         }
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        //基于alpha通道的半透明混合函数
+        //void glBlendFuncSeparate(GLenum srcRGB,
+        //     GLenum dstRGB,
+        //     GLenum srcAlpha,
+        //     GLenum dstAlpha);
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         //关闭混合
         if (hasBg) {
             glDisable(GL_BLEND);
