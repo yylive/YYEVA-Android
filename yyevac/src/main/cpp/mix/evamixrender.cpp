@@ -110,6 +110,7 @@ void yyeva::EvaMixRender::release(GLuint textureId) {
     if (textureId != 0) {
         glDeleteTextures(1, &textureId);
     }
+    glDeleteProgram(shader->program);
 }
 
 /**

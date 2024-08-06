@@ -41,6 +41,7 @@ EvaSrc::~EvaSrc() {
     srcTag.clear();
     txt.clear();
     fontColor.clear();
+    delete[] bitmap;
     bitmap = nullptr;
     bitmapInfo = nullptr;
 }
