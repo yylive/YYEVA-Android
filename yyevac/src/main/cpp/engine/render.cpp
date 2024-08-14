@@ -38,6 +38,7 @@ void yyeva::Render::initRender() {
         void main () {
             vec4 alphaColor = texture2D(texture, v_TexCoordinateAlpha);
             vec4 rgbColor = texture2D(texture, v_TexCoordinateRgb);
+            alphaColor.rgb *= rgbColor.r;
             gl_FragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);
         }
     )";
@@ -50,7 +51,7 @@ void yyeva::Render::initRender() {
 
     glGenTextures(1,&textureId);
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
-    glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -121,8 +122,8 @@ void yyeva::Render::draw() {
         //     GLenum dstRGB,
         //     GLenum srcAlpha,
         //     GLenum dstAlpha);
-//        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE,
+                            GL_ONE_MINUS_SRC_ALPHA);
         glDisable(GL_BLEND);
     }
 }
