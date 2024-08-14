@@ -2,19 +2,18 @@ package com.yy.yyeva.decoder
 
 import android.graphics.*
 import android.media.*
+import android.opengl.GLES20
 import android.os.Build
 import android.view.Surface
+import com.yy.yyeva.EvaAnimPlayer
 import com.yy.yyeva.file.IEvaFileContainer
 import com.yy.yyeva.util.ELog
+import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.EvaJniUtil
 import com.yy.yyeva.util.EvaMediaUtil
-import android.graphics.Bitmap
-import android.opengl.GLES20
-import android.os.Environment
-import com.yy.yyeva.EvaAnimPlayer
-import com.yy.yyeva.util.EvaConstant
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+
 
 class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceTexture.OnFrameAvailableListener {
 
@@ -153,6 +152,9 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             if (!playerEva.isSetFps) {
                 if (format.containsKey(MediaFormat.KEY_FRAME_RATE)) {  //防止读不到fps参数的导致无法播放
                     playerEva.fps = format.getInteger(MediaFormat.KEY_FRAME_RATE)
+                } else {
+                    ELog.i(TAG, "can not get frame-rate from media format")
+                    playerEva.fps = playerEva.defaultFps
                 }
             }
             // 防止没有INFO_OUTPUT_FORMAT_CHANGED时导致alignWidth和alignHeight不会被赋值一直是0
