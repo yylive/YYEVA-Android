@@ -38,7 +38,6 @@ void yyeva::Render::initRender() {
         void main () {
             vec4 alphaColor = texture2D(texture, v_TexCoordinateAlpha);
             vec4 rgbColor = texture2D(texture, v_TexCoordinateRgb);
-            alphaColor.rgb *= rgbColor.r;
             gl_FragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);
         }
     )";
