@@ -38,6 +38,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     private var outputFormat: MediaFormat? = null
     // 暂停
     private var isPause = false
+    private var retryCount = 0  //初始化失败重试次数
 
     override fun start(evaFileContainer: IEvaFileContainer) {
         isStopReq = false
@@ -229,10 +230,18 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                 }
             }
         } catch (e: Throwable) {
-            ELog.e(TAG, "MediaCodec configure exception e=$e", e)
-            onFailed(EvaConstant.REPORT_ERROR_TYPE_DECODE_EXC, "${EvaConstant.ERROR_MSG_DECODE_EXC} e=$e")
-            release(decoder, extractor)
-            return
+            ELog.e(TAG, "retryCount $retryCount, MediaCodec configure exception e=$e", e)
+            if (retryCount > 5) {
+                onFailed(
+                    EvaConstant.REPORT_ERROR_TYPE_DECODE_EXC,
+                    "${EvaConstant.ERROR_MSG_DECODE_EXC} e=$e"
+                )
+                release(decoder, extractor)
+                return
+            } else {  //加入重试机制
+                retryCount++
+                startPlay(evaFileContainer)
+            }
         }
     }
 
@@ -253,6 +262,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
         var inputDone = false
         var frameIndex = 0
         var isLoop = false
+        var failDequeueCount = 0
 
         val decoderInputBuffers = decoder.inputBuffers
 
@@ -272,105 +282,113 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             if (isPause) {
                 continue
             }
-
-            if (!inputDone) {
-                val inputBufIndex = decoder.dequeueInputBuffer(TIMEOUT_USEC)
-                if (inputBufIndex >= 0) {
-                    val inputBuf = decoderInputBuffers[inputBufIndex]
-                    val chunkSize = extractor.readSampleData(inputBuf, 0)
-                    if (chunkSize < 0) {
-                        decoder.queueInputBuffer(inputBufIndex, 0, 0, 0L, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
-                        inputDone = true
-                        ELog.i(TAG, "decode EOS")
+            try {
+                if (!inputDone) {
+                    val inputBufIndex = decoder.dequeueInputBuffer(TIMEOUT_USEC)
+                    if (inputBufIndex >= 0) {
+                        val inputBuf = decoderInputBuffers[inputBufIndex]
+                        val chunkSize = extractor.readSampleData(inputBuf, 0)
+                        if (chunkSize < 0) {
+                            decoder.queueInputBuffer(inputBufIndex, 0, 0, 0L, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
+                            inputDone = true
+                            ELog.i(TAG, "decode EOS")
+                        } else {
+                            val presentationTimeUs = extractor.sampleTime
+                            decoder.queueInputBuffer(inputBufIndex, 0, chunkSize, presentationTimeUs, 0)
+                            ELog.i(TAG, "submitted frame $inputChunk to dec, size=$chunkSize")
+                            inputChunk++
+                            extractor.advance()
+                        }
                     } else {
-                        val presentationTimeUs = extractor.sampleTime
-                        decoder.queueInputBuffer(inputBufIndex, 0, chunkSize, presentationTimeUs, 0)
-                        ELog.i(TAG, "submitted frame $inputChunk to dec, size=$chunkSize")
-                        inputChunk++
-                        extractor.advance()
+                        ELog.d(TAG, "input buffer not available")
                     }
-                } else {
-                    ELog.d(TAG, "input buffer not available")
                 }
-            }
 
-            if (!outputDone) {
-                //抽取解码数据或状态
-                val decoderStatus = decoder.dequeueOutputBuffer(bufferInfo, TIMEOUT_USEC)
-                when {
-                    decoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER -> ELog.d(TAG, "no output from decoder available")
-                    decoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED -> ELog.d(TAG, "decoder output buffers changed")
-                    decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> {
-                        outputFormat = decoder.outputFormat
-                        outputFormat?.apply {
-                            try {
-                                // 有可能取到空值，做一层保护
-                                val stride = getInteger("stride")
-                                val sliceHeight = getInteger("slice-height")
-                                if (stride > 0 && sliceHeight > 0) {
-                                    alignWidth = stride
-                                    alignHeight = sliceHeight
+                if (!outputDone) {
+                    //抽取解码数据或状态
+                    val decoderStatus = decoder.dequeueOutputBuffer(bufferInfo, TIMEOUT_USEC)
+                    when {
+                        decoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER -> ELog.d(TAG, "no output from decoder available")
+                        decoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED -> ELog.d(TAG, "decoder output buffers changed")
+                        decoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> {
+                            outputFormat = decoder.outputFormat
+                            outputFormat?.apply {
+                                try {
+                                    // 有可能取到空值，做一层保护
+                                    val stride = getInteger("stride")
+                                    val sliceHeight = getInteger("slice-height")
+                                    if (stride > 0 && sliceHeight > 0) {
+                                        alignWidth = stride
+                                        alignHeight = sliceHeight
+                                    }
+                                } catch (t: Throwable) {
+                                    ELog.e(TAG, "$t", t)
                                 }
-                            } catch (t: Throwable) {
-                                ELog.e(TAG, "$t", t)
                             }
+                            ELog.i(TAG, "decoder output format changed: $outputFormat")
                         }
-                        ELog.i(TAG, "decoder output format changed: $outputFormat")
-                    }
-                    decoderStatus < 0 -> {
-                        throw RuntimeException("unexpected result from decoder.dequeueOutputBuffer: $decoderStatus")
-                    }
-                    else -> {  //正常解析
-                        var loop = 0
-                        if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
-                            if (this.isLoop) {
-                                loop = 1
-                            } else {
-                                loop = --playLoop
-                                playerEva.playLoop = playLoop // 消耗loop次数 自动恢复后能有正确的loop次数
-                                outputDone = playLoop <= 0
+                        decoderStatus < 0 -> {
+                            throw RuntimeException("unexpected result from decoder.dequeueOutputBuffer: $decoderStatus")
+                        }
+                        else -> {  //正常解析
+                            var loop = 0
+                            if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
+                                if (this.isLoop) {
+                                    loop = 1
+                                } else {
+                                    loop = --playLoop
+                                    playerEva.playLoop = playLoop // 消耗loop次数 自动恢复后能有正确的loop次数
+                                    outputDone = playLoop <= 0
+                                }
                             }
-                        }
-                        val doRender = !outputDone
-                        if (doRender) { //控制帧率时间
-                            speedControlUtil.preRender(bufferInfo.presentationTimeUs)
-                        }
+                            val doRender = !outputDone
+                            if (doRender) { //控制帧率时间
+                                speedControlUtil.preRender(bufferInfo.presentationTimeUs)
+                            }
 
-                        if (needYUV && doRender) {
+                            if (needYUV && doRender) {
 //                            yuvProcess(decoder, decoderStatus)
-                        }
-                        //消耗解码数据
-                        // release & render
-                        decoder.releaseOutputBuffer(decoderStatus, doRender && !needYUV)
+                            }
+                            //消耗解码数据
+                            // release & render
+                            decoder.releaseOutputBuffer(decoderStatus, doRender && !needYUV)
 
-                        if (frameIndex == 0 && !isLoop) {
-                            onVideoStart()
-                        }
+                            if (frameIndex == 0 && !isLoop) {
+                                onVideoStart()
+                            }
 
-                        playerEva.pluginManager.onDecoding(frameIndex)
-                        onVideoRender(frameIndex, playerEva.configManager.config)
-                        //输出帧数据
-                        frameIndex++
-                        ELog.d(TAG, "decode frameIndex=$frameIndex")
-                        if (loop > 0) {
-                            ELog.d(TAG, "Reached EOD, looping")
-                            playerEva.pluginManager.onLoopStart()
-                            extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
-                            inputDone = false
-                            decoder.flush()
-                            speedControlUtil.reset()
-                            frameIndex = 0
-                            isLoop = true
-                            onVideoRestart()
-                        }
-                        if (outputDone) {  //输出完成
-                            if (playerEva.isSetLastFrame) {
-                                notReleaseLastFrame(decoder, extractor)
-                            } else {
-                                release(decoder, extractor)
+                            playerEva.pluginManager.onDecoding(frameIndex)
+                            onVideoRender(frameIndex, playerEva.configManager.config)
+                            //输出帧数据
+                            frameIndex++
+                            ELog.d(TAG, "decode frameIndex=$frameIndex")
+                            if (loop > 0) {
+                                ELog.d(TAG, "Reached EOD, looping")
+                                playerEva.pluginManager.onLoopStart()
+                                extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
+                                inputDone = false
+                                decoder.flush()
+                                speedControlUtil.reset()
+                                frameIndex = 0
+                                isLoop = true
+                                onVideoRestart()
+                            }
+                            if (outputDone) {  //输出完成
+                                if (playerEva.isSetLastFrame) {
+                                    notReleaseLastFrame(decoder, extractor)
+                                } else {
+                                    release(decoder, extractor)
+                                }
                             }
                         }
                     }
+                }
+            } catch (e: Exception) {  //解码帧失败跳过，直接继续解尝试
+                if (failDequeueCount > 5) {
+                    ELog.e(TAG, "failDequeueCount $failDequeueCount reason:$e")
+                } else {
+                    failDequeueCount++
+                    continue
                 }
             }
         }
