@@ -320,6 +320,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
     override fun setMute(isMute: Boolean) {
         ELog.i(TAG, "set mute=$isMute")
         playerEva.isMute = isMute
+        playerEva.setMute(isMute)
     }
 
     /**

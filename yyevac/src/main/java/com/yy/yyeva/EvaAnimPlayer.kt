@@ -88,6 +88,11 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
         decoder?.onSurfaceSizeChanged(width, height)
     }
 
+    fun setMute(isMute: Boolean) {
+        this.isMute = isMute
+        evaAudioPlayer?.setMute(isMute)
+    }
+
     fun startPlay(evaFileContainer: IEvaFileContainer) {
         isStartRunning = true
         prepareDecoder()
