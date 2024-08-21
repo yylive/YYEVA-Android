@@ -26,7 +26,7 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     var isStopReq = false
     var needDestroy = false
     var isPause = false
-    var isMute = false
+    var isAudioMute = false
 
     private fun prepareThread(): Boolean {
         return Decoder.createThread(decodeThread, "anim_audio_thread")
@@ -53,7 +53,7 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
 
     fun setMute(isMute: Boolean) {
         ELog.i(TAG, "setMute $isMute")
-        this.isMute = isMute
+        this.isAudioMute = isMute
     }
 
     fun pause() {
@@ -159,7 +159,7 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
                 val chunkPCM = ByteArray(bufferInfo.size)
                 outputBuffer.get(chunkPCM)
                 outputBuffer.clear()
-                if (!isMute) { //动态设置是否静音
+                if (!isAudioMute) { //动态设置是否静音
                     audioTrack.write(chunkPCM, 0, bufferInfo.size)
                 }
                 decoder.releaseOutputBuffer(outputIndex, false)

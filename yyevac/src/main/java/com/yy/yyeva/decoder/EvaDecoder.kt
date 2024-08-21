@@ -1,6 +1,5 @@
 package com.yy.yyeva.decoder
 
-import android.os.Build
 import android.os.HandlerThread
 import android.os.Handler
 import android.util.Log
@@ -45,6 +44,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
     //    var render: IRenderListener? = null
     val renderThread = HandlerHolder(null, null)
     val decodeThread = HandlerHolder(null, null)
+    var completeBlock: ((Boolean)->Unit)? = null
     private var surfaceWidth = 0
     private var surfaceHeight = 0
     var fps: Int = 0
@@ -61,9 +61,10 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
 
     abstract fun start(evaFileContainer: IEvaFileContainer)
 
-    fun stop() {
+    fun stop(completeBlock: ((Boolean)->Unit)?= null) {
         Log.i(TAG, "stop true")
         isStopReq = true
+        this.completeBlock = completeBlock
     }
 
     abstract fun pause()
@@ -163,6 +164,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
     override fun onVideoComplete(lastFrame: Boolean) {
         ELog.i(TAG, "onVideoComplete")
         playerEva.evaAnimListener?.onVideoComplete(lastFrame)
+        completeBlock?.invoke(lastFrame)
     }
 
     override fun onVideoDestroy() {

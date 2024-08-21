@@ -60,7 +60,7 @@ interface IEvaAnimView {
     // 恢复播放
     fun resume()
     //停止播放
-    fun stopPlay()
+    fun stopPlay(completeBlock: ((Boolean)->Unit)?= null)
     //是否正在运行
     fun isRunning(): Boolean
 

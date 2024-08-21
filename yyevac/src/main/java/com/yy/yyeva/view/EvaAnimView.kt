@@ -298,7 +298,7 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
      */
     override fun setMute(isMute: Boolean) {
         ELog.e(TAG, "set mute=$isMute")
-        playerEva.isMute = isMute
+        playerEva.setMute(isMute)
     }
 
     /**
@@ -364,8 +364,8 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         playerEva.resume()
     }
 
-    override fun stopPlay() {
-        playerEva.stopPlay()
+    override fun stopPlay(completeBlock: ((Boolean)->Unit)?) {
+        playerEva.stopPlay(completeBlock)
     }
 
     override fun isRunning(): Boolean {

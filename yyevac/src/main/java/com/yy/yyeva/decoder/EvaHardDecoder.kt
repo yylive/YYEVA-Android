@@ -537,6 +537,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             playerEva.controllerId = -1
             onVideoDestroy()
             destroyThread()
+            completeBlock = null
         }
     }
 }

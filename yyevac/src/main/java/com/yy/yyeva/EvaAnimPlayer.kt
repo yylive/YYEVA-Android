@@ -55,7 +55,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     var isSurfaceAvailable = false
     var startRunnable: Runnable? = null
     var isStartRunning = false // 启动时运行状态
-    var isMute = false // 是否静音
+    var isAudioMute = false // 是否静音
     var startPoint = 0L // 开启播放位置
     var sampleTime = 0L // sampleTime实际播放时间
 
@@ -89,7 +89,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     }
 
     fun setMute(isMute: Boolean) {
-        this.isMute = isMute
+        this.isAudioMute = isMute
         evaAudioPlayer?.setMute(isMute)
     }
 
@@ -128,7 +128,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
                 Log.i(TAG, "decoder start")
                 isStartRunning = false
                 decoder?.start(evaFileContainer)
-                if (!isMute) {
+                if (!isAudioMute) {
                     evaAudioPlayer?.start(evaFileContainer)
                 }
             } else {
@@ -150,8 +150,8 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
         decoder?.resume()
     }
 
-    fun stopPlay() {
-        decoder?.stop()
+    fun stopPlay(completeBlock: ((Boolean)->Unit)? = null) {
+        decoder?.stop(completeBlock)
         evaAudioPlayer?.stop()
     }
 
