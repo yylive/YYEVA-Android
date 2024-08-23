@@ -2,6 +2,7 @@ package com.yy.yyeva.decoder
 
 import android.os.HandlerThread
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.yy.yyeva.EvaAnimConfig
 import com.yy.yyeva.EvaAnimPlayer
@@ -44,6 +45,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
     //    var render: IRenderListener? = null
     val renderThread = HandlerHolder(null, null)
     val decodeThread = HandlerHolder(null, null)
+    val mainHandler = Handler(Looper.getMainLooper())
     var completeBlock: ((Boolean)->Unit)? = null
     private var surfaceWidth = 0
     private var surfaceHeight = 0
@@ -136,6 +138,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
             decodeThread.thread = quitSafely(decodeThread.thread)
             renderThread.handler = null
             decodeThread.handler = null
+            mainHandler.removeCallbacksAndMessages(null)
         }
     }
 
@@ -148,33 +151,45 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
 
     override fun onVideoStart() {
         ELog.i(TAG, "onVideoStart")
-        playerEva.evaAnimListener?.onVideoStart()
+        mainHandler.post {
+            playerEva.evaAnimListener?.onVideoStart()
+        }
     }
 
     override fun onVideoRestart() {
         ELog.i(TAG, "onVideoRestart")
-        playerEva.evaAnimListener?.onVideoRestart()
+        mainHandler.post {
+            playerEva.evaAnimListener?.onVideoRestart()
+        }
     }
 
     override fun onVideoRender(frameIndex: Int, config: EvaAnimConfig?) {
         ELog.d(TAG, "onVideoRender")
-        playerEva.evaAnimListener?.onVideoRender(frameIndex, config)
+        mainHandler.post {
+            playerEva.evaAnimListener?.onVideoRender(frameIndex, config)
+        }
     }
 
     override fun onVideoComplete(lastFrame: Boolean) {
         ELog.i(TAG, "onVideoComplete")
-        playerEva.evaAnimListener?.onVideoComplete(lastFrame)
-        completeBlock?.invoke(lastFrame)
+        mainHandler.post {
+            playerEva.evaAnimListener?.onVideoComplete(lastFrame)
+            completeBlock?.invoke(lastFrame)
+        }
     }
 
     override fun onVideoDestroy() {
         ELog.i(TAG, "onVideoDestroy")
-        playerEva.evaAnimListener?.onVideoDestroy()
+        mainHandler.post {
+            playerEva.evaAnimListener?.onVideoDestroy()
+        }
     }
 
     override fun onFailed(errorType: Int, errorMsg: String?) {
         ELog.e(TAG, "onFailed errorType=$errorType, errorMsg=$errorMsg")
-        playerEva.evaAnimListener?.onFailed(errorType, errorMsg)
+        mainHandler.post {
+            playerEva.evaAnimListener?.onFailed(errorType, errorMsg)
+        }
     }
 }
 
