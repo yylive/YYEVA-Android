@@ -125,6 +125,11 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
         val bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelConfig, AudioFormat.ENCODING_PCM_16BIT)
         val audioTrack = AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, channelConfig, AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM)
         this.audioTrack = audioTrack
+        if (isAudioMute) {
+            audioTrack.setVolume(0f)
+        } else {
+            audioTrack.setVolume(1f)
+        }
         val state = audioTrack.state
         if (state != AudioTrack.STATE_INITIALIZED) {
             release()
