@@ -56,6 +56,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
     }
 
     private var ball1: Bitmap? = null
+    private var isMute = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,8 +152,9 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         // 注册动画监听
         animView.setAnimListener(this)
         //设置背景图
-        val img = BitmapFactory.decodeResource(resources, R.drawable.bg)
-        animView.setBgImage(img)
+//        val img = BitmapFactory.decodeResource(resources, R.drawable.bg)
+//        animView.setBgImage(img)
+//        img.recycle()
         /**
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
@@ -324,6 +326,10 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
                 animView.resume()
                 btnPause.text = "Pause"
             }
+        }
+        btnMute.setOnClickListener {
+            isMute = !isMute
+            animView.setMute(isMute)
         }
     }
 

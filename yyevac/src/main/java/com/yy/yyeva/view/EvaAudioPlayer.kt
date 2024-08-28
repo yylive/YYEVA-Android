@@ -54,6 +54,11 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     fun setMute(isMute: Boolean) {
         ELog.i(TAG, "setMute $isMute")
         this.isAudioMute = isMute
+        if (isAudioMute) {
+            audioTrack?.setVolume(0f)
+        } else {
+            audioTrack?.setVolume(1f)
+        }
     }
 
     fun pause() {
@@ -159,9 +164,7 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
                 val chunkPCM = ByteArray(bufferInfo.size)
                 outputBuffer.get(chunkPCM)
                 outputBuffer.clear()
-                if (!isAudioMute) { //动态设置是否静音
-                    audioTrack.write(chunkPCM, 0, bufferInfo.size)
-                }
+                audioTrack.write(chunkPCM, 0, bufferInfo.size)
                 decoder.releaseOutputBuffer(outputIndex, false)
             }
 

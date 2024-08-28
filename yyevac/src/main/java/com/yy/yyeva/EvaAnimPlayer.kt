@@ -128,9 +128,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
                 Log.i(TAG, "decoder start")
                 isStartRunning = false
                 decoder?.start(evaFileContainer)
-                if (!isAudioMute) {
-                    evaAudioPlayer?.start(evaFileContainer)
-                }
+                evaAudioPlayer?.start(evaFileContainer)
             } else {
                  startRunnable = Runnable {
                     innerStartPlay(evaFileContainer)
