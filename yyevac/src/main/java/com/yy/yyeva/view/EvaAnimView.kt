@@ -320,6 +320,24 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         startPlay(file)
     }
 
+
+    override fun prepareToPlay(file: File, repeatCount: Int) {
+        try {
+            val fileContainer = EvaFileContainer(file)
+            startPlay(fileContainer, true)
+        } catch (e: Throwable) {
+            animProxyListener.onFailed(EvaConstant.REPORT_ERROR_TYPE_FILE_ERROR, EvaConstant.ERROR_MSG_FILE_ERROR)
+            animProxyListener.onVideoComplete()
+        }
+    }
+
+    override fun play() {
+        ui {
+            playerEva.play()
+        }
+    }
+
+    //播放文件
     override fun startPlay(file: File) {
         try {
             val fileContainer = EvaFileContainer(file)
@@ -341,7 +359,7 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
 
-    override fun startPlay(evaFileContainer: IEvaFileContainer) {
+    override fun startPlay(evaFileContainer: IEvaFileContainer, prepare: Boolean) {
         ui {
             if (visibility != View.VISIBLE) {
                 ELog.e(TAG, "AnimView is GONE, can't play")
@@ -349,7 +367,7 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
             }
             if (!playerEva.isRunning()) {
                 lastEvaFile = evaFileContainer
-                playerEva.startPlay(evaFileContainer)
+                playerEva.startPlay(evaFileContainer, prepare)
             } else {
                 ELog.e(TAG, "is running can not start")
             }

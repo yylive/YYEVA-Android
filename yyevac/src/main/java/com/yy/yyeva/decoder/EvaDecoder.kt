@@ -63,6 +63,10 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
 
     abstract fun start(evaFileContainer: IEvaFileContainer)
 
+    abstract fun prepareToPlay(evaFileContainer: IEvaFileContainer)
+
+    abstract fun play()
+
     fun stop(completeBlock: ((Boolean)->Unit)?= null) {
         Log.i(TAG, "stop true")
         isStopReq = true

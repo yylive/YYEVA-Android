@@ -1,6 +1,5 @@
 package com.yy.yyeva
 
-import android.util.Log
 import com.yy.yyeva.decoder.Decoder
 import com.yy.yyeva.decoder.EvaHardDecoder
 import com.yy.yyeva.file.IEvaFileContainer
@@ -68,6 +67,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
 //    val configManager = AnimConfigManager(this)
     val configManager = EvaAnimConfigManager(this)
     val pluginManager = EvaAnimPluginManager(this)
+    var isStartPlay = false
 
     fun onSurfaceTextureDestroyed() {
         isSurfaceAvailable = false
@@ -93,7 +93,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
         evaAudioPlayer?.setMute(isMute)
     }
 
-    fun startPlay(evaFileContainer: IEvaFileContainer) {
+    fun startPlay(evaFileContainer: IEvaFileContainer, prepare: Boolean = false) {
         isStartRunning = true
         prepareDecoder()
         if (decoder?.prepareThread() == false) {
@@ -115,26 +115,45 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
             val config = configManager.config
             // 如果是默认配置，因为信息不完整onVideoConfigReady不会被调用
             if (config != null && (config.isDefaultConfig || evaAnimListener?.onVideoConfigReady(config) == true)) {
-                innerStartPlay(evaFileContainer)
+                innerStartPlay(evaFileContainer, prepare)
             } else {
                 ELog.i(TAG, "onVideoConfigReady return false")
             }
         }
     }
 
-    private fun innerStartPlay(evaFileContainer: IEvaFileContainer) {
+    private fun innerStartPlay(evaFileContainer: IEvaFileContainer, prepare: Boolean = false) {
         synchronized(EvaAnimPlayer::class.java) {
             if (isSurfaceAvailable) {
-                Log.i(TAG, "decoder start")
+                ELog.i(TAG, "decoder start")
                 isStartRunning = false
-                decoder?.start(evaFileContainer)
-                evaAudioPlayer?.start(evaFileContainer)
+                if (prepare) {  //准备播放
+                    decoder?.prepareToPlay(evaFileContainer)
+                    evaAudioPlayer?.prepareToPlay(evaFileContainer)
+                } else { //立刻播放
+                    decoder?.start(evaFileContainer)
+                    evaAudioPlayer?.start(evaFileContainer)
+                }
             } else {
-                 startRunnable = Runnable {
-                    innerStartPlay(evaFileContainer)
-                 }
+                ELog.i(TAG, "use startRunnable")
+                startRunnable = Runnable {
+                    innerStartPlay(evaFileContainer, prepare)
+                    if (isStartPlay) {  //延迟调用触发
+                        play()
+                    }
+                }
                 evaAnimView.prepareTextureView()
             }
+        }
+    }
+
+    fun play() {
+        isStartPlay = true
+        if (decoder?.isRunning == true) { //解码器准备完毕
+            decoder?.play()
+        }
+        if (evaAudioPlayer?.isRunning == true) {
+            evaAudioPlayer?.play()
         }
     }
 

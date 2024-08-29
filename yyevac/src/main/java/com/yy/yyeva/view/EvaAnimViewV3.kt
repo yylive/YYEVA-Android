@@ -330,6 +330,23 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
         playerEva.isVideoRecord = isVideoRecord
     }
 
+    override fun prepareToPlay(file: File, repeatCount: Int) {
+        try {
+            playerEva.playLoop = repeatCount
+            val fileContainer = EvaFileContainer(file)
+            startPlay(fileContainer, true)
+        } catch (e: Throwable) {
+            animProxyListener.onFailed(EvaConstant.REPORT_ERROR_TYPE_FILE_ERROR, EvaConstant.ERROR_MSG_FILE_ERROR)
+            animProxyListener.onVideoComplete()
+        }
+    }
+
+    override fun play() {
+        ui {
+            playerEva.play()
+        }
+    }
+
     private fun play(videoInfo: EvaVideoEntity) {
         // 播放前强烈建议检查文件的md5是否有改变
         // 因为下载或文件存储过程中会出现文件损坏，导致无法播放
@@ -362,7 +379,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
     }
 
 
-    override fun startPlay(evaFileContainer: IEvaFileContainer) {
+    override fun startPlay(evaFileContainer: IEvaFileContainer, prepare: Boolean) {
         ui {
             if (visibility != View.VISIBLE) {
                 ELog.e(TAG, "AnimView is GONE, can't play")
@@ -370,7 +387,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
             }
             if (!playerEva.isRunning()) {
                 lastEvaFile = evaFileContainer
-                playerEva.startPlay(evaFileContainer)
+                playerEva.startPlay(evaFileContainer, prepare)
             } else {
                 ELog.e(TAG, "is running can not start")
             }

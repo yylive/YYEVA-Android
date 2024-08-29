@@ -39,6 +39,22 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     // 暂停
     private var isPause = false
     private var retryCount = 0  //初始化失败重试次数
+    private val lock = Object()  //用于暂停和帧抽取速度调整
+
+    override fun prepareToPlay(evaFileContainer: IEvaFileContainer) {
+        ELog.i(TAG, "prepareToPlay")
+        isStopReq = false
+        isPause = true
+        needDestroy = false
+        isRunning = true
+        renderThread.handler?.post {
+            startPlay(evaFileContainer)
+        }
+    }
+
+    override fun play() {
+        resume()
+    }
 
     override fun start(evaFileContainer: IEvaFileContainer) {
         isStopReq = false
@@ -224,7 +240,10 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                         startDecode(extractor, this)
                     } catch (e: Throwable) {
                         ELog.e(TAG, "MediaCodec exception e=$e", e)
-                        onFailed(EvaConstant.REPORT_ERROR_TYPE_DECODE_EXC, "${EvaConstant.ERROR_MSG_DECODE_EXC} e=$e")
+                        onFailed(
+                            EvaConstant.REPORT_ERROR_TYPE_DECODE_EXC,
+                            "${EvaConstant.ERROR_MSG_DECODE_EXC} e=$e"
+                        )
                         release(decoder, extractor)
                     }
                 }
@@ -253,6 +272,9 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     override fun resume() {
         ELog.i(TAG, "resume")
         isPause = false
+        synchronized(lock) {
+            lock.notifyAll()
+        }
     }
 
     private fun startDecode(extractor: MediaExtractor, decoder: MediaCodec) {
@@ -279,8 +301,11 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                 return
             }
 
-            if (isPause) {
-                continue
+            synchronized(lock) {
+                if (isPause) {
+                    ELog.i(TAG, "lock wait")
+                    lock.wait()
+                }
             }
             try {
                 if (!inputDone) {
@@ -517,6 +542,10 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     }
 
     override fun destroy() {
+        synchronized(lock) {
+            isPause = false
+            lock.notifyAll()
+        }
         if (isRunning) {
             needDestroy = true
             stop()

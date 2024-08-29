@@ -27,6 +27,7 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     var needDestroy = false
     var isPause = false
     var isAudioMute = false
+    private val lock = Object()  //用于暂停和帧抽取速度调整
 
     private fun prepareThread(): Boolean {
         return Decoder.createThread(decodeThread, "anim_audio_thread")
@@ -69,10 +70,38 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     fun resume() {
         ELog.i(TAG, "resume")
         isPause = false
+        synchronized(lock) {
+            lock.notifyAll()
+        }
     }
 
     fun stop() {
         isStopReq = true
+    }
+
+    fun prepareToPlay(evaFileContainer: IEvaFileContainer) {
+        ELog.i(TAG, "prepareToPlay")
+        isStopReq = false
+        isPause = true
+        needDestroy = false
+        if (!prepareThread()) return
+        if (isRunning) {
+            stop()
+        }
+        isRunning = true
+        decodeThread.handler?.post {
+            try {
+                startPlay(evaFileContainer)
+                isPause = false
+            } catch (e: Throwable) {
+                ELog.e(TAG, "Audio exception=$e", e)
+                release()
+            }
+        }
+    }
+
+    fun play() {
+        resume()
     }
 
     private fun startPlay(evaFileContainer: IEvaFileContainer) {
@@ -140,11 +169,12 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
         val timeOutUs = 1000L
         var isEOS = false
         while (!isStopReq) {
-
-            if (isPause) {
-                continue
+            synchronized(lock) {
+                if (isPause) {
+                    ELog.i(TAG, "lock wait")
+                    lock.wait()
+                }
             }
-
             if (!isEOS) {
                 val inputIndex = decoder.dequeueInputBuffer(timeOutUs)
                 if (inputIndex >= 0) {
@@ -216,6 +246,10 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     }
 
     fun destroy() {
+        synchronized(lock) {
+            isPause = false
+            lock.notifyAll()
+        }
         if (isRunning) {
             needDestroy = true
             stop()
