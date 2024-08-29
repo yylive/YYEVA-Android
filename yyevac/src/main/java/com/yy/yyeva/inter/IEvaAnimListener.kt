@@ -15,7 +15,7 @@ interface IEvaAnimListener {
     /**
      * 开始播放
      */
-    fun onVideoStart()
+    fun onVideoStart(isRestart: Boolean = false)
 
     /**
      * 循环播放开始

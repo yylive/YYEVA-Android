@@ -153,10 +153,10 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
         Log.i(TAG, "updateViewPoint $width, $height")
     }
 
-    override fun onVideoStart() {
+    override fun onVideoStart(isRestart: Boolean) {
         ELog.i(TAG, "onVideoStart")
         mainHandler.post {
-            playerEva.evaAnimListener?.onVideoStart()
+            playerEva.evaAnimListener?.onVideoStart(isRestart)
         }
     }
 

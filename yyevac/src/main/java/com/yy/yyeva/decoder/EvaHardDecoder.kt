@@ -397,6 +397,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                                 frameIndex = 0
                                 isLoop = true
                                 onVideoRestart()
+                                onVideoStart(true)
                             }
                             if (outputDone) {  //输出完成
                                 if (playerEva.isSetLastFrame) {

@@ -55,8 +55,8 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
                 return evaAnimListener?.onVideoConfigReady(config) ?: super.onVideoConfigReady(config)
             }
 
-            override fun onVideoStart() {
-                evaAnimListener?.onVideoStart()
+            override fun onVideoStart(isRestart: Boolean) {
+                evaAnimListener?.onVideoStart(isRestart)
             }
 
             override fun onVideoRestart() {
