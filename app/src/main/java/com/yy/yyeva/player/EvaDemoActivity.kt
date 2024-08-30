@@ -200,7 +200,7 @@ class EvaDemoActivity : Activity(), IEvaAnimListener {
     /**
      * 视频开始回调
      */
-    override fun onVideoStart() {
+    override fun onVideoStart(isRestart: Boolean) {
         ELog.i(TAG, "onVideoStart")
     }
 

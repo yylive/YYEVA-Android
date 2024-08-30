@@ -198,7 +198,9 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
             }
             //循环三次
 //            animView.setLoop(3)
-            animView.startPlay(file)
+//            animView.startPlay(file)
+            animView.prepareToPlay(file)  //分阶段调用
+            animView.play()
             isPause = false
 //            val md5 = FileUtil.getFileMD5(file)
 //            if (videoInfo.md5 == md5) {
@@ -221,7 +223,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
     /**
      * 视频开始回调
      */
-    override fun onVideoStart() {
+    override fun onVideoStart(isRestart: Boolean) {
         ELog.i(TAG, "onVideoStart")
     }
 
