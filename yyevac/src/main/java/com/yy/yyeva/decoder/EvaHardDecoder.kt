@@ -1,7 +1,11 @@
 package com.yy.yyeva.decoder
 
-import android.graphics.*
-import android.media.*
+import android.graphics.Bitmap
+import android.graphics.SurfaceTexture
+import android.media.MediaCodec
+import android.media.MediaCodecInfo
+import android.media.MediaExtractor
+import android.media.MediaFormat
 import android.opengl.GLES20
 import android.os.Build
 import android.view.Surface
@@ -40,6 +44,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     private var isPause = false
     private var retryCount = 0  //初始化失败重试次数
     private val lock = Object()  //用于暂停和帧抽取速度调整
+    private var evaFileContainer: IEvaFileContainer? = null
 
     override fun prepareToPlay(evaFileContainer: IEvaFileContainer) {
         ELog.i(TAG, "prepareToPlay")
@@ -132,6 +137,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     }
 
     private fun startPlay(evaFileContainer: IEvaFileContainer) {
+        this.evaFileContainer = evaFileContainer
         var extractor: MediaExtractor? = null
         var decoder: MediaCodec? = null
         var format: MediaFormat? = null
@@ -391,13 +397,28 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                                 ELog.d(TAG, "Reached EOD, looping")
                                 playerEva.pluginManager.onLoopStart()
                                 extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
-                                inputDone = false
-                                decoder.flush()
-                                speedControlUtil.reset()
-                                frameIndex = 0
-                                isLoop = true
-                                onVideoRestart()
-                                onVideoStart(true)
+                                val presentationTimeUs = extractor.sampleTime
+                                if (presentationTimeUs == -1L) {
+                                    ELog.i(
+                                        TAG,
+                                        "Reached EOD, presentationTimeUs $presentationTimeUs"
+                                    )
+                                    decoder.apply {
+                                        stop()
+                                        release()
+                                    }
+                                    extractor.release()
+                                    startPlay(evaFileContainer!!)
+                                    break
+                                } else {
+                                    inputDone = false
+                                    decoder.flush()
+                                    speedControlUtil.reset()
+                                    frameIndex = 0
+                                    isLoop = true
+                                    onVideoRestart()
+                                    onVideoStart(true)
+                                }
                             }
                             if (outputDone) {  //输出完成
                                 if (playerEva.isSetLastFrame) {
@@ -559,6 +580,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     private fun destroyInner() {
         ELog.i(TAG, "destroyInner")
         renderThread.handler?.post {
+            evaFileContainer?.close()
             playerEva.pluginManager.onDestroy()
             EvaJniUtil.destroyRender(playerEva.controllerId)
             if (playerEva.isVideoRecord) {
