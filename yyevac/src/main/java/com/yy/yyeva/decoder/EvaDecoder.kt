@@ -110,7 +110,8 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
                         playerEva.controllerId,
                         videoWidth,
                         videoHeight,
-                        defaultVideoMode
+                        defaultVideoMode,
+                        playerEva.isSameEva //兼容不包含json但是类似二分一eva布局
                     )
                 }
                 playerEva.evaAnimListener?.onVideoConfigReady(this)

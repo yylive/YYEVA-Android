@@ -264,9 +264,9 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     // 兼容老版本视频模式
-    @Deprecated("Compatible older version mp4")
-    fun setVideoMode(mode: Int) {
+    override fun setVideoMode(mode: Int, isSameEva: Boolean) {
         playerEva.videoMode = mode
+        playerEva.isSameEva = isSameEva
     }
 
     override fun setVideoFps(fps: Int, speed: Float) {

@@ -286,8 +286,9 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
     }
 
     // 兼容老版本视频模式
-    fun setVideoMode(mode: Int) {
+    override fun setVideoMode(mode: Int, isSameEva: Boolean) {
         playerEva.videoMode = mode
+        playerEva.isSameEva = isSameEva
     }
 
     override fun setVideoFps(fps: Int, speed: Float) {

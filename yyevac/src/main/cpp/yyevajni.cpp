@@ -152,7 +152,7 @@ JNIEXPORT void JNICALL YYEVA(setRenderConfig)(
 }
 
 JNIEXPORT void JNICALL YYEVA(defaultConfig)(
-        JNIEnv *env, jobject instance, jint controllerId, jint _videoWidth, jint _videoHeight, jint _defaultVideoMode) {
+        JNIEnv *env, jobject instance, jint controllerId, jint _videoWidth, jint _videoHeight, jint _defaultVideoMode, jboolean _isSameEva) {
     if (controllerId == -1) {
         ELOGE("defaultConfig controller not init");
         return;
@@ -161,7 +161,7 @@ JNIEXPORT void JNICALL YYEVA(defaultConfig)(
         ELOGE("defaultConfig controller %d not found", controllerId);
         return;
     }
-    shared_ptr<EvaAnimeConfig> config = EvaAnimeConfig::defaultConfig((int)_videoWidth, (int)_videoHeight, (int)_defaultVideoMode);
+    shared_ptr<EvaAnimeConfig> config = EvaAnimeConfig::defaultConfig((int)_videoWidth, (int)_videoHeight, (int)_defaultVideoMode, (bool)_isSameEva);
 
     if (config != nullptr) {
         renderMap[controllerId]->setRenderConfig(config);

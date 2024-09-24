@@ -188,7 +188,7 @@ shared_ptr<EvaAnimeConfig> EvaAnimeConfig::parse(const char* json) {
     return nullptr;
 }
 
-shared_ptr<EvaAnimeConfig> EvaAnimeConfig::defaultConfig(int _videoWidth, int _videoHeight, int defaultVideoMode) {
+shared_ptr<EvaAnimeConfig> EvaAnimeConfig::defaultConfig(int _videoWidth, int _videoHeight, int defaultVideoMode, bool isSameEva) {
     auto config = make_shared<EvaAnimeConfig>();
     config->videoWidth = _videoWidth;
     config->videoHeight = _videoHeight;
@@ -206,10 +206,19 @@ shared_ptr<EvaAnimeConfig> EvaAnimeConfig::defaultConfig(int _videoWidth, int _v
             config->rgbPointRect = make_shared<PointRect>(0, config->height, config->width, config->height);
             break;
         case 3: // 视频左右对齐（rgb左\alpha右）
-            config->width = _videoWidth / 2;
-            config->height = _videoHeight;
-            config->rgbPointRect = make_shared<PointRect>(0, 0, config->width, config->height);
-            config->alphaPointRect = make_shared<PointRect>(config->width, 0, config->width, config->height);
+            if (isSameEva) {//兼容不包含json但是类似二分一eva布局
+                config->width = _videoWidth *2/ 3;
+                config->height = _videoHeight;
+                config->rgbPointRect = make_shared<PointRect>(0, 0, config->width, config->height);
+                config->alphaPointRect = make_shared<PointRect>(config->width, 0, config->width /2,
+                                                                config->height /2);
+            } else {
+                config->width = _videoWidth / 2;
+                config->height = _videoHeight;
+                config->rgbPointRect = make_shared<PointRect>(0, 0, config->width, config->height);
+                config->alphaPointRect = make_shared<PointRect>(config->width, 0, config->width,
+                                                                config->height);
+            }
             break;
         case 4: // 视频上下对齐（rgb上\alpha下）
             config->width = _videoWidth;

@@ -285,7 +285,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
 
     private fun startDecode(extractor: MediaExtractor, decoder: MediaCodec) {
         val TIMEOUT_USEC = 10000L
-        var inputChunk = 0
+        var inputChunk = 0L
         var outputDone = false
         var inputDone = false
         var frameIndex = 0

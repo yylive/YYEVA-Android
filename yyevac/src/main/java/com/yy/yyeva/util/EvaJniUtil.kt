@@ -36,7 +36,7 @@ object EvaJniUtil {
      */
     external fun setRenderConfig(controllerId: Int, json: String)
 
-    external fun defaultConfig(controllerId: Int, width: Int, height: Int, defaultVideoMode: Int = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE)
+    external fun defaultConfig(controllerId: Int, width: Int, height: Int, defaultVideoMode: Int = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE, isSameEva: Boolean = false)
 
     /**
      * 设置背景bitmap数据
