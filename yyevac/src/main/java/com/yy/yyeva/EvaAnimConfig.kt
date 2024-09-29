@@ -57,7 +57,6 @@ class EvaAnimConfig {
     var alphaPointRect = PointRect(0, 0 ,0 ,0) // alpha区域
     var rgbPointRect = PointRect(0, 0, 0, 0) // rgb区域
     var defaultVideoMode = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE
-    var isSameEva = false  //兼容不包含json但是类似二分一eva布局
     var jsonConfig: JSONObject? = null
     var isMix = false
 

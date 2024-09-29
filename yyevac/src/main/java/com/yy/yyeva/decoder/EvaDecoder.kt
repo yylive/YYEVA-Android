@@ -103,16 +103,14 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
                         playerEva.controllerId,
                         videoWidth,
                         videoHeight,
-                        -1  //正常宽高
+                        EvaConstant.VIDEO_MODE_NORMAL_MP4  //正常宽高
                     )
                 } else {
                     EvaJniUtil.defaultConfig(
                         playerEva.controllerId,
                         videoWidth,
                         videoHeight,
-                        defaultVideoMode,
-                        playerEva.isSameEva //兼容不包含json但是类似二分一eva布局
-                    )
+                        defaultVideoMode)
                 }
                 playerEva.evaAnimListener?.onVideoConfigReady(this)
                 playerEva.evaAnimView.updateTextureViewLayout()

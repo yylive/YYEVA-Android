@@ -30,5 +30,5 @@ public:
     bool isMix = false;
 
     static shared_ptr<EvaAnimeConfig> parse(const char* json);
-    static shared_ptr<EvaAnimeConfig> defaultConfig(int _videoWidth, int _videoHeight, int defaultVideoMode, bool isSameEva);
+    static shared_ptr<EvaAnimeConfig> defaultConfig(int _videoWidth, int _videoHeight, int defaultVideoMode);
 };

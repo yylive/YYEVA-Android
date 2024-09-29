@@ -196,7 +196,6 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
                 playerEva.isNormalMp4 = true //设定为正常mp4
             }
             this.defaultVideoMode = playerEva.videoMode
-            this.isSameEva = playerEva.isSameEva
             fps = defaultFps
         }
         playerEva.fps = config?.fps ?: defaultFps
@@ -227,17 +226,16 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
                 }
                 EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE -> {
                     // 视频左右对齐（rgb左\alpha右）
-                    if (isSameEva) {//兼容不包含json但是类似二分一eva布局
-                        width = _videoWidth * 2/ 3
-                        height = _videoHeight
-                        rgbPointRect = PointRect(0, 0, width, height)
-                        alphaPointRect = PointRect(width, 0, width/2, height/2)
-                    } else {
-                        width = _videoWidth / 2
-                        height = _videoHeight
-                        rgbPointRect = PointRect(0, 0, width, height)
-                        alphaPointRect = PointRect(width, 0, width, height)
-                    }
+                    width = _videoWidth / 2
+                    height = _videoHeight
+                    rgbPointRect = PointRect(0, 0, width, height)
+                    alphaPointRect = PointRect(width, 0, width, height)
+                }
+                EvaConstant.YYEVAColorRegion_AlphaMP4_alphaHalfRightTop -> {
+                    width = _videoWidth * 2/ 3
+                    height = _videoHeight
+                    rgbPointRect = PointRect(0, 0, width, height)
+                    alphaPointRect = PointRect(width, 0, width/2, height/2)
                 }
                 EvaConstant.VIDEO_MODE_SPLIT_VERTICAL_REVERSE -> {
                     // 视频上下对齐（rgb上\alpha下）

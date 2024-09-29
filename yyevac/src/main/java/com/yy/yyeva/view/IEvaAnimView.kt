@@ -38,7 +38,7 @@ interface IEvaAnimView {
 
     fun supportMask(isSupport: Boolean, isEdgeBlur: Boolean)
 
-    fun setVideoMode(mode: Int, isSameEva: Boolean = false)
+    fun setVideoMode(mode: Int)
 
     //设置视频帧数和倍率
     fun setVideoFps(fps: Int, speed: Float = 1.0f) //speed为倍速

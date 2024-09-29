@@ -50,7 +50,6 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     var enableVersion1 : Boolean = false
     // 视频模式
     var videoMode: Int = EvaConstant.VIDEO_MODE_NORMAL_MP4  // 正常mp4
-    var isSameEva = false //兼容不包含json但是类似二分一eva布局
     var isDetachedFromWindow = false
     var isSurfaceAvailable = false
     var startRunnable: Runnable? = null
