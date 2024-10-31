@@ -5,37 +5,35 @@
 #include "mixshader.h"
 
 yyeva::MixShader::MixShader() {
-    char VERTEX[] =  "attribute vec4 a_Position;  \n"
-                     "attribute vec2 a_TextureSrcCoordinates;\n"
-                     "attribute vec2 a_TextureMaskCoordinates;\n"
-                     "varying vec2 v_TextureSrcCoordinates;\n"
-                     "varying vec2 v_TextureMaskCoordinates;\n"
-                     "void main()\n"
-                     "{\n"
-                     "    v_TextureSrcCoordinates = a_TextureSrcCoordinates;\n"
-                     "    v_TextureMaskCoordinates = a_TextureMaskCoordinates;\n"
-                     "    gl_Position = a_Position;\n"
-                     "}";
+    char VERTEX[] = R"(
+            #version 310 es
+            in vec4 a_Position;
+            in vec2 a_TextureSrcCoordinates;
+            in vec2 a_TextureMaskCoordinates;
+            out vec2 v_TextureSrcCoordinates;
+            out vec2 v_TextureMaskCoordinates;
+            void main() {
+                v_TextureSrcCoordinates = a_TextureSrcCoordinates;
+                v_TextureMaskCoordinates = a_TextureMaskCoordinates;
+                gl_Position = a_Position;
+            }
+    )";
+    char FRAGMENT[] = R"(
+        #version 310 es
+        #extension GL_OES_EGL_image_external_essl3 : require
+        precision mediump float;
+        uniform sampler2D u_TextureSrcUnit;
+        uniform samplerExternalOES u_TextureMaskUnit;
+        in vec2 v_TextureSrcCoordinates;
+        in vec2 v_TextureMaskCoordinates;
+        out vec4 gl_FragColor;
 
-    char FRAGMENT[] = "#extension GL_OES_EGL_image_external : require\n"
-                    "precision mediump float; \n"
-                    "uniform sampler2D u_TextureSrcUnit;\n"
-                    "uniform samplerExternalOES u_TextureMaskUnit;\n"
-                    "uniform int u_isFill;\n"
-                    "uniform vec4 u_Color;\n"
-                    "varying vec2 v_TextureSrcCoordinates;\n"
-                    "varying vec2 v_TextureMaskCoordinates;\n"
-                    "void main()\n"
-                    "{\n"
-                    "    vec4 srcRgba = texture2D(u_TextureSrcUnit, v_TextureSrcCoordinates);\n"
-                    "    vec4 maskRgba = texture2D(u_TextureMaskUnit, v_TextureMaskCoordinates);\n"
-//                    "    float isFill = step(0.5, float(u_isFill));\n"
-//                    "    vec4 srcRgbaCal = isFill * vec4(u_Color.r, u_Color.g, u_Color.b, srcRgba.a) + (1.0 - isFill) * srcRgba;\n"
-//                    "    gl_FragColor = vec4(srcRgbaCal.r, srcRgbaCal.g, srcRgbaCal.b, srcRgba.a * maskRgba.r);\n"
-//                    "    gl_FragColor = vec4(srcRgba.r, srcRgba.g, srcRgba.b, srcRgba.a * maskRgba.r);\n"
-                    "    gl_FragColor = srcRgba * maskRgba.r;\n"
-                    "}";
-
+        void main () {
+            vec4 srcRgba = texture(u_TextureSrcUnit, v_TextureSrcCoordinates);
+            vec4 maskRgba = texture(u_TextureMaskUnit, v_TextureMaskCoordinates);
+            gl_FragColor = srcRgba * maskRgba.r;
+        }
+    )";
     program = ShaderUtil::createProgram(VERTEX, FRAGMENT);
     uTextureSrcUnitLocation = glGetUniformLocation(program, U_TEXTURE_SRC_UNIT);
     uTextureMaskUnitLocation = glGetUniformLocation(program, U_TEXTURE_MASK_UNIT);

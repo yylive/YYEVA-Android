@@ -16,7 +16,7 @@ namespace yyeva {
         const GLchar *U_IS_FILL = "u_isFill";
         const GLchar *U_COLOR = "u_Color";
 
-        // Attribute constants
+        // uniform constants
         const GLchar *A_POSITION = "a_Position";
         const GLchar *A_TEXTURE_SRC_COORDINATES = "a_TextureSrcCoordinates";
         const GLchar *A_TEXTURE_MASK_COORDINATES = "a_TextureMaskCoordinates";

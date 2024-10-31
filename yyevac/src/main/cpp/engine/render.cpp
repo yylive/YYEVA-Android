@@ -17,11 +17,12 @@ yyeva::Render::~Render() {
 
 void yyeva::Render::initRender() {
     char VERTEX_SHADER[] = R"(
-            attribute vec4 vPosition;
-            attribute vec4 vTexCoordinateAlpha;
-            attribute vec4 vTexCoordinateRgb;
-            varying vec2 v_TexCoordinateAlpha;
-            varying vec2 v_TexCoordinateRgb;
+            #version 310 es
+            in vec4 vPosition;
+            in vec4 vTexCoordinateAlpha;
+            in vec4 vTexCoordinateRgb;
+            out vec2 v_TexCoordinateAlpha;
+            out vec2 v_TexCoordinateRgb;
             void main() {
                 v_TexCoordinateAlpha = vec2(vTexCoordinateAlpha.x, vTexCoordinateAlpha.y);
                 v_TexCoordinateRgb = vec2(vTexCoordinateRgb.x, vTexCoordinateRgb.y);
@@ -30,14 +31,17 @@ void yyeva::Render::initRender() {
     )";
 
     char FRAGMENT_SHADER[] = R"(
-        #extension GL_OES_EGL_image_external : require
+        #version 310 es
+        #extension GL_OES_EGL_image_external_essl3 : require
         precision mediump float;
         uniform samplerExternalOES texture;
-        varying vec2 v_TexCoordinateAlpha;
-        varying vec2 v_TexCoordinateRgb;
+        in vec2 v_TexCoordinateAlpha;
+        in vec2 v_TexCoordinateRgb;
+        out vec4 gl_FragColor;
+
         void main () {
-            vec4 alphaColor = texture2D(texture, v_TexCoordinateAlpha);
-            vec4 rgbColor = texture2D(texture, v_TexCoordinateRgb);
+            vec4 alphaColor = texture(texture, v_TexCoordinateAlpha);
+            vec4 rgbColor = texture(texture, v_TexCoordinateRgb);
             gl_FragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);
         }
     )";

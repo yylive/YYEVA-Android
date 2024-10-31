@@ -36,7 +36,7 @@ GLuint yyeva::RenderController::initRender(ANativeWindow *window, bool isNeedYUV
             render = make_shared<Mp4Render>();
         } else if (isNeedYUV) {
             ELOGV("use yuv render");
-            render = make_shared<YUVRender>();
+//            render = make_shared<YUVRender>();
         } else {
             ELOGV("use normal render");
             render = make_shared<Render>();

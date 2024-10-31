@@ -17,20 +17,23 @@ void yyeva::BgRender::setBgImage(unsigned char *bitmap, AndroidBitmapInfo *bitma
 
 void yyeva::BgRender::initRender() {
     char VERTEX_SHADER[] = R"(
-        attribute vec4 vPosition;
-        attribute vec4 vTexCoordinate;
-        varying vec2 v_TexCoordinate;
+        in vec4 vPosition;
+        in vec4 vTexCoordinate;
+        out vec2 v_TexCoordinate;
         void main() {
             v_TexCoordinate = vec2(vTexCoordinate.x, vTexCoordinate.y);
             gl_Position = vPosition;
         }
     )";
     char FRAGMENT_SHADER[] = R"(
+        #version 310 es
         precision mediump float;
         uniform sampler2D texture;
-        varying vec2 v_TexCoordinate;
+        in vec2 v_TexCoordinate;
+        out vec4 gl_FragColor;
+
         void main () {
-            gl_FragColor = texture2D(texture, v_TexCoordinate);
+            gl_FragColor = texture(texture, v_TexCoordinate);
         }
     )";
     shaderProgram = ShaderUtil::createProgram(VERTEX_SHADER, FRAGMENT_SHADER);

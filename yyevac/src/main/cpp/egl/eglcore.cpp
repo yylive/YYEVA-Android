@@ -105,7 +105,7 @@ EGLConfig EGLCore::chooseConfig() {
     EGLConfig configs;
 //    EGLint* attributes = getAttributes();
     EGLint attributes[] =
-            {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, //指定渲染api类别
+            {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR, //指定渲染api类别
              EGL_RED_SIZE, 8,
              EGL_GREEN_SIZE, 8,
              EGL_BLUE_SIZE, 8,
@@ -128,7 +128,7 @@ EGLConfig EGLCore::chooseRecordConfig() {
     EGLConfig configs;
 //    EGLint* attributes = getAttributes();
     EGLint attributes[] =
-            {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, //指定渲染api类别
+            {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR, //指定渲染api类别
              EGL_RED_SIZE, 8,
              EGL_GREEN_SIZE, 8,
              EGL_BLUE_SIZE, 8,
@@ -149,7 +149,7 @@ EGLConfig EGLCore::chooseRecordConfig() {
 
 EGLint* EGLCore::getAttributes() {
     EGLint attribList[] =
-            {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT, //指定渲染api类别
+            {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR, //指定渲染api类别
              EGL_RED_SIZE, 8,
              EGL_GREEN_SIZE, 8,
              EGL_BLUE_SIZE, 8,

@@ -73,7 +73,7 @@ target_link_libraries( # Specifies the target library.
                        yyeva
                        android
 #                       GLESv3
-                       GLESv2
+                       GLESv3
                        EGL
                        jnigraphics
                        parson

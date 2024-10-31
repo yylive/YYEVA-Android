@@ -17,24 +17,27 @@ void yyeva::FbRender::setTextureId(GLuint textureId) {
 }
 
 void yyeva::FbRender::initRender() {
-    char VERTEX_SHADER[] = "attribute vec4 vPosition;\n"
-                           "attribute vec4 vTexCoordinate;\n"
-                           "varying vec2 v_TexCoordinate;\n"
-                           "\n"
-                           "void main() {\n"
-                           "    v_TexCoordinate = vec2(vTexCoordinate.x, vTexCoordinate.y);\n"
-                           "    gl_Position = vPosition;\n"
-                           "}";
+    char VERTEX_SHADER[] = R"(
+        #version 310 es
+        in vec4 vPosition;
+        in vec4 vTexCoordinate;
+        out vec2 v_TexCoordinate;
+        void main() {
+            v_TexCoordinate = vec2(vTexCoordinate.x, vTexCoordinate.y);
+            gl_Position = vPosition;
+        }
+    )";
+    char FRAGMENT_SHADER[] = R"(
+        #version 310 es
+        precision mediump float;
+        uniform sampler2D texture;
+        in vec2 v_TexCoordinate;
+        out vec4 gl_FragColor;
 
-    char FRAGMENT_SHADER[] =
-            "precision mediump float;\n"
-            "uniform sampler2D texture;\n"
-            "varying vec2 v_TexCoordinate;\n"
-            "\n"
-            "void main () {\n"
-            "    gl_FragColor = texture2D(texture, v_TexCoordinate);\n"
-            //                             "    gl_FragColor = vec4(1.0,0.2,0.5,1.0);\n"
-            "}";
+        void main () {
+            gl_FragColor = texture(texture, v_TexCoordinate);
+        }
+    )";
     shaderProgram = ShaderUtil::createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
     uTextureLocation = glGetUniformLocation(shaderProgram, "texture");
     positionLocation = glGetAttribLocation(shaderProgram, "vPosition");
