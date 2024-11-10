@@ -44,6 +44,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
     private var lastEvaFile: IEvaFileContainer? = null
     private val scaleTypeUtil = ScaleTypeUtil()
     private var bg: Bitmap? = null
+    private var evaSocketServer = EvaSocketServer()
 
     // 代理监听
     private val animProxyListener by lazy {
@@ -237,6 +238,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
         }
         playerEva.isDetachedFromWindow = true
         playerEva.onSurfaceTextureDestroyed()
+        evaSocketServer.closeServer()
     }
 
 
@@ -452,6 +454,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
 
     override fun setLog(log: IELog) {
         ELog.log = log
+        evaSocketServer.startServer()
         EvaJniUtil.setLog(log)
     }
 }

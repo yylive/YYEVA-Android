@@ -294,8 +294,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
                 Log.e(tag, msg, tr)
             }
         }
-        ELog.log = log
-        EvaJniUtil.setLog(log)
+        animView.setLog(log)
     }
 
     private var isPause = false;

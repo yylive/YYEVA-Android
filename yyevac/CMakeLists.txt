@@ -41,6 +41,8 @@ add_library( # Sets the name of the library.
         src/main/cpp/util/texcoordsutil.cpp
         src/main/cpp/util/textureloadutil.cpp
         src/main/cpp/util/elog.cpp
+        src/main/cpp/util/localsocketclient.cpp
+        src/main/cpp/util/localsocketserver.cpp
         src/main/cpp/mix/evamixrender.cpp
         src/main/cpp/mix/mixshader.cpp
         src/main/cpp/record/recordercontroller.cpp

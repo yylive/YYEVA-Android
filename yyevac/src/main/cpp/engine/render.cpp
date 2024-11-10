@@ -3,6 +3,7 @@
 //
 
 #include "render.h"
+#include "../util/localsocketclient.h"
 
 #define LOG_TAG "Render"
 #define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
@@ -54,6 +55,8 @@ void yyeva::Render::initRender() {
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    auto client = new LocalSocketClient();
+    client->sendMessage("render", "initRender");
 }
 
 void yyeva::Render::renderFrame() {
