@@ -4,7 +4,7 @@
 #pragma once
 #include <string>
 #include <android/bitmap.h>
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 #include "src/main/cpp/bean/effect.h"
 
 using namespace std;

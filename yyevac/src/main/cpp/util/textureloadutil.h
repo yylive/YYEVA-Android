@@ -2,7 +2,7 @@
 // Created by zengjiale on 2022/4/21.
 //
 #pragma once
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 #include <GLES2/gl2ext.h>
 #include <android/bitmap.h>
 #include <util/stb_image_write.h>

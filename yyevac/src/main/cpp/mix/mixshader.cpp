@@ -37,10 +37,10 @@ yyeva::MixShader::MixShader() {
     program = ShaderUtil::createProgram(VERTEX, FRAGMENT);
     uTextureSrcUnitLocation = glGetUniformLocation(program, U_TEXTURE_SRC_UNIT);
     uTextureMaskUnitLocation = glGetUniformLocation(program, U_TEXTURE_MASK_UNIT);
-    //是否填充字体颜色
-    uIsFillLocation = glGetUniformLocation(program, U_IS_FILL);
-    //填充颜色
-    uColorLocation = glGetUniformLocation(program, U_COLOR);
+//    //是否填充字体颜色
+//    uIsFillLocation = glGetUniformLocation(program, U_IS_FILL);
+//    //填充颜色
+//    uColorLocation = glGetUniformLocation(program, U_COLOR);
 
     aPositionLocation = glGetAttribLocation(program, A_POSITION);
     aTextureSrcCoordinatesLocation = glGetAttribLocation(program, A_TEXTURE_SRC_COORDINATES);

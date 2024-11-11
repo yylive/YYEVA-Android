@@ -3,7 +3,7 @@
 #pragma once
 #include <EGL/egl.h>
 #include <GLES3/gl3.h>
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 #include <EGL/eglext.h>
 
 #include <android/native_window.h>
@@ -20,7 +20,7 @@ public:
 
     ~EGLCore();
 
-    void start(ANativeWindow *window);
+    bool start(ANativeWindow *window);
 
     //使用共享context，用于录制
     void start(EGLContext context, ANativeWindow *window);

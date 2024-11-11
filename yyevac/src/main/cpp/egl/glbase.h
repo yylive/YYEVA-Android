@@ -1,7 +1,7 @@
 //#include <GLES3/gl3.h>
 
 #pragma once
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 
 /**
  * cangwang 2018.12.1

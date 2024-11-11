@@ -7,7 +7,7 @@
 #include "src/main/cpp/egl/eglcore.h"
 #include "src/main/cpp/util/shaderutil.h"
 #include "src/main/cpp/util/glfloatarray.h"
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 #include <GLES2/gl2ext.h>
 #include "src/main/cpp/util/vertexutil.h"
 #include "src/main/cpp/util/texcoordsutil.h"

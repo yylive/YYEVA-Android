@@ -26,6 +26,7 @@ GLuint ShaderUtil::compileShader(GLenum shaderType, const char* shaderSource) {
         GLint compiled;
         glShaderSource(shaderHandle, 1,
                        &shaderSource, nullptr);
+        shaderSource = nullptr;
         glCompileShader(shaderHandle);
         glGetShaderiv(shaderHandle,GL_COMPILE_STATUS,&compiled);
         if(!compiled){
@@ -53,6 +54,7 @@ GLuint ShaderUtil::compileShader(GLenum shaderType, const char* shaderSource) {
         }
         ELOGE("Error create shader");
     }
+    glDeleteShader(shaderHandle);
     return 0;
 }
 
@@ -79,12 +81,16 @@ GLuint ShaderUtil::createAndLinkProgram(GLuint vertexShaderHandle, GLuint fragme
             ELOGE("loadProgram failed: %s", infoLog);
             free(infoLog);
         }
-
+        glDetachShader(iProgId, vertexShaderHandle);
+        glDetachShader(iProgId, fragmentShaderHandle);
+        glDeleteShader(vertexShaderHandle);
+        glDeleteShader(fragmentShaderHandle);
         glDeleteProgram(iProgId);
         return 0;
     }
+//    glDetachShader(iProgId, vertexShaderHandle);
+//    glDetachShader(iProgId, fragmentShaderHandle);
     glDeleteShader(vertexShaderHandle);
     glDeleteShader(fragmentShaderHandle);
     return iProgId;
 }
-

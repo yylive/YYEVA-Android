@@ -85,9 +85,9 @@ void yyeva::EvaMixRender::rendFrame(GLuint videoTextureId, shared_ptr<EvaAnimeCo
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, videoTextureId);
     glUniform1i(shader->uTextureMaskUnitLocation, 1);
 
-    //属性处理
-    glUniform1i(shader->uIsFillLocation, 0);
-    glUniform4f(shader->uColorLocation, 0, 0, 0, 0);
+//    //属性处理
+//    glUniform1i(shader->uIsFillLocation, 0);
+//    glUniform4f(shader->uColorLocation, 0, 0, 0, 0);
     //启动混合
     glEnable(GL_BLEND);
     //基于alpha通道的半透明混合函数

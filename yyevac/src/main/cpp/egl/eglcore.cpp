@@ -4,12 +4,13 @@
 #define LOG_TAG "EGLCore"
 #define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
 #define ELOGD(...) yyeva::ELog::get()->d(LOG_TAG, __VA_ARGS__)
+#define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
 
 /**
  * EGL是介于诸如OpenGL 或OpenVG的Khronos渲染API与底层本地平台窗口系统的接口。它被用于处理图形管理、表面/缓冲捆绑、渲染同步及支援使用其他Khronos API进行的高效、加速、混合模式2D和3D渲染。
  * cangwang 2018.12.1
  */
-EGLCore::EGLCore():mDisplay(EGL_NO_DISPLAY),mSurface(EGL_NO_SURFACE),mContext(EGL_NO_CONTEXT) {
+EGLCore::EGLCore():mDisplay(EGL_NO_DISPLAY), mSurface(EGL_NO_SURFACE),mContext(EGL_NO_CONTEXT) {
 
 }
 
@@ -19,24 +20,44 @@ EGLCore::~EGLCore() {
     mContext = EGL_NO_CONTEXT;
 }
 
-void EGLCore::start(ANativeWindow *window) {
+bool EGLCore::start(ANativeWindow *window) {
     mDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+    if (!mDisplay) {
+        ELOGE("eglGetDisplay failed: %d",eglGetError());
+        release();
+        return false;
+    }
     GLint majorVersion;
     GLint minorVersion;
     //获取支持最低和最高版本
     if (!eglInitialize(mDisplay,&majorVersion,&minorVersion)){
         ELOGE("eglInitialize failed: %d",eglGetError());
-        return;
+        release();
+        return false;
     }
     ELOGD("eglInitialize success");
     EGLConfig config = chooseConfig();
-    ELOGD("chooseConfig success");
+    if (!config) {
+        ELOGE("chooseConfig failed: %d", eglGetError());
+        release();
+        return false;
+    } else {
+        ELOGD("chooseConfig success");
+    }
 
-    mContext = createContext(mDisplay, config);
+    bool isCreateSuccess = createContext(mDisplay, config);
+    if (!isCreateSuccess) {
+        ELOGE("createContext failed:%d", eglGetError());
+        release();
+        return false;
+    }
+
     ELOGD("createContext success");
     EGLint format = 0;
     if (!eglGetConfigAttrib(mDisplay,config,EGL_NATIVE_VISUAL_ID,&format)){
         ELOGE("eglGetConfigAttrib failed: %d",eglGetError());
+        release();
+        return false;
     }
     ELOGD("eglGetConfigAttrib success");
     ANativeWindow_setBuffersGeometry(window,0,0,format);
@@ -44,14 +65,33 @@ void EGLCore::start(ANativeWindow *window) {
     //创建On-Screen 渲染区域
     mSurface = eglCreateWindowSurface(mDisplay,config,window,0);
     if (mSurface == nullptr || mSurface == EGL_NO_SURFACE){
-        ELOGE("eglCreateWindowSurface failed: %d",eglGetError());
-        return;
+        EGLint error = eglGetError();
+        ELOGE("eglCreatePbufferSurface failed: %d", error);
+        switch (error) {
+            case EGL_BAD_ALLOC:
+                ELOGE("Not enough resources available");
+                break;
+            case EGL_BAD_CONFIG:
+                ELOGE("provided EGLConfig is invalid");
+                break;
+            case EGL_BAD_PARAMETER:
+                ELOGE("provided EGL_WIDTH and EGL_HEIGHT is invalid");
+                break;
+            case EGL_BAD_MATCH:
+                ELOGE("Check window and EGLConfig attributes");
+                break;
+        }
+        release();
+        return false;
     }
     ELOGD("eglCreateWindowSurface success");
     if (eglMakeCurrent(mDisplay, mSurface, mSurface, mContext) == false) {
-        ELOGE("make current error:${Integer.toHexString(egl?.eglGetError() ?: 0)}");
+        ELOGE("make current error:%d", eglGetError());
+        release();
+        return false;
     }
     ELOGD("eglMakeCurrent success");
+    return true;
 }
 
 void EGLCore::start(EGLContext context, ANativeWindow *window) {
@@ -157,7 +197,7 @@ EGLint* EGLCore::getAttributes() {
              EGL_DEPTH_SIZE, 0,
              EGL_STENCIL_SIZE, 0,
              EGL_NONE
-    };
+            };
     return attribList;
 }
 
@@ -168,7 +208,7 @@ EGLContext EGLCore::createContext(EGLDisplay eglDisplay, EGLConfig eglConfig) {
                              EGL_NONE};
     // EGL_NO_CONTEXT表示不向其它的context共享资源
     mContext = eglCreateContext(eglDisplay, eglConfig, EGL_NO_CONTEXT, contextAttrib);
-    if (mContext == EGL_NO_CONTEXT){
+    if (mContext == EGL_NO_CONTEXT) {
         ELOGE("eglCreateContext failed: %d",eglGetError());
         return GL_FALSE;
     }
@@ -275,20 +315,42 @@ void EGLCore::swapBuffer() {
     //4）按需重新计算buffer
     //5）Lock buffer，这样就实现page flip，也就是swapbuffer
     if (mDisplay != nullptr && mSurface != nullptr) {
-        eglSwapBuffers(mDisplay, mSurface);
+        if(!eglSwapBuffers(mDisplay, mSurface)) {
+            ELOGE("swapBuffer failed: %d", eglGetError());
+        }
+    } else {
+        ELOGE("swapBuffer failed");
     }
 }
 
 void EGLCore::release() {
-    ELOGD("release");
-    eglDestroySurface(mDisplay,mSurface);
-    eglMakeCurrent(mDisplay,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
-    eglDestroyContext(mDisplay,mContext);
-    eglReleaseThread();
-    eglTerminate(mDisplay);
+    ELOGV("egl release");
+    bool destroyResult = eglMakeCurrent(mDisplay,EGL_NO_SURFACE,EGL_NO_SURFACE,EGL_NO_CONTEXT);
+    if (destroyResult == EGL_FALSE) {
+        ELOGE("eglMakeCurrent failed: %d", eglGetError());
+    }
+    destroyResult = eglDestroySurface(mDisplay,mSurface);
+    if (destroyResult == EGL_FALSE) {
+        ELOGE("eglDestroySurface failed: %d", eglGetError());
+    }
+
+    destroyResult = eglDestroyContext(mDisplay,mContext);
+    if (destroyResult == EGL_FALSE) {
+        ELOGE("eglDestroyContext failed: %d", eglGetError());
+    }
+    destroyResult = eglTerminate(mDisplay);
+    if (destroyResult == EGL_FALSE) {
+        ELOGE("eglTerminate failed: %d", eglGetError());
+    }
+
+    destroyResult = eglReleaseThread();
+    if (destroyResult == EGL_FALSE) {
+        ELOGE("eglReleaseThread failed: %d", eglGetError());
+    }
     mDisplay = EGL_NO_DISPLAY;
     mContext = EGL_NO_CONTEXT;
     mSurface = EGL_NO_SURFACE;
+    ELOGV("egl release finish");
 }
 
 /**
@@ -297,7 +359,8 @@ void EGLCore::release() {
  */
 void EGLCore::setPresentationTime(uint64_t nsecs) {
     if (mDisplay && mSurface && eglPresentationTimeANDROID) {
-        eglPresentationTimeANDROID(mDisplay, mSurface, nsecs);
+        eglPresentationTimeANDROID(mDisplay, mSurface,
+                                   static_cast<khronos_stime_nanoseconds_t>(nsecs));
     }
 }
 
