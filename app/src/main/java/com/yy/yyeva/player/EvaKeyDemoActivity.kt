@@ -333,6 +333,9 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
             isMute = !isMute
             animView.setMute(isMute)
         }
+        btnRestart.setOnClickListener {
+            animView.restart()
+        }
     }
 
     private fun loadFile() {

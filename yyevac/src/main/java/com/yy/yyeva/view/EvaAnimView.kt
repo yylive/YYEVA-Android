@@ -373,6 +373,10 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         }
     }
 
+    override fun restart() {
+        playerEva.restart()
+    }
+
     override fun pause() {
         playerEva.pause()
     }

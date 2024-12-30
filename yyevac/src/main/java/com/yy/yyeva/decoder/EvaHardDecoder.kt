@@ -42,6 +42,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     private var outputFormat: MediaFormat? = null
     // 暂停
     private var isPause = false
+    private var isRestart = false
     private var retryCount = 0  //初始化失败重试次数
     private val lock = Object()  //用于暂停和帧抽取速度调整
     private var evaFileContainer: IEvaFileContainer? = null
@@ -270,6 +271,11 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
         }
     }
 
+    override fun restart() {
+        ELog.i(TAG, "restart")
+        isRestart = true
+    }
+
     override fun pause() {
         ELog.i(TAG, "pause")
         isPause = true
@@ -312,6 +318,10 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                     ELog.i(TAG, "lock wait")
                     lock.wait()
                 }
+            }
+            if (isRestart) {
+                extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
+                isRestart = false
             }
             try {
                 if (!inputDone) {

@@ -73,6 +73,8 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
         this.completeBlock = completeBlock
     }
 
+    abstract fun restart()
+
     abstract fun pause()
 
     abstract fun resume()

@@ -27,6 +27,7 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     var needDestroy = false
     var isPause = false
     var isAudioMute = false
+    var isRestart = false
     private val lock = Object()  //用于暂停和帧抽取速度调整
 
     private fun prepareThread(): Boolean {
@@ -60,6 +61,11 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
         } else {
             audioTrack?.setVolume(1f)
         }
+    }
+
+    fun restart() {
+        ELog.i(TAG, "restart")
+        isRestart = true
     }
 
     fun pause() {
@@ -174,6 +180,10 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
                     ELog.i(TAG, "lock wait")
                     lock.wait()
                 }
+            }
+            if (isRestart) {
+                extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
+                isRestart = false
             }
             if (!isEOS) {
                 val inputIndex = decoder.dequeueInputBuffer(timeOutUs)

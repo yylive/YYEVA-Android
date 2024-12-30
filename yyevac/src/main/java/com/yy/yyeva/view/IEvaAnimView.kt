@@ -53,6 +53,8 @@ interface IEvaAnimView {
 
     fun prepareToPlay(file: File, repeatCount: Int = 0)
 
+    fun restart()
+
     fun play()
 
     //播放文件
