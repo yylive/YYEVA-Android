@@ -34,6 +34,8 @@ interface IEvaAnimListener {
      */
     fun onVideoComplete(lastFrame: Boolean = false)
 
+    fun onVideoPlayFinish()
+
     /**
      * 视频被销毁
      */

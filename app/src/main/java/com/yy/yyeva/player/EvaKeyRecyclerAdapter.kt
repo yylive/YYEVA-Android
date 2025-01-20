@@ -176,6 +176,10 @@ class EvaKeyRecyclerAdapter():RecyclerView.Adapter<EvaKeyRecyclerAdapter.EvaKeyH
                     ELog.i(TAG, "onVideoComplete")
                 }
 
+                override fun onVideoPlayFinish() {
+                    ELog.i(TAG, "onVideoPlayFinish")
+                }
+
                 override fun onVideoDestroy() {
                     ELog.i(TAG, "onVideoDestroy")
                 }

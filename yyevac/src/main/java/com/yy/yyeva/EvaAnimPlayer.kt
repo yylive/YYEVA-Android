@@ -89,6 +89,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     }
 
     fun startPlay(evaFileContainer: IEvaFileContainer) {
+        ELog.i(TAG, "startPlay")
         isStartRunning = true
         prepareDecoder()
         if (decoder?.prepareThread() == false) {
@@ -170,5 +171,6 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
                 isLoop = this@EvaAnimPlayer.isLoop
             }
         }
+        ELog.i(TAG, "prepareDecoder")
     }
 }

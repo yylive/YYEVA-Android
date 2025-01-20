@@ -73,6 +73,10 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
                 evaAnimListener?.onVideoComplete()
             }
 
+            override fun onVideoPlayFinish() {
+                evaAnimListener?.onVideoPlayFinish()
+            }
+
             override fun onVideoDestroy() {
                 hide()
                 evaAnimListener?.onVideoDestroy()

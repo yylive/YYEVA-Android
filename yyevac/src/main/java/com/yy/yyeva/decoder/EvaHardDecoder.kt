@@ -13,6 +13,7 @@ import android.opengl.GLES20
 import android.os.Environment
 import com.yy.yyeva.EvaAnimPlayer
 import com.yy.yyeva.util.EvaConstant
+import com.yy.yyeva.view.EvaAudioPlayer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -116,6 +117,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     }
 
     private fun startPlay(evaFileContainer: IEvaFileContainer) {
+        ELog.i(TAG, "startPlay")
         var extractor: MediaExtractor? = null
         var decoder: MediaCodec? = null
         var format: MediaFormat? = null

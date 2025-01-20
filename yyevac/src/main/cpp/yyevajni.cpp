@@ -95,6 +95,7 @@ JNIEXPORT void JNICALL YYEVA(videoSizeChange)(
 JNIEXPORT jint JNICALL YYEVA(initRender)(
         JNIEnv *env, jobject instance, jint controllerId,
         jobject surface, jboolean isNeedYUV, jboolean isNormalMp4, jboolean isVideoRecord) {
+    ELOGV("initRender");
     lock_guard<mutex> auto_lock(mtx);
     //创建window
     ANativeWindow *window = ANativeWindow_fromSurface(env,surface);
@@ -478,7 +479,7 @@ JNIEXPORT void JNICALL YYEVA(stopRecord)(
 JNIEXPORT void JNICALL YYEVA(setLog)(
         JNIEnv *env,
         jobject instance, jobject log) {
-    ELOGV("nativeSetListener");
+    ELOGV("setLog");
 
     JavaVM *javaVm;
     if (env->GetJavaVM(&javaVm) != JNI_OK) {

@@ -234,6 +234,10 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         ELog.i(TAG, "onVideoComplete")
     }
 
+    override fun onVideoPlayFinish() {
+        ELog.i(TAG, "onVideoPlayFinish")
+    }
+
     /**
      * 播放器被销毁情况下会调用
      */

@@ -75,6 +75,11 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
                 evaAnimListener?.onVideoComplete(lastFrame)
             }
 
+            override fun onVideoPlayFinish() {
+                ELog.i(TAG, "onVideoPlayFinish")
+                evaAnimListener?.onVideoPlayFinish()
+            }
+
             override fun onVideoDestroy() {
                 hide()
                 evaAnimListener?.onVideoDestroy()
@@ -368,6 +373,7 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
                 ELog.e(TAG, "AnimView is GONE, can't play")
                 return@ui
             }
+            ELog.i(TAG, "startPlay ${evaFileContainer.getFile()?.absolutePath}")
             if (!playerEva.isRunning()) {
                 lastEvaFile = evaFileContainer
                 playerEva.startPlay(evaFileContainer)

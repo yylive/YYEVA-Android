@@ -87,6 +87,7 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
     }
 
     fun preparePlay(videoWidth: Int, videoHeight: Int) {
+        ELog.i(TAG, "preparePlay $videoWidth, $videoHeight")
         playerEva.configManager.defaultConfig(videoWidth, videoHeight)
         playerEva.configManager.config?.apply {
 //            render?.setAnimConfig(this)
@@ -164,6 +165,12 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
         ELog.i(TAG, "onVideoComplete")
         playerEva.evaAnimListener?.onVideoComplete(lastFrame)
     }
+
+    override fun onVideoPlayFinish() {
+        ELog.i(TAG, "onVideoPlayFinish")
+        playerEva.evaAnimListener?.onVideoPlayFinish()
+    }
+
 
     override fun onVideoDestroy() {
         ELog.i(TAG, "onVideoDestroy")
