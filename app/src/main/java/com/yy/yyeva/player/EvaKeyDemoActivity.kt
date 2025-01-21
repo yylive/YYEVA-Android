@@ -45,7 +45,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
     }
 
     // 视频信息
-    private val videoInfo = VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be")
+    private val videoInfo = VideoInfo("第二层.mp4", "400a778f258ed6bd02ec32defe8ca8be")
 
 
     // 动画View
@@ -114,7 +114,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
              */
             override fun setText(resource: EvaResource, result: (EvaResource) -> Unit) {
                 val tag = resource.tag
-                if (tag == "anchor_nick") { // 此tag是已经写入到动画配置中的tag
+                if (tag == "name") { // 此tag是已经写入到动画配置中的tag
                     resource.text = "USERNICK\uD83D\uDE04"
                     resource.textAlign = "left"
                     result(resource)

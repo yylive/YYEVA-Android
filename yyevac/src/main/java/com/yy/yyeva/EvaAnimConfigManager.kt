@@ -98,7 +98,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
                         }
                     } else {
                         if (readBytesLast.isNotEmpty()) {
-                            bufStrS = String(readBytes + readBytesLast)
+                            bufStrS = String(readBytesLast + readBytes)
                             var indexS = bufStrS.indexOf(matchStart)
                             if (indexS > 0) { //合并分段找到匹配开头
                                 jsonStr = bufStrS.substring(indexS + matchStart.length)
