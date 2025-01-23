@@ -125,9 +125,9 @@ void yyeva::Render::draw() {
         //     GLenum dstRGB,
         //     GLenum srcAlpha,
         //     GLenum dstAlpha);
-//        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE,
-//                            GL_ONE_MINUS_SRC_ALPHA);
-        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE,
+                            GL_ONE_MINUS_SRC_ALPHA);
+//        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         glDisable(GL_BLEND);
     }
