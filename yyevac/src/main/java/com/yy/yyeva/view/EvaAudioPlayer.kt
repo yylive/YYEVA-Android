@@ -56,10 +56,14 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     fun setMute(isMute: Boolean) {
         ELog.i(TAG, "setMute $isMute")
         this.isAudioMute = isMute
-        if (isAudioMute) {
-            audioTrack?.setVolume(0f)
-        } else {
-            audioTrack?.setVolume(1f)
+        try {
+            if (isAudioMute) {
+                audioTrack?.setVolume(0f)
+            } else {
+                audioTrack?.setVolume(1f)
+            }
+        } catch (e: Exception) {
+            ELog.e(TAG, "setMute $e")
         }
     }
 
@@ -160,11 +164,16 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
         val bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelConfig, AudioFormat.ENCODING_PCM_16BIT)
         val audioTrack = AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, channelConfig, AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM)
         this.audioTrack = audioTrack
-        if (isAudioMute) {
-            audioTrack.setVolume(0f)
-        } else {
-            audioTrack.setVolume(1f)
+        try {
+            if (isAudioMute) {
+                audioTrack.setVolume(0f)
+            } else {
+                audioTrack.setVolume(1f)
+            }
+        } catch (e: Exception) {
+            ELog.e(TAG, "startPlay setVolume $e")
         }
+
         val state = audioTrack.state
         if (state != AudioTrack.STATE_INITIALIZED) {
             release()
