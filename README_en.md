@@ -73,6 +73,28 @@ interface IEvaAnimView {
     fun setLoop(playLoop: Int)
      //设置背景图
     fun setBgImage(bg: Bitmap)
+    //speed为倍速
+    fun setVideoFps(fps: Int, speed: Float = 1.0f)
+    //设置资源颜色区域和透明区域的对齐方式
+    /*
+    const val VIDEO_MODE_SPLIT_HORIZONTAL = 1 // 视频左右对齐（alpha左\rgb右）
+    const val VIDEO_MODE_SPLIT_VERTICAL = 2 // 视频上下对齐（alpha上\rgb下）
+    const val VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE = 3 // 视频左右对齐（rgb左\alpha右）
+    const val VIDEO_MODE_SPLIT_VERTICAL_REVERSE = 4 // 视频上下对齐（rgb上\alpha下）
+    const val YYEVAColorRegion_AlphaMP4_alphaHalfRightTop = 5 // 视频上下对齐（rgb上\alpha下）1/4 elpha
+     */
+    fun setVideoMode(mode: Int)
+    //设置起始播放位置 毫秒
+    //硬解某些机型会有跳帧前几帧解析异常的问题，不建议使用。
+    fun setStartPoint(startPoint: Long)
+    //设置静音
+    fun setMute(isMute: Boolean)
+    //是否不透明度mp4
+    fun setNormalMp4(isNormalMp4: Boolean)
+    //是否停留在最后一帧
+    fun setLastFrame(isSetLastFrame: Boolean)
+    //设置日志打印
+    fun setLog(log: IELog)
     ...
 }
 ```
