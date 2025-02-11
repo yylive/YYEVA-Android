@@ -13,8 +13,7 @@ yyeva::RecordRender::~RecordRender() {
 }
 
 void yyeva::RecordRender::initRender() {
-    char VERTEX_SHADER[] = R"(
-        #version 310 es
+    char VERTEX_SHADER[] = R"(#version 310 es
         in vec4 vPosition;
         in vec4 vTexCoordinate;
         out vec2 v_TexCoordinate;
@@ -33,15 +32,14 @@ void yyeva::RecordRender::initRender() {
 //            "    gl_FragColor = texture(texture, v_TexCoordinate);\n"
 //            //                             "    gl_FragColor = vec4(1.0,0.2,0.5,1.0);\n"
 //            "}";
-    char FRAGMENT_SHADER[] = R"(
-        #version 310 es
+    char FRAGMENT_SHADER[] = R"(#version 310 es
         precision mediump float;
         uniform sampler2D texture;
         in vec2 v_TexCoordinate;
-        out vec4 gl_FragColor;
+        out vec4 fragColor;
 
         void main () {
-            gl_FragColor = texture(texture, vec2(v_TexCoordinate.x, 1.0-v_TexCoordinate.y));
+            fragColor = texture(texture, vec2(v_TexCoordinate.x, 1.0-v_TexCoordinate.y));
         }
     )";
     shaderProgram = ShaderUtil::createProgram(VERTEX_SHADER, FRAGMENT_SHADER);

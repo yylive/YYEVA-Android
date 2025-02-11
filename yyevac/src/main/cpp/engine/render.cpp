@@ -32,20 +32,20 @@ void yyeva::Render::initRender() {
     char FRAGMENT_SHADER[] = R"(#version 310 es
         #extension GL_OES_EGL_image_external_essl3 : require
         precision mediump float;
-        uniform samplerExternalOES texture;
+        uniform samplerExternalOES u_Texture;
         in vec2 v_TexCoordinateAlpha;
         in vec2 v_TexCoordinateRgb;
         out vec4 fragColor;
 
         void main () {
-            vec4 alphaColor = texture(texture, v_TexCoordinateAlpha);
-            vec4 rgbColor = texture(texture, v_TexCoordinateRgb);
+            vec4 alphaColor = texture(u_Texture, v_TexCoordinateAlpha);
+            vec4 rgbColor = texture(u_Texture, v_TexCoordinateRgb);
             fragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);
         }
     )";
 
     shaderProgram = ShaderUtil::createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    uTextureLocation = glGetUniformLocation(shaderProgram, "texture");
+    uTextureLocation = glGetUniformLocation(shaderProgram, "u_Texture");
     aPositionLocation = glGetAttribLocation(shaderProgram, "vPosition");
     aTextureAlphaLocation = glGetAttribLocation(shaderProgram, "vTexCoordinateAlpha");
     aTextureRgbLocation = glGetAttribLocation(shaderProgram, "vTexCoordinateRgb");
