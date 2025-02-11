@@ -5,8 +5,7 @@
 #include "mixshader.h"
 
 yyeva::MixShader::MixShader() {
-    char VERTEX[] = R"(
-            #version 310 es
+    char VERTEX[] = R"(#version 310 es
             in vec4 a_Position;
             in vec2 a_TextureSrcCoordinates;
             in vec2 a_TextureMaskCoordinates;
@@ -18,20 +17,19 @@ yyeva::MixShader::MixShader() {
                 gl_Position = a_Position;
             }
     )";
-    char FRAGMENT[] = R"(
-        #version 310 es
+    char FRAGMENT[] = R"(#version 310 es
         #extension GL_OES_EGL_image_external_essl3 : require
         precision mediump float;
         uniform sampler2D u_TextureSrcUnit;
         uniform samplerExternalOES u_TextureMaskUnit;
         in vec2 v_TextureSrcCoordinates;
         in vec2 v_TextureMaskCoordinates;
-        out vec4 gl_FragColor;
+        out vec4 fragColor;
 
         void main () {
             vec4 srcRgba = texture(u_TextureSrcUnit, v_TextureSrcCoordinates);
             vec4 maskRgba = texture(u_TextureMaskUnit, v_TextureMaskCoordinates);
-            gl_FragColor = srcRgba * maskRgba.r;
+            fragColor = srcRgba * maskRgba.r;
         }
     )";
     program = ShaderUtil::createProgram(VERTEX, FRAGMENT);

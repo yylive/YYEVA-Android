@@ -16,8 +16,7 @@ yyeva::Render::~Render() {
 }
 
 void yyeva::Render::initRender() {
-    char VERTEX_SHADER[] = R"(
-            #version 310 es
+    char VERTEX_SHADER[] = R"(#version 310 es
             in vec4 vPosition;
             in vec4 vTexCoordinateAlpha;
             in vec4 vTexCoordinateRgb;
@@ -30,19 +29,18 @@ void yyeva::Render::initRender() {
             }
     )";
 
-    char FRAGMENT_SHADER[] = R"(
-        #version 310 es
+    char FRAGMENT_SHADER[] = R"(#version 310 es
         #extension GL_OES_EGL_image_external_essl3 : require
         precision mediump float;
         uniform samplerExternalOES texture;
         in vec2 v_TexCoordinateAlpha;
         in vec2 v_TexCoordinateRgb;
-        out vec4 gl_FragColor;
+        out vec4 fragColor;
 
         void main () {
             vec4 alphaColor = texture(texture, v_TexCoordinateAlpha);
             vec4 rgbColor = texture(texture, v_TexCoordinateRgb);
-            gl_FragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);
+            fragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);
         }
     )";
 
