@@ -157,9 +157,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
 
             // 是否支持h265
             if (EvaMediaUtil.checkIsHevc(format)) {
-                if (Build.VERSION.SDK_INT  < Build.VERSION_CODES.LOLLIPOP
-                    || !EvaMediaUtil.checkSupportCodec(EvaMediaUtil.MIME_HEVC)) {
-
+                if (!EvaMediaUtil.checkSupportCodec(EvaMediaUtil.MIME_HEVC)) {
                     onFailed(
                         EvaConstant.REPORT_ERROR_TYPE_HEVC_NOT_SUPPORT,
                         "${EvaConstant.ERROR_MSG_HEVC_NOT_SUPPORT} " +
@@ -202,22 +200,48 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
 //            }
 
             preparePlay(videoWidth, videoHeight)
-
-            if (EvaJniUtil.getExternalTexture(playerEva.controllerId) != -1) {
-                glTexture = playerEva.evaAnimView.getSurfaceTexture()?.apply {
+            if(videoWidth <= 0 || videoHeight <= 0) {
+                ELog.e(TAG, "error Video size is $videoWidth x $videoHeight")
+                onFailed(EvaConstant.REPORT_ERROR_TYPE_EXTRACTOR_EXC, "error Video size is $videoWidth x $videoHeight")
+                release(decoder, extractor)
+                return
+            } else if (EvaJniUtil.getExternalTexture(playerEva.controllerId) != -1
+                && playerEva.evaAnimView.getSurfaceTexture() != null) {
+                glTexture = playerEva.evaAnimView.getSurfaceTexture()!!.apply {
                     setOnFrameAvailableListener(this@EvaHardDecoder)
                     setDefaultBufferSize(videoWidth, videoHeight)
                 }
             } else {
-                ELog.e(TAG, "eva not init, can not get glTexture")
+                if (retryCount > 5) {
+                    ELog.e(TAG, "eva not init, can not get glTexture")
+                    onFailed(
+                        EvaConstant.REPORT_ERROR_TYPE_EXTRACTOR_EXC,
+                        "eva not init, can not get glTexture"
+                    )
+                    release(decoder, extractor)
+                } else {
+                    ELog.e(TAG, "retryCount $retryCount eva not init, can not get glTexture", )
+                    retryCount++
+                    startPlay(evaFileContainer)
+                }
                 return
             }
             EvaJniUtil.renderClearFrame(playerEva.controllerId)
 
         } catch (e: Throwable) {
-            ELog.e(TAG, "MediaExtractor exception e=$e", e)
-            onFailed(EvaConstant.REPORT_ERROR_TYPE_EXTRACTOR_EXC, "${EvaConstant.ERROR_MSG_EXTRACTOR_EXC} e=$e")
-            release(decoder, extractor)
+            if (retryCount > 5) {
+                ELog.e(TAG, "MediaExtractor exception e=$e", e)
+
+                onFailed(
+                    EvaConstant.REPORT_ERROR_TYPE_EXTRACTOR_EXC,
+                    "${EvaConstant.ERROR_MSG_EXTRACTOR_EXC} e=$e"
+                )
+                release(decoder, extractor)
+            } else {
+                ELog.e(TAG, "retryCount $retryCount, MediaCodec configure exception e=$e", e)
+                retryCount++
+                startPlay(evaFileContainer)
+            }
             return
         }
 
@@ -418,7 +442,9 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                                         release()
                                     }
                                     extractor.release()
-                                    startPlay(evaFileContainer!!)
+                                    renderThread.handler?.post {
+                                        startPlay(evaFileContainer!!)
+                                    }
                                     break
                                 } else {
                                     inputDone = false
