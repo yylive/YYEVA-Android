@@ -195,6 +195,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
             evaAudioPlayer = EvaAudioPlayer(this).apply {
                 playLoop = this@EvaAnimPlayer.playLoop
                 isLoop = this@EvaAnimPlayer.isLoop
+                isAudioMute = this@EvaAnimPlayer.isAudioMute
             }
         }
     }
