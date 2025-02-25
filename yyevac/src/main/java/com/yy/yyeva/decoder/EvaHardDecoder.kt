@@ -163,7 +163,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                         "${EvaConstant.ERROR_MSG_HEVC_NOT_SUPPORT} " +
                                 "sdk:${Build.VERSION.SDK_INT}" +
                                 ",support hevc:" + EvaMediaUtil.checkSupportCodec(EvaMediaUtil.MIME_HEVC))
-                    release(null, null)
+                    extractor.release()
                     return
                 }
             }
@@ -200,10 +200,10 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
 //            }
 
             preparePlay(videoWidth, videoHeight)
-            if(videoWidth <= 0 || videoHeight <= 0) {
+            if (videoWidth <= 0 || videoHeight <= 0) {
                 ELog.e(TAG, "error Video size is $videoWidth x $videoHeight")
                 onFailed(EvaConstant.REPORT_ERROR_TYPE_EXTRACTOR_EXC, "error Video size is $videoWidth x $videoHeight")
-                release(decoder, extractor)
+                extractor.release()
                 return
             } else if (EvaJniUtil.getExternalTexture(playerEva.controllerId) != -1
                 && playerEva.evaAnimView.getSurfaceTexture() != null) {
@@ -222,6 +222,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                 } else {
                     ELog.e(TAG, "retryCount $retryCount eva not init, can not get glTexture", )
                     retryCount++
+                    extractor.release()
                     startPlay(evaFileContainer)
                 }
                 return
@@ -240,6 +241,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             } else {
                 ELog.e(TAG, "retryCount $retryCount, MediaCodec configure exception e=$e", e)
                 retryCount++
+                extractor?.release()
                 startPlay(evaFileContainer)
             }
             return
@@ -393,6 +395,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
                             ELog.i(TAG, "decoder output format changed: $outputFormat")
                         }
                         decoderStatus < 0 -> {
+                            release(decoder, extractor)
                             throw RuntimeException("unexpected result from decoder.dequeueOutputBuffer: $decoderStatus")
                         }
                         else -> {  //正常解析
@@ -469,6 +472,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             } catch (e: Exception) {  //解码帧失败跳过，直接继续解尝试
                 if (failDequeueCount > 5) {
                     ELog.e(TAG, "failDequeueCount $failDequeueCount reason:$e")
+                    release(decoder, extractor)
                 } else {
                     failDequeueCount++
                     continue
