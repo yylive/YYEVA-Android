@@ -134,7 +134,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
                                 } else {
                                     jsonStr.substring(
                                         0,
-                                        jsonStr.length - (readBytesLast.size - indexS) - 1
+                                        jsonStr.length - (readBytesLast.size - indexS)
                                     )
                                 }
                                 findEnd = true
