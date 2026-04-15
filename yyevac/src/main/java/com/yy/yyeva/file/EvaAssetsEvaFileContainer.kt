@@ -7,7 +7,7 @@ import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
 import java.io.File
 
-class EvaAssetsEvaFileContainer(assetManager: AssetManager, val assetsPath: String): IEvaFileContainer {
+class EvaAssetsEvaFileContainer(private val assetManager: AssetManager, val assetsPath: String): IEvaFileContainer {
 
     companion object {
         private const val TAG = "${EvaConstant.TAG}.FileContainer"
@@ -16,12 +16,11 @@ class EvaAssetsEvaFileContainer(assetManager: AssetManager, val assetsPath: Stri
     private val assetFd: AssetFileDescriptor = assetManager.openFd(assetsPath)
     private val assetsInputStream: AssetManager.AssetInputStream =
         assetManager.open(assetsPath, AssetManager.ACCESS_STREAMING) as AssetManager.AssetInputStream
-    var f: File
+    private val fileName = assetsPath.substringAfterLast('/')
     private var md5 = ""
 
     init {
         ELog.i(TAG, "AssetsFileContainer init")
-        f = File(assetsPath)
     }
 
     override fun setDataSource(extractor: MediaExtractor) {
@@ -52,30 +51,34 @@ class EvaAssetsEvaFileContainer(assetManager: AssetManager, val assetsPath: Stri
         assetsInputStream.close()
     }
 
-    override fun getFile(): File {
-        return f
+    override fun getFile(): File? {
+        return null
     }
 
     override fun getMd5(): String {
         if (md5.isEmpty()) {
-            md5 = FileUtil.getFileMD5(f)?: ""
+            md5 = try {
+                FileUtil.getStreamMD5(assetManager.open(assetsPath)) ?: ""
+            } catch (e: Exception) {
+                ""
+            }
         }
         return md5
     }
 
     override fun setEvaJson(json: String) {
-        EvaPref.setEvaJson(f.name, getMd5(), json)
+        EvaPref.setEvaJson(fileName, getMd5(), json)
     }
 
     override fun getEvaJson(): String? {
-        return EvaPref.getEvaJson(f.name, getMd5())
+        return EvaPref.getEvaJson(fileName, getMd5())
     }
 
     override fun setEvaMp4Type(type: Int) {
-        EvaPref.setEvaMp4Type(f.name, getMd5(), type)
+        EvaPref.setEvaMp4Type(fileName, getMd5(), type)
     }
 
     override fun getEvaMp4Type(): Int {
-        return EvaPref.getEvaMp4Type(f.name, getMd5())
+        return EvaPref.getEvaMp4Type(fileName, getMd5())
     }
 }
