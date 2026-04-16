@@ -6,6 +6,7 @@ import android.media.MediaExtractor
 import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
 import java.io.File
+import java.io.IOException
 
 class EvaAssetsEvaFileContainer(private val assetManager: AssetManager, val assetsPath: String): IEvaFileContainer {
 
@@ -13,9 +14,11 @@ class EvaAssetsEvaFileContainer(private val assetManager: AssetManager, val asse
         private const val TAG = "${EvaConstant.TAG}.FileContainer"
     }
 
-    private val assetFd: AssetFileDescriptor = assetManager.openFd(assetsPath)
-    private val assetsInputStream: AssetManager.AssetInputStream =
-        assetManager.open(assetsPath, AssetManager.ACCESS_STREAMING) as AssetManager.AssetInputStream
+    val assetFd: AssetFileDescriptor = assetManager.openFd(assetsPath)
+
+    // JSON 扫描流：每次 startRandomRead() 重新打开，保证从头扫描
+    private var scanInputStream: AssetManager.AssetInputStream? = null
+
     private val fileName = assetsPath.substringAfterLast('/')
     private var md5 = ""
 
@@ -31,24 +34,36 @@ class EvaAssetsEvaFileContainer(private val assetManager: AssetManager, val asse
         }
     }
 
+    // 每次重新打开流，确保 JSON 扫描始终从文件头开始
     override fun startRandomRead() {
+        try { scanInputStream?.close() } catch (e: IOException) { /* ignore */ }
+        scanInputStream = assetManager.open(assetsPath, AssetManager.ACCESS_STREAMING)
+                as AssetManager.AssetInputStream
     }
 
     override fun read(b: ByteArray, off: Int, len: Int): Int {
-        return assetsInputStream.read(b, off, len)
+        return scanInputStream?.read(b, off, len) ?: -1
     }
 
     override fun skip(pos: Long) {
-        assetsInputStream.skip(pos)
+        // InputStream.skip() 不保证跳过指定字节数，用读取循环替代
+        var remaining = pos
+        val buf = ByteArray(4096)
+        while (remaining > 0) {
+            val n = scanInputStream?.read(buf, 0, minOf(remaining, buf.size.toLong()).toInt()) ?: break
+            if (n < 0) break
+            remaining -= n
+        }
     }
 
     override fun closeRandomRead() {
-        assetsInputStream.close()
+        try { scanInputStream?.close() } catch (e: IOException) { /* ignore */ }
+        scanInputStream = null
     }
 
     override fun close() {
-        assetFd.close()
-        assetsInputStream.close()
+        try { assetFd.close() } catch (e: IOException) { /* ignore */ }
+        // scanInputStream 由 closeRandomRead() 管理，不在此处重复关闭
     }
 
     override fun getFile(): File? {

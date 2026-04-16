@@ -1,19 +1,26 @@
 package com.yy.yyeva
 
+import android.annotation.TargetApi
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.media.MediaDataSource
 import android.media.MediaMetadataRetriever
+import android.os.Build
 import android.os.SystemClock
 import android.util.Base64
 import android.util.Log
+import com.yy.yyeva.file.EvaAssetsEvaFileContainer
+import com.yy.yyeva.file.EvaFileContainer
 import com.yy.yyeva.file.IEvaFileContainer
 import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
 import com.yy.yyeva.util.PointRect
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
+import java.io.FileInputStream
 import java.io.IOException
 import java.lang.Exception
+import java.nio.ByteBuffer
 import java.util.zip.Inflater
 import kotlin.math.abs
 
@@ -76,56 +83,60 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
         if (jsonStr.isEmpty()) {
             evaFileContainer.startRandomRead()
             val readBytes = ByteArray(1024)
-            var readBytesLast = ByteArray(1024)
+            var readBytesLast = ByteArray(0)
             var bufStr = ""
             var bufStrS = ""
             val matchStart = "yyeffectmp4json[["
             val matchEnd = "]]yyeffectmp4json"
             var findStart = false
             var findEnd = false
-            while (evaFileContainer.read(readBytes, 0, readBytes.size) > 0) {
+            var actualRead: Int
+            // ISO_8859_1 保证 1字节→1字符，避免 UTF-8 多字节替换导致跨块边界检测偏移
+            while (evaFileContainer.read(readBytes, 0, readBytes.size).also { actualRead = it } > 0) {
                 if (!findStart) { //没找到开头
-                    bufStr = String(readBytes)
+                    bufStr = String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
                     var index = bufStr.indexOf(matchStart)
-                    if (index > 0) { //分段1找到匹配开头
+                    if (index >= 0) { //分段1找到匹配开头
                         jsonStr = bufStr.substring(index + matchStart.length)
                         findStart = true
                         index = jsonStr.indexOf(matchEnd)
-                        if (index > 0) { //同时包含结尾段进行截取
+                        if (index >= 0) { //同时包含结尾段进行截取
                             findEnd = true
                             jsonStr = jsonStr.substring(0, index)
                             break
                         }
                     } else {
                         if (readBytesLast.isNotEmpty()) {
-                            bufStrS = String(readBytesLast + readBytes)
+                            bufStrS = String(readBytesLast, Charsets.ISO_8859_1) +
+                                    String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
                             var indexS = bufStrS.indexOf(matchStart)
-                            if (indexS > 0) { //合并分段找到匹配开头
+                            if (indexS >= 0) { //合并分段找到匹配开头
                                 jsonStr = bufStrS.substring(indexS + matchStart.length)
                                 findStart = true
                                 indexS = jsonStr.indexOf(matchEnd)
-                                if (indexS > 0) { // 同时包含结尾段进行截取
+                                if (indexS >= 0) { // 同时包含结尾段进行截取
                                     findEnd = true
                                     jsonStr = jsonStr.substring(0, indexS)
                                     break
                                 }
                             }
                         }
-                        //保存分段
-                        readBytesLast = readBytes.clone()
+                        //保存分段（只保留实际读取的字节）
+                        readBytesLast = readBytes.copyOf(actualRead)
                     }
                 } else {
-                    bufStr = String(readBytes)
+                    bufStr = String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
                     val index = bufStr.indexOf(matchEnd)
-                    if (index > 0) { //分段1找到匹配结尾
+                    if (index >= 0) { //分段1找到匹配结尾
                         jsonStr += bufStr.substring(0, index)
                         findEnd = true
                         break
-                    } else if (!readBytesLast.contentEquals(readBytes)) { //判定内容不一致
+                    } else if (!readBytesLast.contentEquals(readBytes.copyOf(actualRead))) { //判定内容不一致
                         if (readBytesLast.isNotEmpty()) {
-                            bufStrS = String(readBytesLast + readBytes)
+                            bufStrS = String(readBytesLast, Charsets.ISO_8859_1) +
+                                    String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
                             val indexS = bufStrS.indexOf(matchEnd)
-                            if (indexS > 0) { //合并分段找到匹配结尾
+                            if (indexS >= 0) { //合并分段找到匹配结尾
                                 jsonStr = if (indexS > readBytesLast.size) {
                                     jsonStr.substring(
                                         0,
@@ -144,7 +155,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
                         //保存数据
                         jsonStr += bufStr
                         //保存分段
-                        readBytesLast = readBytes.clone()
+                        readBytesLast = readBytes.copyOf(actualRead)
                     }
                 }
             }
@@ -297,28 +308,112 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
             return
         }
 
-        val file = evaFileContainer.getFile()
-        if(file != null && file.exists()) {
-            val mmr = MediaMetadataRetriever()
-            mmr.setDataSource(file.absolutePath)
-            //获取播放时长
-            val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
-            if (duration != null && duration > 0) {
-                for(i in 1..6) {
-                    startDetect = System.currentTimeMillis()
-                    val bitmap =
-                        mmr.getFrameAtTime(i* duration/6 * 1000, MediaMetadataRetriever.OPTION_CLOSEST)
-                    val isJudge = getConfigManager(bitmap)
-                    bitmap?.recycle()
-                    Log.i(TAG, "detect image mp4Type ${System.currentTimeMillis() - startDetect}")
-                    if (isJudge) {
-                        break
+        val mmr = MediaMetadataRetriever()
+        var canDetectMp4Type = false
+        try {
+            when {
+                evaFileContainer is EvaFileContainer -> {
+                    val file = evaFileContainer.getFile()
+                    if (file.exists()) {
+                        mmr.setDataSource(file.absolutePath)
+                        canDetectMp4Type = true
                     }
                 }
-                Log.i(TAG, "detect mp4Type ${playerEva.videoMode}")
-                evaFileContainer.setEvaMp4Type(playerEva.videoMode)
+                evaFileContainer is EvaAssetsEvaFileContainer -> {
+                    canDetectMp4Type = setupMmrFromAssets(mmr, evaFileContainer)
+                }
             }
+
+            if (canDetectMp4Type) {
+                val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
+                if (duration != null && duration > 0) {
+                    for (i in 1..6) {
+                        startDetect = System.currentTimeMillis()
+                        val bitmap = mmr.getFrameAtTime(
+                            i * duration / 6 * 1000,
+                            MediaMetadataRetriever.OPTION_CLOSEST
+                        )
+                        val isJudge = getConfigManager(bitmap)
+                        bitmap?.recycle()
+                        ELog.i(TAG, "detect image mp4Type ${System.currentTimeMillis() - startDetect}")
+                        if (isJudge) break
+                    }
+                    ELog.i(TAG, "detect mp4Type ${playerEva.videoMode}")
+                    evaFileContainer.setEvaMp4Type(playerEva.videoMode)
+                } else {
+                    ELog.e(TAG, "getMp4Type: METADATA_KEY_DURATION is null or 0")
+                }
+            }
+        } catch (e: Exception) {
+            ELog.e(TAG, "getMp4Type exception: $e", e)
+        } finally {
             mmr.release()
+        }
+    }
+
+    /**
+     * 为 assets 路径配置 MediaMetadataRetriever 数据源。
+     *
+     * API 23+: 使用 MediaDataSource + FileChannel.read(position) 精确定位，
+     *   避免 setDataSource(FileDescriptor, offset, length) 在 APK 内嵌 FD 上
+     *   部分机型原生 seek 失效导致 extractMetadata 静默返回 null 的问题。
+     * API 21-22: 降级为 FileDescriptor 方式尽力而为。
+     */
+    private fun setupMmrFromAssets(
+        mmr: MediaMetadataRetriever,
+        container: EvaAssetsEvaFileContainer
+    ): Boolean {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mmr.setDataSource(container.createMediaDataSource())
+            } else {
+                // API 21-22：FileDescriptor offset 方式，少数旧机型可能仍失效
+                val fd = container.assetFd
+                if (fd.declaredLength >= 0) {
+                    mmr.setDataSource(fd.fileDescriptor, fd.startOffset, fd.declaredLength)
+                } else {
+                    mmr.setDataSource(fd.fileDescriptor)
+                }
+            }
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "setupMmrFromAssets failed: $e", e)
+            false
+        }
+    }
+
+    /**
+     * 为 MediaMetadataRetriever 创建可靠的 MediaDataSource（API 23+）。
+     *
+     * setDataSource(FileDescriptor, offset, length) 在 APK 内嵌 FD 上，部分设备原生层
+     * lseek 行为不正确，导致 extractMetadata 静默返回 null。
+     * MediaDataSource 通过 FileChannel.read(position) 在 Java 层完成随机定位，
+     * 绕开底层 seek 问题。
+     */
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun EvaAssetsEvaFileContainer.createMediaDataSource(): MediaDataSource {
+        val startOffset = assetFd.startOffset
+        val totalLength = assetFd.declaredLength
+        // FileChannel.read(ByteBuffer, position) 是线程安全的随机读，不改变 channel 当前位置
+        val channel = FileInputStream(assetFd.fileDescriptor).channel
+
+        return object : MediaDataSource() {
+            override fun readAt(position: Long, buffer: ByteArray, offset: Int, size: Int): Int {
+                if (position >= totalLength) return -1
+                val toRead = minOf(size.toLong(), totalLength - position).toInt()
+                val bb = ByteBuffer.wrap(buffer, offset, toRead)
+                return try {
+                    val n = channel.read(bb, startOffset + position)
+                    if (n <= 0) -1 else n
+                } catch (e: IOException) {
+                    -1
+                }
+            }
+
+            override fun getSize(): Long = totalLength
+
+            // 底层 fd 由 assetFd 管理，此处不关闭
+            override fun close() {}
         }
     }
 
