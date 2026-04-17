@@ -37,6 +37,8 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
 
     companion object {
         private const val TAG = "${EvaConstant.TAG}.EvaAnimConfigManager"
+        // 是否使用HSV颜色空间判断灰度（更精确但稍慢）
+        private const val USE_HSV_GRAY_DETECT = true
     }
 
     /**
@@ -193,7 +195,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
     }
 
     private fun setNoJson(evaFileContainer: IEvaFileContainer, defaultFps: Int) {
-        if (playerEva.videoMode == EvaConstant.VIDEO_MODE_NORMAL_MP4) {// 没有设置,默认为正常mp4
+        if (playerEva.videoMode == EvaConstant.VIDEO_MODE_NORMAL_MP4 || playerEva.isNoJsonDetect) {// 没有设置,默认为正常mp4
             getMp4Type(evaFileContainer)
         }
         // 按照默认配置生成config
@@ -424,39 +426,58 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
         if (bitmap != null) {
             val w = bitmap.width
             val h = bitmap.height
-            val count = 10
+            
+            val sampleCount = 20
             Log.i(TAG, "ltIsGray")
-            val ltIsGray = isGray(getArray(bitmap, 0, 0, count))
+            val ltIsGray = isGray(getArray(bitmap, 0, 0, sampleCount), sampleCount)
             Log.i(TAG, "rtIsGray")
-            val rtIsGray = isGray(getArray(bitmap, w/2, 0, count))
+            val rtIsGray = isGray(getArray(bitmap, w/2, 0, sampleCount), sampleCount)
             Log.i(TAG, "lbIsGray")
-            val lbIsGray = isGray(getArray(bitmap, 0, h/2, count))
+            val lbIsGray = isGray(getArray(bitmap, 0, h/2, sampleCount), sampleCount)
             Log.i(TAG, "rbIsGray")
-            val rbIsGray = isGray(getArray(bitmap, w/2, h/2, count))
+            val rbIsGray = isGray(getArray(bitmap, w/2, h/2, sampleCount), sampleCount)
             Log.i(TAG, "ltIsGray $ltIsGray, rtIsGray $rtIsGray, lbIsGray $lbIsGray, rbIsGray $rbIsGray")
 
-            if (!ltIsGray && !lbIsGray && !rtIsGray && !rbIsGray) {
-                //正常mp4
-                Log.i(TAG, "正常mp4")
-                playerEva.isNormalMp4 = true
-            } else if (ltIsGray && lbIsGray && (!rtIsGray || !rbIsGray)) {
-                //左灰右彩
-                Log.i(TAG, "左灰右彩")
-                playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL
-            } else if ((!ltIsGray || !lbIsGray) && rtIsGray && rbIsGray) {
-                //左彩右灰
-                Log.i(TAG, "左彩右灰")
-                playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE
-            } else if (ltIsGray && rtIsGray && (!lbIsGray || !rbIsGray)) {
-                //上灰下彩
-                Log.i(TAG, "上灰下彩")
-                playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_VERTICAL
-            } else if ((!ltIsGray || !rtIsGray) && lbIsGray && rbIsGray) {
-                //上彩下灰
-                Log.i(TAG, "上彩下灰")
-                playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_VERTICAL_REVERSE
-            } else {
-                return false
+            val grayCount = listOf(ltIsGray, rtIsGray, lbIsGray, rbIsGray).count { it }
+            
+            when (grayCount) {
+                0 -> {
+                    //正常mp4
+                    Log.i(TAG, "正常mp4")
+                    playerEva.isNormalMp4 = true
+                }
+                2 -> {
+                    when {
+                        ltIsGray && lbIsGray && !rtIsGray && !rbIsGray -> {
+                            //左灰右彩
+                            Log.i(TAG, "左灰右彩")
+                            playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL
+                        }
+                        !ltIsGray && !lbIsGray && rtIsGray && rbIsGray -> {
+                            //左彩右灰
+                            Log.i(TAG, "左彩右灰")
+                            playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE
+                        }
+                        ltIsGray && rtIsGray && !lbIsGray && !rbIsGray -> {
+                            //上灰下彩
+                            Log.i(TAG, "上灰下彩")
+                            playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_VERTICAL
+                        }
+                        !ltIsGray && !rtIsGray && lbIsGray && rbIsGray -> {
+                            //上彩下灰
+                            Log.i(TAG, "上彩下灰")
+                            playerEva.videoMode = EvaConstant.VIDEO_MODE_SPLIT_VERTICAL_REVERSE
+                        }
+                        else -> {
+                            Log.e(TAG, "无法识别的布局模式")
+                            return false
+                        }
+                    }
+                }
+                else -> {
+                    Log.e(TAG, "灰度区域数量异常: $grayCount")
+                    return false
+                }
             }
         } else {
             Log.e(TAG, "getConfigManager bitmap is null")
@@ -465,83 +486,24 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
 
         return true
     }
-    //3*3 + 边缘3+3+1 取点
-    private fun getArray(bitmap: Bitmap, start_x: Int, start_y: Int): IntArray {
-        val w = bitmap.width
-        val h = bitmap.height
-        val w_i = w/8
-        val h_i = h/8
-        val a = IntArray(16)
-        a[0] = bitmap.getPixel(start_x + w_i, start_y + h_i)
-        a[1] = bitmap.getPixel(start_x + w_i*2, start_y + h_i)
-        a[2] = bitmap.getPixel(start_x + w_i*3, start_y + h_i)
-        a[3] = bitmap.getPixel(start_x + w_i, start_y + h_i*2)
-        a[4] = bitmap.getPixel(start_x + w_i*2, start_y + h_i*2)
-        a[5] = bitmap.getPixel(start_x + w_i*3, start_y + h_i*2)
-        a[6] = bitmap.getPixel(start_x + w_i, start_y + h_i*3)
-        a[7] = bitmap.getPixel(start_x + w_i*2, start_y + h_i*3)
-        a[8] = bitmap.getPixel(start_x + w_i*3, start_y + h_i*3)
-
-        //添加靠近十字中线的点
-        if (start_x < w/2 && start_y < h/2) {  //第一象限
-            //横向靠近中线的三个点
-            a[9] = bitmap.getPixel(start_x + w_i, h/2 - 3)
-            a[10] = bitmap.getPixel(start_x + w_i*2, h/2 - 3)
-            a[11] = bitmap.getPixel(start_x + w_i*3, h/2 - 3)
-            //纵向靠近中间线的三个点
-            a[12] = bitmap.getPixel(w/2 - 3, start_y + h_i)
-            a[13] = bitmap.getPixel(w/2 - 3, start_y + h_i*2)
-            a[14] = bitmap.getPixel(w/2 - 3, start_y + h_i*3)
-            //靠近重点的点
-            a[15] = bitmap.getPixel(w/2 - 3, h/2 - 3)
-        } else if (start_x <= w/2 && start_y >= h/2) {  //第二象限
-            //横向靠近中线的三个点
-            a[9] = bitmap.getPixel(start_x + w_i, h/2 - 3)
-            a[10] = bitmap.getPixel(start_x + w_i*2, h/2 - 3)
-            a[11] = bitmap.getPixel(start_x + w_i*3, h/2 - 3)
-            //纵向靠近中间线的三个点
-            a[12] = bitmap.getPixel(w/2 + 3, start_y + h_i)
-            a[13] = bitmap.getPixel(w/2 + 3, start_y + h_i*2)
-            a[14] = bitmap.getPixel(w/2 + 3, start_y + h_i*3)
-            //靠近重点的点
-            a[15] = bitmap.getPixel(w/2 + 3, h/2 - 3)
-        } else if (start_x < w/2 && start_y >= h/2) {  //第三象限
-            //横向靠近中线的三个点
-            a[9] = bitmap.getPixel(start_x + w_i, h/2 + 3)
-            a[10] = bitmap.getPixel(start_x + w_i*2, h/2 + 3)
-            a[11] = bitmap.getPixel(start_x + w_i*3, h/2 + 3)
-            //纵向靠近中间线的三个点
-            a[12] = bitmap.getPixel(w/2 - 3, start_y + h_i)
-            a[13] = bitmap.getPixel(w/2 - 3, start_y + h_i*2)
-            a[14] = bitmap.getPixel(w/2 - 3, start_y + h_i*3)
-            //靠近重点的点
-            a[15] = bitmap.getPixel(w/2 - 3, h/2 + 3)
-        } else if (start_x <= w/2 && start_y >= h/2) {  //第四象限
-            //横向靠近中线的三个点
-            a[9] = bitmap.getPixel(start_x + w_i, h/2 + 3)
-            a[10] = bitmap.getPixel(start_x + w_i*2, h/2 + 3)
-            a[11] = bitmap.getPixel(start_x + w_i*3, h/2 + 3)
-            //纵向靠近中间线的三个点
-            a[12] = bitmap.getPixel(w/2 + 3, start_y + h_i)
-            a[13] = bitmap.getPixel(w/2 + 3, start_y + h_i*2)
-            a[14] = bitmap.getPixel(w/2 + 3, start_y + h_i*3)
-            //靠近重点的点
-            a[15] = bitmap.getPixel(w/2 + 3, h/2 + 3)
-        }
-
-        return a
-    }
-
     //n*n n平均取点
     private fun getArray(bitmap: Bitmap, start_x: Int, start_y: Int, count: Int): IntArray {
         val w = bitmap.width
         val h = bitmap.height
-        val w_i = w/(2*(count+1))
-        val h_i = h/(2*(count+1))
+        val regionW = w / 2
+        val regionH = h / 2
+        
+        val stepX = regionW / (count + 1)
+        val stepY = regionH / (count + 1)
+        
         val a = IntArray(count * count)
         for(i in 0 until count) {
             for(j in 0 until count) {
-                a[i*10 + j] = bitmap.getPixel(start_x + w_i * j, start_y + h_i * i)
+                val x = start_x + stepX * (j + 1)
+                val y = start_y + stepY * (i + 1)
+                if (x < w && y < h) {
+                    a[i * count + j] = bitmap.getPixel(x, y)
+                }
             }
         }
 
@@ -570,47 +532,56 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
         return a
     }
 
-//    private fun isGray(a:IntArray): Boolean {
-//        //一个区域里面的识别点
-//        for (c in a) {
-////            val hsv = FloatArray(3)
-////            //通过使用HSV颜色空间中的S通道进行判断。为此，要将rgb模式转换为hsb模式再去判断，其中：h色相，s饱和度，b对比度
-////            //判断饱和度，如果s<10%即可认为是灰度图，至于这个阈值是10％还是15％
-////            Color.colorToHSV(c, hsv)
-////            Log.i("打印选择的值","H=${hsv[0]} ,S=${hsv[1]} ,V=${hsv[2]}")
-////            if (hsv[1] in 0.3..0.99) {  //s饱和度大认为是彩色 s等于1位纯色，当纯黑或纯白的时候
-////                return false
-////            }
-//            //获取rgb值
-//            val r = Color.red(c)
-//            val g = Color.green(c)
-//            val b = Color.blue(c)
-//            Log.i("打印选择的值","r=$r ,g=$g ,b=$b")
-//            //通过rgb色值差距来判断是否灰度图
-//            if ((abs(r-g) > 25 || abs(g-b) > 25 || abs(b-r) > 25)
-//                && (r>30 && g>30 && b>30)) {
-//                return false
-//            }
-//        }
-//        return true
-//    }
-
     //是否灰度区域
-    private fun isGray(a:IntArray): Boolean {
-        //一个区域里面的识别点
+    private fun isGray(a:IntArray, sampleCount: Int = 10): Boolean {
+        var grayPixelCount = 0
+        val totalPixels = a.size
+        
         for (c in a) {
-            //获取rgb值
-            val r = Color.red(c)
-            val g = Color.green(c)
-            val b = Color.blue(c)
-            Log.i("打印选择的值","r=$r ,g=$g ,b=$b")
-            //通过rgb色值差距来判断是否灰度图
-            if ((abs(r-g) > 25 || abs(g-b) > 25 || abs(b-r) > 25)
-                && (r>30 && g>30 && b>30)) {
-                return false
+            val isGrayPixel = if (USE_HSV_GRAY_DETECT) {
+                isGrayByHSV(c)
+            } else {
+                isGrayByRGB(c)
+            }
+            
+            if (isGrayPixel) {
+                grayPixelCount++
             }
         }
-        return true
+        
+        // 85%以上的像素为灰度才判定为灰度区域
+        val grayRatio = grayPixelCount.toFloat() / totalPixels
+        return grayRatio >= 0.85
+    }
+    
+    /**
+     * 使用HSV颜色空间判断是否为灰度像素
+     * @param pixel 像素颜色值
+     * @return true表示灰度像素
+     */
+    private fun isGrayByHSV(pixel: Int): Boolean {
+        val hsv = FloatArray(3)
+        Color.colorToHSV(pixel, hsv)
+        // hsv[0]=色相, hsv[1]=饱和度, hsv[2]=亮度
+        // 饱和度<15% 或 亮度<10% 视为灰度
+        return hsv[1] < 0.15f || hsv[2] < 0.1f
+    }
+    
+    /**
+     * 使用RGB颜色空间判断是否为灰度像素
+     * @param pixel 像素颜色值
+     * @return true表示灰度像素
+     */
+    private fun isGrayByRGB(pixel: Int): Boolean {
+        val r = Color.red(pixel)
+        val g = Color.green(pixel)
+        val b = Color.blue(pixel)
+        
+        val maxDiff = maxOf(abs(r - g), abs(g - b), abs(b - r))
+        val avgBrightness = (r + g + b) / 3
+        
+        // RGB差值<=20视为灰度，或亮度<=20视为暗色/黑色
+        return maxDiff <= 20 || avgBrightness <= 20
     }
     //获取视频的关键帧时间列表
     fun getMp4KeyframeTimes(filePath: String?): LongArray {

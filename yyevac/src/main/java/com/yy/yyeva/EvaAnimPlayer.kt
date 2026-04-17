@@ -52,6 +52,7 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     var enableVersion1 : Boolean = false
     // 视频模式
     var videoMode: Int = EvaConstant.VIDEO_MODE_NORMAL_MP4  // 正常mp4
+    var isNoJsonDetect = false  // 没有json的情况下，是否强制开启检测
     var isDetachedFromWindow = false
     var isSurfaceAvailable = false
     var startRunnable: Runnable? = null

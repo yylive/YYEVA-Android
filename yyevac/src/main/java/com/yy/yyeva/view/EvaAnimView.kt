@@ -268,6 +268,10 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         playerEva.videoMode = mode
     }
 
+    override fun setNoJsonDetect(isNoJsonDetect: Boolean) {
+        playerEva.isNoJsonDetect = isNoJsonDetect
+    }
+
     override fun setVideoFps(fps: Int, speed: Float) {
         ELog.i(TAG, "setVideoFps=$fps， speed=$speed")
         playerEva.isSetFps = true
