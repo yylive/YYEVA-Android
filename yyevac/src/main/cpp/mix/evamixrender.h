@@ -28,7 +28,8 @@ namespace yyeva {
         void init(shared_ptr<EvaSrcMap> evaSrcMap);
 
         void rendFrame(GLuint videoTextureId, shared_ptr<EvaAnimeConfig> config,
-                       shared_ptr<EvaFrame> frame, shared_ptr<EvaSrc> src);
+                       shared_ptr<EvaFrame> frame, shared_ptr<EvaSrc> src,
+                       const float* externalTextureTransform);
 
         void release(GLuint textureId);
 

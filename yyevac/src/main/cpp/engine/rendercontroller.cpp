@@ -3,6 +3,7 @@
 //
 
 #include "rendercontroller.h"
+#include <cstring>
 
 #define LOG_TAG "RenderController"
 #define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
@@ -12,6 +13,11 @@ yyeva::RenderController::RenderController():render(nullptr),config(nullptr),
                                     frameAll(nullptr), srcMap(nullptr),
                                     bgRender(nullptr), eglCore(make_shared<EGLCore>()),
                                     fbRender(nullptr) {
+    memset(externalTextureTransform, 0, sizeof(externalTextureTransform));
+    externalTextureTransform[0] = 1.0f;
+    externalTextureTransform[5] = 1.0f;
+    externalTextureTransform[10] = 1.0f;
+    externalTextureTransform[15] = 1.0f;
 }
 
 yyeva::RenderController::~RenderController() {
@@ -99,6 +105,14 @@ void yyeva::RenderController::updateViewPoint(int width, int height) {
         render->updateViewPort(width, height);
     } else {
         ELOGE("render is null");
+    }
+}
+
+void yyeva::RenderController::updateExternalTextureTransform(const float* matrix) {
+    if (matrix == nullptr) return;
+    memcpy(externalTextureTransform, matrix, sizeof(externalTextureTransform));
+    if (render != nullptr) {
+        render->setExternalTextureTransform(externalTextureTransform);
     }
 }
 
@@ -227,7 +241,7 @@ void yyeva::RenderController::mixRendering(int frameIndex) {
                         auto src = srcMap->map.find(frame->srcId)->second;
                         if (frame->frame->w > 0 && frame->frame->h > 0
                             && frame->mFrame->w > 0 && frame->mFrame->h > 0) {
-                            mixRender->rendFrame(videoTextureId, config, frame, src);
+                            mixRender->rendFrame(videoTextureId, config, frame, src, externalTextureTransform);
                         }
                     }
                     if (videoRecord) {

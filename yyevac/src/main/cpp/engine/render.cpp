@@ -3,12 +3,18 @@
 //
 
 #include "render.h"
+#include <cstring>
 
 #define LOG_TAG "Render"
 #define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
 #define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
 
 yyeva::Render::Render(): vertexArray(make_shared<GlFloatArray>()), alphaArray(make_shared<GlFloatArray>()), rgbArray(make_shared<GlFloatArray>()) {
+    memset(textureTransform, 0, sizeof(textureTransform));
+    textureTransform[0] = 1.0f;
+    textureTransform[5] = 1.0f;
+    textureTransform[10] = 1.0f;
+    textureTransform[15] = 1.0f;
     initRender();
 }
 
@@ -20,11 +26,14 @@ void yyeva::Render::initRender() {
             in vec4 vPosition;
             in vec4 vTexCoordinateAlpha;
             in vec4 vTexCoordinateRgb;
+            uniform mat4 uTextureTransform;
             out vec2 v_TexCoordinateAlpha;
             out vec2 v_TexCoordinateRgb;
             void main() {
-                v_TexCoordinateAlpha = vec2(vTexCoordinateAlpha.x, vTexCoordinateAlpha.y);
-                v_TexCoordinateRgb = vec2(vTexCoordinateRgb.x, vTexCoordinateRgb.y);
+                vec4 alphaCoord = uTextureTransform * vec4(vTexCoordinateAlpha.x, vTexCoordinateAlpha.y, 0.0, 1.0);
+                vec4 rgbCoord = uTextureTransform * vec4(vTexCoordinateRgb.x, vTexCoordinateRgb.y, 0.0, 1.0);
+                v_TexCoordinateAlpha = alphaCoord.xy;
+                v_TexCoordinateRgb = rgbCoord.xy;
                 gl_Position = vPosition;
             }
     )";
@@ -43,9 +52,9 @@ void yyeva::Render::initRender() {
             fragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);
         }
     )";
-
     shaderProgram = ShaderUtil::createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
     uTextureLocation = glGetUniformLocation(shaderProgram, "u_Texture");
+    uTextureTransformLocation = glGetUniformLocation(shaderProgram, "uTextureTransform");
     aPositionLocation = glGetAttribLocation(shaderProgram, "vPosition");
     aTextureAlphaLocation = glGetAttribLocation(shaderProgram, "vTexCoordinateAlpha");
     aTextureRgbLocation = glGetAttribLocation(shaderProgram, "vTexCoordinateRgb");
@@ -100,6 +109,11 @@ void yyeva::Render::updateViewPort(int width, int height) {
     surfaceHeight = height;
 }
 
+void yyeva::Render::setExternalTextureTransform(const float* matrix) {
+    if (matrix == nullptr) return;
+    memcpy(textureTransform, matrix, sizeof(textureTransform));
+}
+
 void yyeva::Render::swapBuffers() {
 
 }
@@ -112,6 +126,7 @@ void yyeva::Render::draw() {
         glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
         //加载纹理
         glUniform1i(uTextureLocation, 0);
+        glUniformMatrix4fv(uTextureTransformLocation, 1, GL_FALSE, textureTransform);
 
         alphaArray->setVertexAttribPointer(aTextureAlphaLocation);
         rgbArray->setVertexAttribPointer(aTextureRgbLocation);

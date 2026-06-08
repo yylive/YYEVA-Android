@@ -5,7 +5,6 @@
 #include "string"
 #include "src/main/cpp/util/shaderutil.h"
 
-
 using namespace std;
 namespace yyeva {
     class MixShader {
@@ -13,6 +12,7 @@ namespace yyeva {
         // Uniform constants
         const GLchar *U_TEXTURE_SRC_UNIT = "u_TextureSrcUnit";
         const GLchar *U_TEXTURE_MASK_UNIT = "u_TextureMaskUnit";
+        const GLchar *U_MASK_TEXTURE_TRANSFORM = "u_MaskTextureTransform";
         const GLchar *U_IS_FILL = "u_isFill";
         const GLchar *U_COLOR = "u_Color";
 
@@ -25,13 +25,13 @@ namespace yyeva {
         GLuint program;
         GLint uTextureSrcUnitLocation;
         GLint uTextureMaskUnitLocation;
+        GLint uMaskTextureTransformLocation;
         GLint uIsFillLocation;
         GLint uColorLocation;
 
         GLint aPositionLocation;
         GLint aTextureSrcCoordinatesLocation;
         GLint aTextureMaskCoordinatesLocation;
-
 
         MixShader();
 

@@ -9,11 +9,13 @@ yyeva::MixShader::MixShader() {
             in vec4 a_Position;
             in vec2 a_TextureSrcCoordinates;
             in vec2 a_TextureMaskCoordinates;
+            uniform mat4 u_MaskTextureTransform;
             out vec2 v_TextureSrcCoordinates;
             out vec2 v_TextureMaskCoordinates;
             void main() {
                 v_TextureSrcCoordinates = a_TextureSrcCoordinates;
-                v_TextureMaskCoordinates = a_TextureMaskCoordinates;
+                vec4 maskCoord = u_MaskTextureTransform * vec4(a_TextureMaskCoordinates.x, a_TextureMaskCoordinates.y, 0.0, 1.0);
+                v_TextureMaskCoordinates = maskCoord.xy;
                 gl_Position = a_Position;
             }
     )";
@@ -35,6 +37,7 @@ yyeva::MixShader::MixShader() {
     program = ShaderUtil::createProgram(VERTEX, FRAGMENT);
     uTextureSrcUnitLocation = glGetUniformLocation(program, U_TEXTURE_SRC_UNIT);
     uTextureMaskUnitLocation = glGetUniformLocation(program, U_TEXTURE_MASK_UNIT);
+    uMaskTextureTransformLocation = glGetUniformLocation(program, U_MASK_TEXTURE_TRANSFORM);
 //    //是否填充字体颜色
 //    uIsFillLocation = glGetUniformLocation(program, U_IS_FILL);
 //    //填充颜色

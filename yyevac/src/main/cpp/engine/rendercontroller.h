@@ -31,6 +31,8 @@ namespace yyeva {
 
         void updateViewPoint(int width, int height);
 
+        void updateExternalTextureTransform(const float* matrix);
+
         int getExternalTexture();
 
         void videoSizeChange(int newWidth, int newHeight);
@@ -94,6 +96,7 @@ namespace yyeva {
         int mFrameHeight = -1;
 
         int blendMode = 1;
+        float externalTextureTransform[16];
 
         void initRecordFrameBuffer(int width, int height);
 

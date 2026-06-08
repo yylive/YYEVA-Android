@@ -8,6 +8,7 @@
 #include <util/elog.h>
 #include <map>
 #include <mutex>
+#include <cstring>
 
 #define LOG_TAG "YYEVAJNI"
 #define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
@@ -90,6 +91,28 @@ JNIEXPORT void JNICALL YYEVA(videoSizeChange)(
         return;
     }
     renderMap[controllerId]->videoSizeChange(newWidth, newHeight);
+}
+
+JNIEXPORT void JNICALL YYEVA(updateExternalTextureTransform)(
+        JNIEnv *env,
+        jobject instance, jint controllerId,
+        jfloatArray matrix) {
+    if (controllerId == -1) {
+        ELOGE("updateExternalTextureTransform controller not init");
+        return;
+    }
+    if (renderMap.find(controllerId) == renderMap.end()) {
+        ELOGE("updateExternalTextureTransform controller %d not found", controllerId);
+        return;
+    }
+    if (matrix == NULL || env->GetArrayLength(matrix) < 16) {
+        ELOGE("updateExternalTextureTransform matrix invalid");
+        return;
+    }
+    float textureTransform[16];
+    memset(textureTransform, 0, sizeof(textureTransform));
+    env->GetFloatArrayRegion(matrix, 0, 16, textureTransform);
+    renderMap[controllerId]->updateExternalTextureTransform(textureTransform);
 }
 
 JNIEXPORT jint JNICALL YYEVA(initRender)(

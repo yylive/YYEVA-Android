@@ -3,8 +3,14 @@
 //
 
 #include "mp4render.h"
+#include <cstring>
 
 yyeva::Mp4Render::Mp4Render(): vertexArray(make_shared<GlFloatArray>()), rgbaArray(make_shared<GlFloatArray>()) {
+    memset(textureTransform, 0, sizeof(textureTransform));
+    textureTransform[0] = 1.0f;
+    textureTransform[5] = 1.0f;
+    textureTransform[10] = 1.0f;
+    textureTransform[15] = 1.0f;
     initRender();
 }
 
@@ -20,9 +26,11 @@ void yyeva::Mp4Render::initRender() {
     char VERTEX_SHADER[] = R"(#version 310 es
         in vec4 vPosition;
         in vec4 vTexCoordinate;
+        uniform mat4 uTextureTransform;
         out vec2 v_TexCoordinate;
         void main() {
-            v_TexCoordinate = vec2(vTexCoordinate.x, vTexCoordinate.y);
+            vec4 texCoord = uTextureTransform * vec4(vTexCoordinate.x, vTexCoordinate.y, 0.0, 1.0);
+            v_TexCoordinate = texCoord.xy;
             gl_Position = vPosition;
         }
     )";
@@ -39,6 +47,7 @@ void yyeva::Mp4Render::initRender() {
     )";
     shaderProgram = ShaderUtil::createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
     uTextureLocation = glGetUniformLocation(shaderProgram, "u_Texture");
+    uTextureTransformLocation = glGetUniformLocation(shaderProgram, "uTextureTransform");
     positionLocation = glGetAttribLocation(shaderProgram, "vPosition");
     textureLocation = glGetAttribLocation(shaderProgram, "vTexCoordinate");
 
@@ -94,14 +103,20 @@ void yyeva::Mp4Render::updateViewPort(int width, int height) {
     surfaceHeight = height;
 }
 
+void yyeva::Mp4Render::setExternalTextureTransform(const float* matrix) {
+    if (matrix == nullptr) return;
+    memcpy(textureTransform, matrix, sizeof(textureTransform));
+}
+
 void yyeva::Mp4Render::draw() {
     if (textureId != -1) {
         glUseProgram(shaderProgram);
         vertexArray->setVertexAttribPointer(positionLocation);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureId);
+        glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
         //加载纹理
         glUniform1i(uTextureLocation, 0);
+        glUniformMatrix4fv(uTextureTransformLocation, 1, GL_FALSE, textureTransform);
         rgbaArray->setVertexAttribPointer(textureLocation);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }

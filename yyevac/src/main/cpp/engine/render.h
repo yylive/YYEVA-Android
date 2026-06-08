@@ -37,6 +37,8 @@ namespace yyeva {
 
         void updateViewPort(int width, int height);
 
+        void setExternalTextureTransform(const float* matrix);
+
         void setHasBg(bool hasBg);
 
         void setBlendMode(int blendMode) override;
@@ -58,48 +60,13 @@ namespace yyeva {
         //alpha纹理位置
         GLint aTextureAlphaLocation;
         GLint aTextureRgbLocation;
+        GLint uTextureTransformLocation;
+        GLfloat textureTransform[16];
 
         int surfaceWidth = 0;
         int surfaceHeight = 0;
         bool surfaceSizeChanged = false;
         bool hasBg = false;
         int blendMode = 1;
-
-//    string VERTEX_SHADER = string("uniform vec4 vPosition;\n") +
-//                              "uniform vec4 vTexCoordinateAlpha;\n" +
-//                              "uniform vec4 vTexCoordinateRgb;\n" +
-//                              "in vec2 v_TexCoordinateAlpha;\n" +
-//                              "in vec2 v_TexCoordinateRgb;\n" +
-//                              "\n" +
-//                              "void main() {\n" +
-//                              "    v_TexCoordinateAlpha = vec2(vTexCoordinateAlpha.x, vTexCoordinateAlpha.y);\n" +
-//                              "    v_TexCoordinateRgb = vec2(vTexCoordinateRgb.x, vTexCoordinateRgb.y);\n" +
-//                              "    gl_Position = vPosition;\n" +
-//                              "}";
-
-//    char VERTEX_SHADER[] = "uniform vec4 vPosition;\n"
-//                           "uniform vec4 vTexCoordinateAlpha;\n"
-//                           "uniform vec4 vTexCoordinateRgb;\n"
-//                           "in vec2 v_TexCoordinateAlpha;\n"
-//                           "in vec2 v_TexCoordinateRgb;\n"
-//                           "\n"
-//                           "void main() {\n"
-//                           "    v_TexCoordinateAlpha = vec2(vTexCoordinateAlpha.x, vTexCoordinateAlpha.y);\n"
-//                           "    v_TexCoordinateRgb = vec2(vTexCoordinateRgb.x, vTexCoordinateRgb.y);\n"
-//                           "    gl_Position = vPosition;\n"
-//                           "}";
-
-
-//    string FRAGMENT_SHADER = string("#extension GL_OES_EGL_image_external : require\n") +
-//                                "precision mediump float;\n" +
-//                                "uniform samplerExternalOES texture;\n" +
-//                                "in vec2 v_TexCoordinateAlpha;\n" +
-//                                "in vec2 v_TexCoordinateRgb;\n" +
-//                                "\n" +
-//                                "void main () {\n" +
-//                                "    vec4 alphaColor = texture(texture, v_TexCoordinateAlpha);\n" +
-//                                "    vec4 rgbColor = texture(texture, v_TexCoordinateRgb);\n" +
-//                                "    gl_FragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);\n" +
-//                                "}";
     };
 }

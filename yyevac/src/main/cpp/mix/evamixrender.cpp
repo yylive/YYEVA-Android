@@ -35,7 +35,9 @@ void yyeva::EvaMixRender::init(shared_ptr<EvaSrcMap> evaSrcMap) {
     }
 }
 
-void yyeva::EvaMixRender::rendFrame(GLuint videoTextureId, shared_ptr<EvaAnimeConfig> config, shared_ptr<EvaFrame> frame, shared_ptr<EvaSrc> src) {
+void yyeva::EvaMixRender::rendFrame(GLuint videoTextureId, shared_ptr<EvaAnimeConfig> config,
+                                    shared_ptr<EvaFrame> frame, shared_ptr<EvaSrc> src,
+                                    const float* externalTextureTransform) {
     if (videoTextureId <= 0) {
         ELOGE("rendFrame videoTextureId = 0");
         return;
@@ -59,6 +61,9 @@ void yyeva::EvaMixRender::rendFrame(GLuint videoTextureId, shared_ptr<EvaAnimeCo
         return;
     }
     shader->useProgram();
+    if (externalTextureTransform != nullptr) {
+        glUniformMatrix4fv(shader->uMaskTextureTransformLocation, 1, GL_FALSE, externalTextureTransform);
+    }
     //定点坐标 坐标归一
     vertexArray->setArray(VertexUtil::create(config->width, config->height, frame->frame, vertexArray->array));
     vertexArray->setVertexAttribPointer(shader->aPositionLocation);

@@ -26,6 +26,11 @@ object EvaJniUtil {
     external fun videoSizeChange(controllerId: Int, newWidth: Int, newHeight: Int)
 
     /**
+     * 更新外部视频纹理变换矩阵，用于裁剪解码器对齐区域
+     */
+    external fun updateExternalTextureTransform(controllerId: Int, matrix: FloatArray)
+
+    /**
      * 初始化mp4渲染
      * 返回管理器id
      */

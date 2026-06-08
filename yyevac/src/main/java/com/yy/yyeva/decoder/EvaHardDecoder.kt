@@ -40,6 +40,7 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     // 动画是否需要走YUV渲染逻辑的标志位
     private var needYUV = false
     private var outputFormat: MediaFormat? = null
+    private val surfaceTextureTransform = FloatArray(16)
     // 暂停
     private var isPause = false
     private var isRestart = false
@@ -86,6 +87,9 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             try {
                 glTexture?.apply {
                     updateTexImage()
+                    getTransformMatrix(surfaceTextureTransform)
+                    correctTextureTransformOrientation(surfaceTextureTransform)
+                    EvaJniUtil.updateExternalTextureTransform(playerEva.controllerId, surfaceTextureTransform)
                     //渲染mp4数据
                     EvaJniUtil.renderFrame(playerEva.controllerId)
                     //元素混合
@@ -100,6 +104,15 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             } catch (e: Throwable) {
                 ELog.e(TAG, "render exception=$e", e)
             }
+        }
+    }
+
+    private fun correctTextureTransformOrientation(matrix: FloatArray) {
+        if (matrix[5] >= 0f) return
+        for (i in 0 until 4) {
+            val yColumn = matrix[4 + i]
+            matrix[12 + i] += yColumn
+            matrix[4 + i] = -yColumn
         }
     }
 

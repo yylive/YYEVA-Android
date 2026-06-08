@@ -14,6 +14,7 @@ public:
     virtual void destroyRender() = 0;
     virtual void setAnimeConfig(shared_ptr<EvaAnimeConfig> config) = 0;
     virtual void updateViewPort(int width, int height){};
+    virtual void setExternalTextureTransform(const float* matrix){};
     virtual GLuint getExternalTexture() = 0;
     virtual void releaseTexture() = 0;
     virtual void swapBuffers() = 0;

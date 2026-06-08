@@ -18,7 +18,6 @@
 #define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
 #define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
 
-
 using namespace std;
 namespace yyeva {
     class Mp4Render : public IRender {
@@ -47,6 +46,8 @@ namespace yyeva {
 
         void updateViewPort(int width, int height);
 
+        void setExternalTextureTransform(const float* matrix);
+
         void setHasBg(bool hasBg) {};
 
         void setBlendMode(int blendMode) {};
@@ -66,6 +67,8 @@ namespace yyeva {
         GLint positionLocation;
         //纹理位置
         GLint textureLocation;
+        GLint uTextureTransformLocation;
+        GLfloat textureTransform[16];
 
         int surfaceWidth = 0;
         int surfaceHeight = 0;
