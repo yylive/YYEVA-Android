@@ -14,6 +14,7 @@ import com.yy.yyeva.file.EvaFileContainer
 import com.yy.yyeva.file.IEvaFileContainer
 import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
+import com.yy.yyeva.util.EvaVapConfigParser
 import com.yy.yyeva.util.PointRect
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -37,6 +38,9 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
 
     companion object {
         private const val TAG = "${EvaConstant.TAG}.EvaAnimConfigManager"
+        // json缓存标记
+        private const val CACHE_NONE = "none" // yyeffectmp4json未找到，vapc尚未检测（兼容旧缓存）
+        private const val CACHE_NONE_VAP_CHECKED = "none_vap_checked" // yyeffectmp4json和vapc均未找到
     }
 
     /**
@@ -80,115 +84,154 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
             return true
         }
         var jsonStr = evaFileContainer.getEvaJson() ?: ""  //读取sp缓存
+
+        // 1. 有效缓存直接使用
+        if (jsonStr.isNotEmpty() && jsonStr != CACHE_NONE && jsonStr != CACHE_NONE_VAP_CHECKED) {
+            ELog.i(TAG, "检测正常，使用缓存json $jsonStr")
+            return parseConfigJson(jsonStr, defaultFps)
+        }
+
+        // 2. 已确认 yyeffectmp4json 和 vapc 都没有，直接走默认配置
+        if (jsonStr == CACHE_NONE_VAP_CHECKED) {
+            ELog.i(TAG, "${evaFileContainer.getFile()?.path} 不存在json(vapc已检测)")
+            setNoJson(evaFileContainer, defaultFps)
+            return true
+        }
+
+        // 3. jsonStr为空(从未检测) 或 == CACHE_NONE(旧缓存,仅yyeffect未测,vapc未测)
+        //    先扫描 yyeffectmp4json（仅空缓存时需要，CACHE_NONE 已知 yyeffect 没有）
         if (jsonStr.isEmpty()) {
-            evaFileContainer.startRandomRead()
-            val readBytes = ByteArray(1024)
-            var readBytesLast = ByteArray(0)
-            var bufStr = ""
-            var bufStrS = ""
-            val matchStart = "yyeffectmp4json[["
-            val matchEnd = "]]yyeffectmp4json"
-            var findStart = false
-            var findEnd = false
-            var actualRead: Int
-            // ISO_8859_1 保证 1字节→1字符，避免 UTF-8 多字节替换导致跨块边界检测偏移
-            while (evaFileContainer.read(readBytes, 0, readBytes.size).also { actualRead = it } > 0) {
-                if (!findStart) { //没找到开头
-                    bufStr = String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
-                    var index = bufStr.indexOf(matchStart)
-                    if (index >= 0) { //分段1找到匹配开头
-                        jsonStr = bufStr.substring(index + matchStart.length)
-                        findStart = true
-                        index = jsonStr.indexOf(matchEnd)
-                        if (index >= 0) { //同时包含结尾段进行截取
-                            findEnd = true
-                            jsonStr = jsonStr.substring(0, index)
-                            break
-                        }
-                    } else {
-                        if (readBytesLast.isNotEmpty()) {
-                            bufStrS = String(readBytesLast, Charsets.ISO_8859_1) +
-                                    String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
-                            var indexS = bufStrS.indexOf(matchStart)
-                            if (indexS >= 0) { //合并分段找到匹配开头
-                                jsonStr = bufStrS.substring(indexS + matchStart.length)
-                                findStart = true
-                                indexS = jsonStr.indexOf(matchEnd)
-                                if (indexS >= 0) { // 同时包含结尾段进行截取
-                                    findEnd = true
-                                    jsonStr = jsonStr.substring(0, indexS)
-                                    break
-                                }
-                            }
-                        }
-                        //保存分段（只保留实际读取的字节）
-                        readBytesLast = readBytes.copyOf(actualRead)
+            val scanned = scanYyeffectJson(evaFileContainer)
+            if (scanned != null) {
+                ELog.d(TAG, "jsonStr:$scanned")
+                evaFileContainer.setEvaJson(scanned) //检测后认为资源存在json,保存缓存
+                return parseConfigJson(scanned, defaultFps)
+            }
+            ELog.e(TAG, "yyeffectmp4json not found")
+        }
+
+        // 4. yyeffectmp4json 没找到，尝试解析 VAP 格式的 vapc box
+        val vapcJson = EvaVapConfigParser.parseVapc(evaFileContainer)
+        if (vapcJson != null) {
+            ELog.i(TAG, "parse vapc config success")
+            val vapStr = vapcJson.toString()
+            evaFileContainer.setEvaJson(vapStr) //缓存转换后的YYEVA格式json，避免重复解析
+            return parseConfigJson(vapStr, defaultFps)
+        }
+
+        // 5. yyeffectmp4json 和 vapc 均未找到
+        ELog.e(TAG, "yyeffectmp4json and vapc both not found")
+        evaFileContainer.setEvaJson(CACHE_NONE_VAP_CHECKED) //标记两者均已检测，不重复检测
+        setNoJson(evaFileContainer, defaultFps)
+        return true
+    }
+
+    /**
+     * 扫描 mp4 中的 yyeffectmp4json 标记，base64+zlib 解密后返回 json 字符串。
+     * @return 解密后的 json；未找到返回 null
+     */
+    private fun scanYyeffectJson(evaFileContainer: IEvaFileContainer): String? {
+        evaFileContainer.startRandomRead()
+        val readBytes = ByteArray(1024)
+        var readBytesLast = ByteArray(0)
+        var jsonStr = ""
+        var bufStr = ""
+        var bufStrS = ""
+        val matchStart = "yyeffectmp4json[["
+        val matchEnd = "]]yyeffectmp4json"
+        var findStart = false
+        var findEnd = false
+        var actualRead: Int
+        // ISO_8859_1 保证 1字节→1字符，避免 UTF-8 多字节替换导致跨块边界检测偏移
+        while (evaFileContainer.read(readBytes, 0, readBytes.size).also { actualRead = it } > 0) {
+            if (!findStart) { //没找到开头
+                bufStr = String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
+                var index = bufStr.indexOf(matchStart)
+                if (index >= 0) { //分段1找到匹配开头
+                    jsonStr = bufStr.substring(index + matchStart.length)
+                    findStart = true
+                    index = jsonStr.indexOf(matchEnd)
+                    if (index >= 0) { //同时包含结尾段进行截取
+                        findEnd = true
+                        jsonStr = jsonStr.substring(0, index)
+                        break
                     }
                 } else {
-                    bufStr = String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
-                    val index = bufStr.indexOf(matchEnd)
-                    if (index >= 0) { //分段1找到匹配结尾
-                        jsonStr += bufStr.substring(0, index)
-                        findEnd = true
-                        break
-                    } else if (!readBytesLast.contentEquals(readBytes.copyOf(actualRead))) { //判定内容不一致
-                        if (readBytesLast.isNotEmpty()) {
-                            bufStrS = String(readBytesLast, Charsets.ISO_8859_1) +
-                                    String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
-                            val indexS = bufStrS.indexOf(matchEnd)
-                            if (indexS >= 0) { //合并分段找到匹配结尾
-                                jsonStr = if (indexS > readBytesLast.size) {
-                                    jsonStr.substring(
-                                        0,
-                                        jsonStr.length - (indexS - readBytesLast.size) - 1
-                                    )
-                                } else {
-                                    jsonStr.substring(
-                                        0,
-                                        jsonStr.length - (readBytesLast.size - indexS)
-                                    )
-                                }
+                    if (readBytesLast.isNotEmpty()) {
+                        bufStrS = String(readBytesLast, Charsets.ISO_8859_1) +
+                                String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
+                        var indexS = bufStrS.indexOf(matchStart)
+                        if (indexS >= 0) { //合并分段找到匹配开头
+                            jsonStr = bufStrS.substring(indexS + matchStart.length)
+                            findStart = true
+                            indexS = jsonStr.indexOf(matchEnd)
+                            if (indexS >= 0) { // 同时包含结尾段进行截取
                                 findEnd = true
+                                jsonStr = jsonStr.substring(0, indexS)
                                 break
                             }
                         }
-                        //保存数据
-                        jsonStr += bufStr
-                        //保存分段
-                        readBytesLast = readBytes.copyOf(actualRead)
                     }
+                    //保存分段（只保留实际读取的字节）
+                    readBytesLast = readBytes.copyOf(actualRead)
+                }
+            } else {
+                bufStr = String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
+                val index = bufStr.indexOf(matchEnd)
+                if (index >= 0) { //分段1找到匹配结尾
+                    jsonStr += bufStr.substring(0, index)
+                    findEnd = true
+                    break
+                } else if (!readBytesLast.contentEquals(readBytes.copyOf(actualRead))) { //判定内容不一致
+                    if (readBytesLast.isNotEmpty()) {
+                        bufStrS = String(readBytesLast, Charsets.ISO_8859_1) +
+                                String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
+                        val indexS = bufStrS.indexOf(matchEnd)
+                        if (indexS >= 0) { //合并分段找到匹配结尾
+                            jsonStr = if (indexS > readBytesLast.size) {
+                                jsonStr.substring(
+                                    0,
+                                    jsonStr.length - (indexS - readBytesLast.size) - 1
+                                )
+                            } else {
+                                jsonStr.substring(
+                                    0,
+                                    jsonStr.length - (readBytesLast.size - indexS)
+                                )
+                            }
+                            findEnd = true
+                            break
+                        }
+                    }
+                    //保存数据
+                    jsonStr += bufStr
+                    //保存分段
+                    readBytesLast = readBytes.copyOf(actualRead)
                 }
             }
-
-            evaFileContainer.closeRandomRead()
-
-            if (!findStart || !findEnd) {
-                ELog.e(TAG, "yyeffectmp4json not found")
-                evaFileContainer.setEvaJson("none") //检测后认为资源不存在json,不重复检测
-                setNoJson(evaFileContainer, defaultFps)
-                return true
-            } else {
-                //先用base64解密，再用zlib解密
-                jsonStr =
-                    zlib(Base64.decode(jsonStr.toByteArray(), Base64.DEFAULT)).decodeToString()
-                ELog.d(TAG, "jsonStr:$jsonStr")
-                evaFileContainer.setEvaJson(jsonStr) //检测后认为资源存在json,保存缓存
-            }
-        } else if (jsonStr == "none") {  //检测过后，认为是null
-            ELog.i(TAG, "${evaFileContainer.getFile()?.path} 不存在json")
-            setNoJson(evaFileContainer, defaultFps)
-            return true
-        } else {
-            ELog.i(TAG, "检测正常，使用缓存json $jsonStr")
         }
 
+        evaFileContainer.closeRandomRead()
+
+        if (!findStart || !findEnd) {
+            return null
+        }
+        //先用base64解密，再用zlib解密
+        return zlib(Base64.decode(jsonStr.toByteArray(), Base64.DEFAULT)).decodeToString()
+    }
+
+    /**
+     * 用 json 字符串解析配置并设置 fps。
+     */
+    private fun parseConfigJson(jsonStr: String, defaultFps: Int): Boolean {
+        val cfg = config ?: return false
         val jsonObj = JSONObject(jsonStr)
-        config.jsonConfig = jsonObj
-        val result = config.parse(jsonObj)
-        if (config.fps == 0) {
-            config.fps = defaultFps
+        cfg.jsonConfig = jsonObj
+        val result = cfg.parse(jsonObj)
+        if (cfg.fps == 0) {
+            cfg.fps = defaultFps
         }
-        playerEva.fps = config.fps
+        playerEva.fps = cfg.fps
         return result
     }
 
