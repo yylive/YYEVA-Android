@@ -85,12 +85,14 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
         }
         var jsonStr = evaFileContainer.getEvaJson() ?: ""  //读取sp缓存
 
-        val mergeInfo = readMergeInfo(evaFileContainer)
-        if (!mergeInfo.isNullOrEmpty()) {
-            jsonStr =
-                zlib(Base64.decode(mergeInfo.toByteArray(), Base64.DEFAULT)).decodeToString()
-            ELog.d(TAG, "jsonStr:$jsonStr")
-            evaFileContainer.setEvaJson(jsonStr)
+        if (jsonStr.isEmpty()) {
+            val mergeInfo = readMergeInfo(evaFileContainer)
+            if (!mergeInfo.isNullOrEmpty()) {
+                jsonStr =
+                    zlib(Base64.decode(mergeInfo.toByteArray(), Base64.DEFAULT)).decodeToString()
+                ELog.d(TAG, "jsonStr:$jsonStr")
+                evaFileContainer.setEvaJson(jsonStr)
+            }
         }
 
         // 1. 有效缓存直接使用
