@@ -41,6 +41,9 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
     private var needYUV = false
     private var outputFormat: MediaFormat? = null
     private val surfaceTextureTransform = FloatArray(16)
+    // 缓存最近一次已同步到 native 的外部纹理矩阵，只在矩阵变化时才触发 JNI 更新
+    private val lastSyncedTextureTransform = FloatArray(16)
+    private var hasSyncedTextureTransform = false
     // 暂停
     private var isPause = false
     private var isRestart = false
@@ -87,9 +90,13 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             try {
                 glTexture?.apply {
                     updateTexImage()
+                    // 仍然按帧读取 SurfaceTexture 矩阵，只把真正变化的结果同步给 native
                     getTransformMatrix(surfaceTextureTransform)
                     correctTextureTransformOrientation(surfaceTextureTransform)
-                    EvaJniUtil.updateExternalTextureTransform(playerEva.controllerId, surfaceTextureTransform)
+                    if (hasTextureTransformChanged()) {
+                        EvaJniUtil.updateExternalTextureTransform(playerEva.controllerId, surfaceTextureTransform)
+                        markTextureTransformSynced()
+                    }
                     //渲染mp4数据
                     EvaJniUtil.renderFrame(playerEva.controllerId)
                     //元素混合
@@ -114,6 +121,21 @@ class EvaHardDecoder(playerEva: EvaAnimPlayer) : Decoder(playerEva), SurfaceText
             matrix[12 + i] += yColumn
             matrix[4 + i] = -yColumn
         }
+    }
+
+    private fun hasTextureTransformChanged(): Boolean {
+        if (!hasSyncedTextureTransform) return true
+        for (i in surfaceTextureTransform.indices) {
+            if (surfaceTextureTransform[i] != lastSyncedTextureTransform[i]) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun markTextureTransformSynced() {
+        surfaceTextureTransform.copyInto(lastSyncedTextureTransform)
+        hasSyncedTextureTransform = true
     }
 
     fun save2DTextureToJPEG(textureId: Int, width: Int, height: Int) {

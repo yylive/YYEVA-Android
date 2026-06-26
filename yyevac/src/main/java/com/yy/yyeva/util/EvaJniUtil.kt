@@ -26,7 +26,8 @@ object EvaJniUtil {
     external fun videoSizeChange(controllerId: Int, newWidth: Int, newHeight: Int)
 
     /**
-     * 更新外部视频纹理变换矩阵，用于裁剪解码器对齐区域
+     * 更新外部视频纹理变换矩阵，用于裁剪解码器对齐区域。
+     * Java 层会按帧读取矩阵，但只在矩阵内容变化时才下发到 native。
      */
     external fun updateExternalTextureTransform(controllerId: Int, matrix: FloatArray)
 

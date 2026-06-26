@@ -2,7 +2,6 @@ package com.yy.yyeva
 
 import android.annotation.TargetApi
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.media.MediaDataSource
 import android.media.MediaMetadataRetriever
 import android.os.Build
@@ -15,6 +14,8 @@ import com.yy.yyeva.file.IEvaFileContainer
 import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
 import com.yy.yyeva.util.EvaVapConfigParser
+import com.yy.yyeva.util.GrayColorJudge
+import com.yy.yyeva.util.Mp4MetadataReader
 import com.yy.yyeva.util.PointRect
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
@@ -23,7 +24,6 @@ import java.io.IOException
 import java.lang.Exception
 import java.nio.ByteBuffer
 import java.util.zip.Inflater
-import kotlin.math.abs
 
 
 /**
@@ -85,6 +85,14 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
         }
         var jsonStr = evaFileContainer.getEvaJson() ?: ""  //读取sp缓存
 
+        val mergeInfo = readMergeInfo(evaFileContainer)
+        if (!mergeInfo.isNullOrEmpty()) {
+            jsonStr =
+                zlib(Base64.decode(mergeInfo.toByteArray(), Base64.DEFAULT)).decodeToString()
+            ELog.d(TAG, "jsonStr:$jsonStr")
+            evaFileContainer.setEvaJson(jsonStr)
+        }
+
         // 1. 有效缓存直接使用
         if (jsonStr.isNotEmpty() && jsonStr != CACHE_NONE && jsonStr != CACHE_NONE_VAP_CHECKED) {
             ELog.i(TAG, "检测正常，使用缓存json $jsonStr")
@@ -124,6 +132,22 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
         evaFileContainer.setEvaJson(CACHE_NONE_VAP_CHECKED) //标记两者均已检测，不重复检测
         setNoJson(evaFileContainer, defaultFps)
         return true
+    }
+
+    private fun readMergeInfo(evaFileContainer: IEvaFileContainer): String? {
+        return try {
+            val file = evaFileContainer.getFile()
+            when {
+                file != null && file.exists() -> Mp4MetadataReader.readMergeInfo(file.inputStream())
+                evaFileContainer is EvaAssetsEvaFileContainer -> {
+                    Mp4MetadataReader.readMergeInfo(evaFileContainer.assetFd.createInputStream())
+                }
+                else -> null
+            }
+        } catch (e: Exception) {
+            ELog.e(TAG, "readMergeInfo failed: $e", e)
+            null
+        }
     }
 
     /**
@@ -640,20 +664,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
 
     //是否灰度区域
     private fun isGray(a:IntArray): Boolean {
-        //一个区域里面的识别点
-        for (c in a) {
-            //获取rgb值
-            val r = Color.red(c)
-            val g = Color.green(c)
-            val b = Color.blue(c)
-            Log.i("打印选择的值","r=$r ,g=$g ,b=$b")
-            //通过rgb色值差距来判断是否灰度图
-            if ((abs(r-g) > 25 || abs(g-b) > 25 || abs(b-r) > 25)
-                && (r>30 && g>30 && b>30)) {
-                return false
-            }
-        }
-        return true
+        return GrayColorJudge.isGrayRegion(a)
     }
     //获取视频的关键帧时间列表
     fun getMp4KeyframeTimes(filePath: String?): LongArray {
