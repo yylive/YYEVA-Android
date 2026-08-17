@@ -183,6 +183,7 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
         audioTrack.play()
         val timeOutUs = 1000L
         var isEOS = false
+        var loopRemain = playLoop
         while (!isStopReq) {
             synchronized(lock) {
                 if (isPause) {
@@ -223,7 +224,7 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
             }
 
             if (isEOS && bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
-                if (isLoop || --playLoop > 0) {
+                if (isLoop || --loopRemain > 0) {
                     ELog.d(TAG, "Reached EOS, looping -> playLoop")
                     extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
                     decoder.flush()

@@ -340,7 +340,9 @@ open class EvaAnimViewV3 @JvmOverloads constructor(context: Context, attrs: Attr
 
     override fun prepareToPlay(file: File, repeatCount: Int) {
         try {
-            playerEva.playLoop = repeatCount
+            if (repeatCount > 0) {
+                playerEva.playLoop = repeatCount
+            }
             val fileContainer = EvaFileContainer(file)
             startPlay(fileContainer, true)
         } catch (e: Throwable) {
