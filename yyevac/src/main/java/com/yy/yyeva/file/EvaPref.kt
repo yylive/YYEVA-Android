@@ -16,7 +16,7 @@ object EvaPref {
         }
     }
 
-    fun getEvaJson(md5: String?): String? {
+    fun getEvaJson(fileName: String, md5: String?): String? {
         if (sp == null) {
             ELog.e(TAG, "EvaPref not init")
             return null
@@ -27,20 +27,33 @@ object EvaPref {
             return null
         }
 
-        return sp?.getString("yyeva_json_$md5", "")
+        return if (md5.isEmpty()) {
+            sp?.getString("yyeva_json_$fileName", "")
+        } else {
+            sp?.getString("yyeva_json_$md5", "")
+        }
     }
 
     fun setEvaJson(fileName: String, md5: String, json: String) {
         ELog.i(TAG, "setEvaJson fileName: $fileName, md5: $md5")
-        sp?.edit()?.putString("yyeva_json_$md5", json)?.apply()
+        if (md5.isEmpty()) {
+            sp?.edit()?.putString("yyeva_json_$fileName", json)?.apply()
+        } else {
+            sp?.edit()?.putString("yyeva_json_$md5", json)?.apply()
+        }
     }
 
     fun setEvaMp4Type(fileName: String, md5: String, type: Int) {
         ELog.i(TAG, "setEvaMp4Type fileName: $fileName, md5: $md5, type: $type")
         sp?.edit()?.putInt("yyeva_mp4_type_$md5", type)?.apply()
+        if (md5.isEmpty()) {
+            sp?.edit()?.putInt("yyeva_mp4_type_$fileName", type)?.apply()
+        } else {
+            sp?.edit()?.putInt("yyeva_mp4_type_$md5", type)?.apply()
+        }
     }
 
-    fun getEvaMp4Type(md5: String?): Int {
+    fun getEvaMp4Type(fileName: String, md5: String?): Int {
         if (sp == null) {
             ELog.e(TAG, "EvaPref not init")
             return VIDEO_MODE_NORMAL_MP4_NONE
@@ -51,6 +64,10 @@ object EvaPref {
             return VIDEO_MODE_NORMAL_MP4_NONE
         }
 
-        return sp?.getInt("yyeva_mp4_type_$md5", VIDEO_MODE_NORMAL_MP4_NONE) ?: VIDEO_MODE_NORMAL_MP4_NONE
+        return if (md5.isEmpty()) {
+            sp?.getInt("yyeva_mp4_type_$fileName", VIDEO_MODE_NORMAL_MP4_NONE)?: VIDEO_MODE_NORMAL_MP4_NONE
+        } else {
+            sp?.getInt("yyeva_mp4_type_$md5", VIDEO_MODE_NORMAL_MP4_NONE)?: VIDEO_MODE_NORMAL_MP4_NONE
+        }
     }
 }

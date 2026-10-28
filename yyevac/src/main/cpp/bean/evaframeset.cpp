@@ -7,13 +7,13 @@ EvaFrameSet::EvaFrameSet() {
 
 }
 
-EvaFrameSet::EvaFrameSet(Datas datas) {
-    index = datas.frameIndex;
+EvaFrameSet::EvaFrameSet(std::shared_ptr<Datas> datas) {
+    index = datas->frameIndex;
     int i = 0;
-    std::list<Data>::iterator it;
-    for (it = datas.data.begin(); it != datas.data.end(); ++it) {
-        auto *frame = new EvaFrame(i, *it);
-        list.push_back(*frame);
+    std::list<shared_ptr<Data>>::iterator it;
+    for (it = datas->data.begin(); it != datas->data.end(); ++it) {
+        auto frame = make_shared<EvaFrame>(i, *it);
+        list.push_back(frame);
         i++;
     }
 }

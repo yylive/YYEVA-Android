@@ -4,24 +4,24 @@
 
 #include "texcoordsutil.h"
 
-float* TexCoordsUtil::create(int width, int height, PointRect* rect, float* array) {
+float* TexCoordsUtil::create(float width, float height, std::shared_ptr<PointRect> rect, float* array) {
     //x0
-    array[0] = (float) rect->x / width;
+    array[0] = rect->x / width;
     //y0
-    array[1] = (float) rect->y / height;
+    array[1] = rect->y / height;
     //x1
-    array[2] = (float) rect->x / width;
+    array[2] = rect->x / width;
     //y1
-    array[3] = ((float)rect->y + rect->h) / height;
+    array[3] = (rect->y + rect->h) / height;
 
     //x2
-    array[4] = ((float)rect->x + rect->w) / width;
+    array[4] = (rect->x + rect->w) / width;
     //y2
-    array[5] = (float) rect->y / height;
+    array[5] = rect->y / height;
     //x3
-    array[6] = ((float)rect->x + rect->w) / width;
+    array[6] = (rect->x + rect->w) / width;
     //y3
-    array[7] = ((float)rect->y + rect->h) / height;
+    array[7] = (rect->y + rect->h) / height;
 
     return array;
 }

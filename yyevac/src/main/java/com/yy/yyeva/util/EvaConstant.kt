@@ -10,6 +10,7 @@ object EvaConstant {
     const val VIDEO_MODE_SPLIT_VERTICAL = 2 // 视频上下对齐（alpha上\rgb下）
     const val VIDEO_MODE_SPLIT_HORIZONTAL_REVERSE = 3 // 视频左右对齐（rgb左\alpha右）
     const val VIDEO_MODE_SPLIT_VERTICAL_REVERSE = 4 // 视频上下对齐（rgb上\alpha下）
+    const val YYEVAColorRegion_AlphaMP4_alphaHalfRightTop = 5 // 视频上下对齐（rgb上\alpha下）1/4 elpha
 
     const val OK = 0 // 成功
 

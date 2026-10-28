@@ -5,29 +5,29 @@
 #include "evamixrender.h"
 
 #define LOG_TAG "EvaMixRender"
-#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
+#define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
 
-EvaMixRender::EvaMixRender() {
-
-}
-
-EvaMixRender::~EvaMixRender() {
+yyeva::EvaMixRender::EvaMixRender() {
 
 }
 
-void EvaMixRender::init(EvaSrcMap* evaSrcMap) {
-    shader = new MixShader();
+yyeva::EvaMixRender::~EvaMixRender() {
+
+}
+
+void yyeva::EvaMixRender::init(shared_ptr<EvaSrcMap> evaSrcMap) {
+    shader = make_shared<MixShader>();
     glDisable(GL_DEPTH_TEST);  //关闭深度测试
 
     if (!evaSrcMap->map.empty()) {
-        map<string, EvaSrc>::iterator it;
+        map<string, shared_ptr<EvaSrc>>::iterator it;
         for (it = evaSrcMap->map.begin(); it != evaSrcMap->map.end(); it++) {
 //            cout << (*it).first << " " << (*it).second << endl;
-            ELOGV("init srcId = %s", it->second.srcId.c_str());
-            TextureLoadUtil::loadTexture(&it->second);
+            ELOGV("init srcId = %s", it->second->srcId.c_str());
+            TextureLoadUtil::loadTexture(it->second);
             if (shader != nullptr && shader->program != 0) {
-                ELOGV("textureProgram=%d, textureId=%d", shader->program, it->second.srcTextureId);
+                ELOGV("textureProgram=%d, textureId=%d", shader->program, it->second->srcTextureId);
             } else {
                 ELOGE("shader program error");
             }
@@ -35,7 +35,9 @@ void EvaMixRender::init(EvaSrcMap* evaSrcMap) {
     }
 }
 
-void EvaMixRender::rendFrame(GLuint videoTextureId, EvaAnimeConfig* config, EvaFrame* frame, EvaSrc* src) {
+void yyeva::EvaMixRender::rendFrame(GLuint videoTextureId, shared_ptr<EvaAnimeConfig> config,
+                                    shared_ptr<EvaFrame> frame, shared_ptr<EvaSrc> src,
+                                    const float* externalTextureTransform) {
     if (videoTextureId <= 0) {
         ELOGE("rendFrame videoTextureId = 0");
         return;
@@ -59,6 +61,9 @@ void EvaMixRender::rendFrame(GLuint videoTextureId, EvaAnimeConfig* config, EvaF
         return;
     }
     shader->useProgram();
+    if (externalTextureTransform != nullptr) {
+        glUniformMatrix4fv(shader->uMaskTextureTransformLocation, 1, GL_FALSE, externalTextureTransform);
+    }
     //定点坐标 坐标归一
     vertexArray->setArray(VertexUtil::create(config->width, config->height, frame->frame, vertexArray->array));
     vertexArray->setVertexAttribPointer(shader->aPositionLocation);
@@ -85,9 +90,9 @@ void EvaMixRender::rendFrame(GLuint videoTextureId, EvaAnimeConfig* config, EvaF
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, videoTextureId);
     glUniform1i(shader->uTextureMaskUnitLocation, 1);
 
-    //属性处理
-    glUniform1i(shader->uIsFillLocation, 0);
-    glUniform4f(shader->uColorLocation, 0, 0, 0, 0);
+//    //属性处理
+//    glUniform1i(shader->uIsFillLocation, 0);
+//    glUniform4f(shader->uColorLocation, 0, 0, 0, 0);
     //启动混合
     glEnable(GL_BLEND);
     //基于alpha通道的半透明混合函数
@@ -95,16 +100,24 @@ void EvaMixRender::rendFrame(GLuint videoTextureId, EvaAnimeConfig* config, EvaF
     //     GLenum dstRGB,
     //     GLenum srcAlpha,
     //     GLenum dstAlpha);
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    if (src->srcType == EvaSrc::SrcType::TXT) {  //文字图片不进行预乘，因为已经带有透明度
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    } else {
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    }
     //绘制
     glDrawArrays(GL_TRIANGLE_STRIP,0, 4);
     //关闭混合
     glDisable(GL_BLEND);
 }
 
-void EvaMixRender::release(GLuint textureId) {
+void yyeva::EvaMixRender::release(GLuint textureId) {
     if (textureId != 0) {
         glDeleteTextures(1, &textureId);
+    }
+    if (shader->program > 0) {
+        glDeleteProgram(shader->program);
+        shader->program = 0;
     }
 }
 
@@ -118,7 +131,7 @@ void EvaMixRender::release(GLuint textureId) {
  * @param fitType 缩放模型
  * @return
  */
-float *EvaMixRender::genSrcCoordsArray(float *array, int fw, int fh, int sw, int sh,
+float *yyeva::EvaMixRender::genSrcCoordsArray(float *array, float fw, float fh, float sw, float sh,
                                        EvaSrc::FitType fitType) {
     float* srcArray = nullptr;
     if (fitType == EvaSrc::FitType::CENTER_FULL) { //aspectFill
@@ -126,23 +139,23 @@ float *EvaMixRender::genSrcCoordsArray(float *array, int fw, int fh, int sw, int
             //中心对齐，不拉伸
             int gw = (sw - fw) / 2;
             int gh = (sh - fh) / 2;
-            srcArray = TexCoordsUtil::create(sw, sh, new PointRect(gw, gh, fw, fh), array);
+            srcArray = TexCoordsUtil::create(sw, sh, make_shared<PointRect>(gw, gh, fw, fh), array);
         } else { //centerCrop
             float fScale = float(fw) / fh;
             float sScale = float(sw) / sh;
-            PointRect *srcRect;
+            shared_ptr<PointRect> srcRect;
             if (fScale > sScale) {
                 int w = sw;
                 int x = 0;
                 int h = int(sw / fScale);
                 int y = (sh - h) / 2;
-                srcRect = new PointRect(x, y, w, h);
+                srcRect = make_shared<PointRect>(x, y, w, h);
             } else {
                 int h = sh;
                 int y = 0;
                 int w = int(sh * fScale);
                 int x = (sw - w) / 2;
-                srcRect = new PointRect(x, y, w, h);
+                srcRect = make_shared<PointRect>(x, y, w, h);
             }
             srcArray = TexCoordsUtil::create(sw, sh, srcRect, array);
         }
@@ -151,33 +164,33 @@ float *EvaMixRender::genSrcCoordsArray(float *array, int fw, int fh, int sw, int
             //中心对齐，不拉伸
             int gw = (sw - fw) / 2;
             int gh = (sh - fh) / 2;
-            srcArray = TexCoordsUtil::create(sw, sh, new PointRect(gw, gh, fw, fh), array);
+            srcArray = TexCoordsUtil::create(sw, sh, make_shared<PointRect>(gw, gh, fw, fh), array);
         } else {
             float fScale = float(fw) / fh;
             float sScale = float(sw) / sh;
-            PointRect *srcRect;
+            shared_ptr<PointRect> srcRect;
             if (fScale < sScale) {
-                int w = sw;
-                int x = 0;
-                int h = int(sw / fScale);
-                int y = (sh - h) / 2;
-                srcRect = new PointRect(x, y, w, h);
+                float w = sw;
+                float x = 0;
+                float h = sw / fScale;
+                float y = (sh - h) / 2.0;
+                srcRect = make_shared<PointRect>(x, y, w, h);
             } else {
-                int h = sh;
-                int y = 0;
-                int w = int(sh * fScale);
-                int x = (sw - w) / 2;
-                srcRect = new PointRect(x, y, w, h);
+                float h = sh;
+                float y = 0;
+                float w = sh * fScale;
+                float x = (sw - w) / 2.0;
+                srcRect = make_shared<PointRect>(x, y, w, h);
             }
             srcArray = TexCoordsUtil::create(sw, sh, srcRect, array);
         }
     } else { //scaleFill
-        srcArray = TexCoordsUtil::create(fw, fh, new PointRect(0, 0, fw, fh), array);
+        srcArray = TexCoordsUtil::create(fw, fh, make_shared<PointRect>(0, 0, fw, fh), array);
     }
     return srcArray;
 }
 
-float *EvaMixRender::transColor(int color) {
+float *yyeva::EvaMixRender::transColor(int color) {
     auto* argb = new float[4];
     unsigned int c = color;
     argb[0] = float((c >> 24) & 0x000000ff) / 255.0;
@@ -188,7 +201,7 @@ float *EvaMixRender::transColor(int color) {
 }
 
 //转换RGB颜色 color string转为color RGB色值
-float *EvaMixRender::transColor(std::string color) {
+float *yyeva::EvaMixRender::transColor(std::string color) {
     if (color == "") {
         auto* argb = new float[4]{1.0f};
         return argb;

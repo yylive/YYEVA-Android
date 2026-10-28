@@ -2,11 +2,11 @@
 // Created by asus on 2022/4/17.
 //
 #include "shaderutil.h"
-#include <android/log.h>
 
-#define LOG_TAG "ShareUtil"
-#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-#define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+
+#define LOG_TAG "SharerUtil"
+#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
+#define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
 
 GLuint ShaderUtil::createProgram(string vertexSource, string fragmentSource) {
     GLuint vertexShaderHandle = compileShader(GL_VERTEX_SHADER, vertexSource.c_str());
@@ -26,6 +26,7 @@ GLuint ShaderUtil::compileShader(GLenum shaderType, const char* shaderSource) {
         GLint compiled;
         glShaderSource(shaderHandle, 1,
                        &shaderSource, nullptr);
+        shaderSource = nullptr;
         glCompileShader(shaderHandle);
         glGetShaderiv(shaderHandle,GL_COMPILE_STATUS,&compiled);
         if(!compiled){
@@ -45,14 +46,15 @@ GLuint ShaderUtil::compileShader(GLenum shaderType, const char* shaderSource) {
     } else {
         GLint infoLen = 0;
         glGetShaderiv(shaderHandle,GL_INFO_LOG_LENGTH,&infoLen);
-        if(infoLen >1){
+        if (infoLen > 1) {
             char *infoLog= (char*)malloc(sizeof(char*) *infoLen);
             glGetShaderInfoLog(shaderHandle,infoLen,NULL,infoLog);
-            ELOGE("Error create shader:[%s]",infoLog);
+            ELOGE("Error create shader:[%s]", infoLog);
             free(infoLog);
         }
         ELOGE("Error create shader");
     }
+    glDeleteShader(shaderHandle);
     return 0;
 }
 
@@ -79,12 +81,16 @@ GLuint ShaderUtil::createAndLinkProgram(GLuint vertexShaderHandle, GLuint fragme
             ELOGE("loadProgram failed: %s", infoLog);
             free(infoLog);
         }
-
+        glDetachShader(iProgId, vertexShaderHandle);
+        glDetachShader(iProgId, fragmentShaderHandle);
+        glDeleteShader(vertexShaderHandle);
+        glDeleteShader(fragmentShaderHandle);
         glDeleteProgram(iProgId);
         return 0;
     }
+//    glDetachShader(iProgId, vertexShaderHandle);
+//    glDetachShader(iProgId, fragmentShaderHandle);
     glDeleteShader(vertexShaderHandle);
     glDeleteShader(fragmentShaderHandle);
     return iProgId;
 }
-

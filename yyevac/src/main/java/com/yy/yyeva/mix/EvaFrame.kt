@@ -1,12 +1,14 @@
 package com.yy.yyeva.mix
 
 import android.util.SparseArray
+import androidx.annotation.Keep
 import com.yy.yyeva.EvaAnimConfig
 import com.yy.yyeva.util.PointRect
 
 /**
  * 单帧描述
  */
+@Keep
 class EvaFrame(index: Int, d: EvaAnimConfig.Data) {
     var srcId = ""
     var z = 0

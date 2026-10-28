@@ -1,21 +1,29 @@
 package com.yy.yyeva
 
+import android.annotation.TargetApi
 import android.graphics.Bitmap
-import android.graphics.Color
+import android.media.MediaDataSource
 import android.media.MediaMetadataRetriever
+import android.os.Build
 import android.os.SystemClock
 import android.util.Base64
 import android.util.Log
+import com.yy.yyeva.file.EvaAssetsEvaFileContainer
+import com.yy.yyeva.file.EvaFileContainer
 import com.yy.yyeva.file.IEvaFileContainer
 import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
+import com.yy.yyeva.util.EvaVapConfigParser
+import com.yy.yyeva.util.GrayColorJudge
+import com.yy.yyeva.util.Mp4MetadataReader
 import com.yy.yyeva.util.PointRect
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
+import java.io.FileInputStream
 import java.io.IOException
 import java.lang.Exception
+import java.nio.ByteBuffer
 import java.util.zip.Inflater
-import kotlin.math.abs
 
 
 /**
@@ -30,6 +38,9 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
 
     companion object {
         private const val TAG = "${EvaConstant.TAG}.EvaAnimConfigManager"
+        // json缓存标记
+        private const val CACHE_NONE = "none" // yyeffectmp4json未找到，vapc尚未检测（兼容旧缓存）
+        private const val CACHE_NONE_VAP_CHECKED = "none_vap_checked" // yyeffectmp4json和vapc均未找到
     }
 
     /**
@@ -73,111 +84,180 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
             return true
         }
         var jsonStr = evaFileContainer.getEvaJson() ?: ""  //读取sp缓存
+
         if (jsonStr.isEmpty()) {
-            evaFileContainer.startRandomRead()
-            val readBytes = ByteArray(1024)
-            var readBytesLast = ByteArray(1024)
-            var bufStr = ""
-            var bufStrS = ""
-            val matchStart = "yyeffectmp4json[["
-            val matchEnd = "]]yyeffectmp4json"
-            var findStart = false
-            var findEnd = false
-            while (evaFileContainer.read(readBytes, 0, readBytes.size) > 0) {
-                if (!findStart) { //没找到开头
-                    bufStr = String(readBytes)
-                    var index = bufStr.indexOf(matchStart)
-                    if (index > 0) { //分段1找到匹配开头
-                        jsonStr = bufStr.substring(index + matchStart.length)
-                        findStart = true
-                        index = jsonStr.indexOf(matchEnd)
-                        if (index > 0) { //同时包含结尾段进行截取
-                            findEnd = true
-                            jsonStr = jsonStr.substring(0, index)
-                            break
-                        }
-                    } else {
-                        if (readBytesLast.isNotEmpty()) {
-                            bufStrS = String(readBytes + readBytesLast)
-                            var indexS = bufStrS.indexOf(matchStart)
-                            if (indexS > 0) { //合并分段找到匹配开头
-                                jsonStr = bufStrS.substring(indexS + matchStart.length)
-                                findStart = true
-                                indexS = jsonStr.indexOf(matchEnd)
-                                if (indexS > 0) { // 同时包含结尾段进行截取
-                                    findEnd = true
-                                    jsonStr = jsonStr.substring(0, indexS)
-                                    break
-                                }
-                            }
-                        }
-                        //保存分段
-                        readBytesLast = readBytes.clone()
+            val mergeInfo = readMergeInfo(evaFileContainer)
+            if (!mergeInfo.isNullOrEmpty()) {
+                jsonStr =
+                    zlib(Base64.decode(mergeInfo.toByteArray(), Base64.DEFAULT)).decodeToString()
+                ELog.d(TAG, "jsonStr:$jsonStr")
+                evaFileContainer.setEvaJson(jsonStr)
+            }
+        }
+
+        // 1. 有效缓存直接使用
+        if (jsonStr.isNotEmpty() && jsonStr != CACHE_NONE && jsonStr != CACHE_NONE_VAP_CHECKED) {
+            ELog.i(TAG, "检测正常，使用缓存json $jsonStr")
+            return parseConfigJson(jsonStr, defaultFps)
+        }
+
+        // 2. 已确认 yyeffectmp4json 和 vapc 都没有，直接走默认配置
+        if (jsonStr == CACHE_NONE_VAP_CHECKED) {
+            ELog.i(TAG, "${evaFileContainer.getFile()?.path} 不存在json(vapc已检测)")
+            setNoJson(evaFileContainer, defaultFps)
+            return true
+        }
+
+        // 3. jsonStr为空(从未检测) 或 == CACHE_NONE(旧缓存,仅yyeffect未测,vapc未测)
+        //    先扫描 yyeffectmp4json（仅空缓存时需要，CACHE_NONE 已知 yyeffect 没有）
+        if (jsonStr.isEmpty()) {
+            val scanned = scanYyeffectJson(evaFileContainer)
+            if (scanned != null) {
+                ELog.d(TAG, "jsonStr:$scanned")
+                evaFileContainer.setEvaJson(scanned) //检测后认为资源存在json,保存缓存
+                return parseConfigJson(scanned, defaultFps)
+            }
+            ELog.e(TAG, "yyeffectmp4json not found")
+        }
+
+        // 4. yyeffectmp4json 没找到，尝试解析 VAP 格式的 vapc box
+        val vapcJson = EvaVapConfigParser.parseVapc(evaFileContainer)
+        if (vapcJson != null) {
+            ELog.i(TAG, "parse vapc config success")
+            val vapStr = vapcJson.toString()
+            evaFileContainer.setEvaJson(vapStr) //缓存转换后的YYEVA格式json，避免重复解析
+            return parseConfigJson(vapStr, defaultFps)
+        }
+
+        // 5. yyeffectmp4json 和 vapc 均未找到
+        ELog.e(TAG, "yyeffectmp4json and vapc both not found")
+        evaFileContainer.setEvaJson(CACHE_NONE_VAP_CHECKED) //标记两者均已检测，不重复检测
+        setNoJson(evaFileContainer, defaultFps)
+        return true
+    }
+
+    private fun readMergeInfo(evaFileContainer: IEvaFileContainer): String? {
+        return try {
+            val file = evaFileContainer.getFile()
+            when {
+                file != null && file.exists() -> Mp4MetadataReader.readMergeInfo(file.inputStream())
+                evaFileContainer is EvaAssetsEvaFileContainer -> {
+                    Mp4MetadataReader.readMergeInfo(evaFileContainer.assetFd.createInputStream())
+                }
+                else -> null
+            }
+        } catch (e: Exception) {
+            ELog.e(TAG, "readMergeInfo failed: $e", e)
+            null
+        }
+    }
+
+    /**
+     * 扫描 mp4 中的 yyeffectmp4json 标记，base64+zlib 解密后返回 json 字符串。
+     * @return 解密后的 json；未找到返回 null
+     */
+    private fun scanYyeffectJson(evaFileContainer: IEvaFileContainer): String? {
+        evaFileContainer.startRandomRead()
+        val readBytes = ByteArray(1024)
+        var readBytesLast = ByteArray(0)
+        var jsonStr = ""
+        var bufStr = ""
+        var bufStrS = ""
+        val matchStart = "yyeffectmp4json[["
+        val matchEnd = "]]yyeffectmp4json"
+        var findStart = false
+        var findEnd = false
+        var actualRead: Int
+        // ISO_8859_1 保证 1字节→1字符，避免 UTF-8 多字节替换导致跨块边界检测偏移
+        while (evaFileContainer.read(readBytes, 0, readBytes.size).also { actualRead = it } > 0) {
+            if (!findStart) { //没找到开头
+                bufStr = String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
+                var index = bufStr.indexOf(matchStart)
+                if (index >= 0) { //分段1找到匹配开头
+                    jsonStr = bufStr.substring(index + matchStart.length)
+                    findStart = true
+                    index = jsonStr.indexOf(matchEnd)
+                    if (index >= 0) { //同时包含结尾段进行截取
+                        findEnd = true
+                        jsonStr = jsonStr.substring(0, index)
+                        break
                     }
                 } else {
-                    bufStr = String(readBytes)
-                    val index = bufStr.indexOf(matchEnd)
-                    if (index > 0) { //分段1找到匹配结尾
-                        jsonStr += bufStr.substring(0, index)
-                        findEnd = true
-                        break
-                    } else if (!readBytesLast.contentEquals(readBytes)) { //判定内容不一致
-                        if (readBytesLast.isNotEmpty()) {
-                            bufStrS = String(readBytesLast + readBytes)
-                            val indexS = bufStrS.indexOf(matchEnd)
-                            if (indexS > 0) { //合并分段找到匹配结尾
-                                jsonStr = if (indexS > readBytesLast.size) {
-                                    jsonStr.substring(
-                                        0,
-                                        jsonStr.length - (indexS - readBytesLast.size) - 1
-                                    )
-                                } else {
-                                    jsonStr.substring(
-                                        0,
-                                        jsonStr.length - (readBytesLast.size - indexS) - 1
-                                    )
-                                }
+                    if (readBytesLast.isNotEmpty()) {
+                        bufStrS = String(readBytesLast, Charsets.ISO_8859_1) +
+                                String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
+                        var indexS = bufStrS.indexOf(matchStart)
+                        if (indexS >= 0) { //合并分段找到匹配开头
+                            jsonStr = bufStrS.substring(indexS + matchStart.length)
+                            findStart = true
+                            indexS = jsonStr.indexOf(matchEnd)
+                            if (indexS >= 0) { // 同时包含结尾段进行截取
                                 findEnd = true
+                                jsonStr = jsonStr.substring(0, indexS)
                                 break
                             }
                         }
-                        //保存数据
-                        jsonStr += bufStr
-                        //保存分段
-                        readBytesLast = readBytes.clone()
                     }
+                    //保存分段（只保留实际读取的字节）
+                    readBytesLast = readBytes.copyOf(actualRead)
+                }
+            } else {
+                bufStr = String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
+                val index = bufStr.indexOf(matchEnd)
+                if (index >= 0) { //分段1找到匹配结尾
+                    jsonStr += bufStr.substring(0, index)
+                    findEnd = true
+                    break
+                } else if (!readBytesLast.contentEquals(readBytes.copyOf(actualRead))) { //判定内容不一致
+                    if (readBytesLast.isNotEmpty()) {
+                        bufStrS = String(readBytesLast, Charsets.ISO_8859_1) +
+                                String(readBytes, 0, actualRead, Charsets.ISO_8859_1)
+                        val indexS = bufStrS.indexOf(matchEnd)
+                        if (indexS >= 0) { //合并分段找到匹配结尾
+                            jsonStr = if (indexS > readBytesLast.size) {
+                                jsonStr.substring(
+                                    0,
+                                    jsonStr.length - (indexS - readBytesLast.size) - 1
+                                )
+                            } else {
+                                jsonStr.substring(
+                                    0,
+                                    jsonStr.length - (readBytesLast.size - indexS)
+                                )
+                            }
+                            findEnd = true
+                            break
+                        }
+                    }
+                    //保存数据
+                    jsonStr += bufStr
+                    //保存分段
+                    readBytesLast = readBytes.copyOf(actualRead)
                 }
             }
-
-            evaFileContainer.closeRandomRead()
-
-            if (!findStart || !findEnd) {
-                ELog.e(TAG, "yyeffectmp4json not found")
-                evaFileContainer.setEvaJson("none") //检测后认为资源不存在json,不重复检测
-                setNoJson(evaFileContainer, defaultFps)
-                return true
-            } else {
-                //先用base64解密，再用zlib解密
-                jsonStr =
-                    zlib(Base64.decode(jsonStr.toByteArray(), Base64.DEFAULT)).decodeToString()
-                ELog.d(TAG, "jsonStr:$jsonStr")
-                evaFileContainer.setEvaJson(jsonStr) //检测后认为资源存在json,保存缓存
-            }
-        } else if (jsonStr == "none") {  //检测过后，认为是null
-            ELog.i(TAG, "${evaFileContainer.getFile()?.path} 不存在json")
-            setNoJson(evaFileContainer, defaultFps)
-            return true
-        } else {
-            ELog.i(TAG, "检测正常，使用缓存json $jsonStr")
         }
 
+        evaFileContainer.closeRandomRead()
+
+        if (!findStart || !findEnd) {
+            return null
+        }
+        //先用base64解密，再用zlib解密
+        return zlib(Base64.decode(jsonStr.toByteArray(), Base64.DEFAULT)).decodeToString()
+    }
+
+    /**
+     * 用 json 字符串解析配置并设置 fps。
+     */
+    private fun parseConfigJson(jsonStr: String, defaultFps: Int): Boolean {
+        val cfg = config ?: return false
         val jsonObj = JSONObject(jsonStr)
-        config.jsonConfig = jsonObj
-        val result = config.parse(jsonObj)
-        if (config.fps == 0) {
-            config.fps = defaultFps
+        cfg.jsonConfig = jsonObj
+        val result = cfg.parse(jsonObj)
+        if (cfg.fps == 0) {
+            cfg.fps = defaultFps
         }
-        playerEva.fps = config.fps
+        playerEva.fps = cfg.fps
         return result
     }
 
@@ -231,6 +311,12 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
                     rgbPointRect = PointRect(0, 0, width, height)
                     alphaPointRect = PointRect(width, 0, width, height)
                 }
+                EvaConstant.YYEVAColorRegion_AlphaMP4_alphaHalfRightTop -> {
+                    width = _videoWidth * 2/ 3
+                    height = _videoHeight
+                    rgbPointRect = PointRect(0, 0, width, height)
+                    alphaPointRect = PointRect(width, 0, width/2, height/2)
+                }
                 EvaConstant.VIDEO_MODE_SPLIT_VERTICAL_REVERSE -> {
                     // 视频上下对齐（rgb上\alpha下）
                     width = _videoWidth
@@ -264,6 +350,9 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
             while (!decompresser.finished()) {
                 val i: Int = decompresser.inflate(buf)
                 o.write(buf, 0, i)
+                if (i == 0) {
+                    break
+                }
             }
             output = o.toByteArray()
         } catch (e: Exception) {
@@ -288,28 +377,112 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
             return
         }
 
-        val file = evaFileContainer.getFile()
-        if(file != null && file.exists()) {
-            val mmr = MediaMetadataRetriever()
-            mmr.setDataSource(file.absolutePath)
-            //获取播放时长
-            val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
-            if (duration != null && duration > 0) {
-                for(i in 1..6) {
-                    startDetect = System.currentTimeMillis()
-                    val bitmap =
-                        mmr.getFrameAtTime(i* duration/6 * 1000, MediaMetadataRetriever.OPTION_CLOSEST)
-                    val isJudge = getConfigManager(bitmap)
-                    bitmap?.recycle()
-                    Log.i(TAG, "detect image mp4Type ${System.currentTimeMillis() - startDetect}")
-                    if (isJudge) {
-                        break
+        val mmr = MediaMetadataRetriever()
+        var canDetectMp4Type = false
+        try {
+            when {
+                evaFileContainer is EvaFileContainer -> {
+                    val file = evaFileContainer.getFile()
+                    if (file.exists()) {
+                        mmr.setDataSource(file.absolutePath)
+                        canDetectMp4Type = true
                     }
                 }
-                Log.i(TAG, "detect mp4Type ${playerEva.videoMode}")
-                evaFileContainer.setEvaMp4Type(playerEva.videoMode)
+                evaFileContainer is EvaAssetsEvaFileContainer -> {
+                    canDetectMp4Type = setupMmrFromAssets(mmr, evaFileContainer)
+                }
             }
+
+            if (canDetectMp4Type) {
+                val duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong()
+                if (duration != null && duration > 0) {
+                    for (i in 1..6) {
+                        startDetect = System.currentTimeMillis()
+                        val bitmap = mmr.getFrameAtTime(
+                            i * duration / 6 * 1000,
+                            MediaMetadataRetriever.OPTION_CLOSEST
+                        )
+                        val isJudge = getConfigManager(bitmap)
+                        bitmap?.recycle()
+                        ELog.i(TAG, "detect image mp4Type ${System.currentTimeMillis() - startDetect}")
+                        if (isJudge) break
+                    }
+                    ELog.i(TAG, "detect mp4Type ${playerEva.videoMode}")
+                    evaFileContainer.setEvaMp4Type(playerEva.videoMode)
+                } else {
+                    ELog.e(TAG, "getMp4Type: METADATA_KEY_DURATION is null or 0")
+                }
+            }
+        } catch (e: Exception) {
+            ELog.e(TAG, "getMp4Type exception: $e", e)
+        } finally {
             mmr.release()
+        }
+    }
+
+    /**
+     * 为 assets 路径配置 MediaMetadataRetriever 数据源。
+     *
+     * API 23+: 使用 MediaDataSource + FileChannel.read(position) 精确定位，
+     *   避免 setDataSource(FileDescriptor, offset, length) 在 APK 内嵌 FD 上
+     *   部分机型原生 seek 失效导致 extractMetadata 静默返回 null 的问题。
+     * API 21-22: 降级为 FileDescriptor 方式尽力而为。
+     */
+    private fun setupMmrFromAssets(
+        mmr: MediaMetadataRetriever,
+        container: EvaAssetsEvaFileContainer
+    ): Boolean {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mmr.setDataSource(container.createMediaDataSource())
+            } else {
+                // API 21-22：FileDescriptor offset 方式，少数旧机型可能仍失效
+                val fd = container.assetFd
+                if (fd.declaredLength >= 0) {
+                    mmr.setDataSource(fd.fileDescriptor, fd.startOffset, fd.declaredLength)
+                } else {
+                    mmr.setDataSource(fd.fileDescriptor)
+                }
+            }
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "setupMmrFromAssets failed: $e", e)
+            false
+        }
+    }
+
+    /**
+     * 为 MediaMetadataRetriever 创建可靠的 MediaDataSource（API 23+）。
+     *
+     * setDataSource(FileDescriptor, offset, length) 在 APK 内嵌 FD 上，部分设备原生层
+     * lseek 行为不正确，导致 extractMetadata 静默返回 null。
+     * MediaDataSource 通过 FileChannel.read(position) 在 Java 层完成随机定位，
+     * 绕开底层 seek 问题。
+     */
+    @TargetApi(Build.VERSION_CODES.M)
+    private fun EvaAssetsEvaFileContainer.createMediaDataSource(): MediaDataSource {
+        val startOffset = assetFd.startOffset
+        val totalLength = assetFd.declaredLength
+        // FileChannel.read(ByteBuffer, position) 是线程安全的随机读，不改变 channel 当前位置
+        val channel = FileInputStream(assetFd.fileDescriptor).channel
+
+        return object : MediaDataSource() {
+            override fun readAt(position: Long, buffer: ByteArray, offset: Int, size: Int): Int {
+                if (position >= totalLength) return -1
+                val toRead = minOf(size.toLong(), totalLength - position).toInt()
+                val bb = ByteBuffer.wrap(buffer, offset, toRead)
+                return try {
+                    val n = channel.read(bb, startOffset + position)
+                    if (n <= 0) -1 else n
+                } catch (e: IOException) {
+                    -1
+                }
+            }
+
+            override fun getSize(): Long = totalLength
+
+            // 底层 fd 由 assetFd 管理，此处不关闭
+            override fun close() {}
         }
     }
 
@@ -493,20 +666,7 @@ class EvaAnimConfigManager(var playerEva: EvaAnimPlayer) {
 
     //是否灰度区域
     private fun isGray(a:IntArray): Boolean {
-        //一个区域里面的识别点
-        for (c in a) {
-            //获取rgb值
-            val r = Color.red(c)
-            val g = Color.green(c)
-            val b = Color.blue(c)
-            Log.i("打印选择的值","r=$r ,g=$g ,b=$b")
-            //通过rgb色值差距来判断是否灰度图
-            if ((abs(r-g) > 25 || abs(g-b) > 25 || abs(b-r) > 25)
-                && (r>30 && g>30 && b>30)) {
-                return false
-            }
-        }
-        return true
+        return GrayColorJudge.isGrayRegion(a)
     }
     //获取视频的关键帧时间列表
     fun getMp4KeyframeTimes(filePath: String?): LongArray {

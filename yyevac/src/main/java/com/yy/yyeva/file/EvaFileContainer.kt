@@ -60,7 +60,7 @@ class EvaFileContainer(private val file: File) : IEvaFileContainer {
     }
 
     override fun getEvaJson(): String? {
-        return EvaPref.getEvaJson(getMd5())
+        return EvaPref.getEvaJson(file.name, getMd5())
     }
 
     override fun setEvaMp4Type(type: Int) {
@@ -68,6 +68,6 @@ class EvaFileContainer(private val file: File) : IEvaFileContainer {
     }
 
     override fun getEvaMp4Type(): Int {
-        return EvaPref.getEvaMp4Type(getMd5())
+        return EvaPref.getEvaMp4Type(file.name, getMd5())
     }
 }

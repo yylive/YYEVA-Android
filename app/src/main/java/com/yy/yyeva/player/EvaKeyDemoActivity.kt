@@ -23,6 +23,8 @@ import android.util.Log
 import com.yy.yyeva.inter.IEvaFetchResource
 import com.yy.yyeva.mix.EvaSrc
 import com.yy.yyeva.player.bean.VideoInfo
+import com.yy.yyeva.util.EvaBlendMode
+import com.yy.yyeva.util.EvaJniUtil
 import com.yy.yyeva.view.EvaAnimViewV3
 import kotlinx.android.synthetic.main.activity_anim_simple_demo_p.*
 import kotlin.math.abs
@@ -44,7 +46,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
     }
 
     // 视频信息
-    private val videoInfo = VideoInfo("effect.mp4", "400a778f258ed6bd02ec32defe8ca8be")
+    private val videoInfo = VideoInfo("xue.mp4", "400a778f258ed6bd02ec32defe8ca8be")
 
 
     // 动画View
@@ -55,6 +57,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
     }
 
     private var ball1: Bitmap? = null
+    private var isMute = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +74,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         // 初始化调试开关
         initTestView()
         // 居中（根据父布局按比例居中并裁剪）
-        animView.setScaleType(ScaleType.CENTER_CROP)
+        animView.setScaleType(ScaleType.FIT_CENTER)
         /**
          * 注册资源获取类
          */
@@ -87,7 +90,14 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
                  * 比如：一个素材里需要显示多个头像，则需要定义多个不同的tag，表示不同位置，需要显示不同的头像，文字类似
                  */
                 val tag = resource.tag
-                if (tag == "anchor_avatar1") { // 此tag是已经写入到动画配置中的tag
+                if (tag == "祝福语") { // 此tag是已经写入到动画配置中的tag
+                    val drawableId = R.drawable.tip
+                    val options = BitmapFactory.Options()
+                    options.inScaled = false
+                    val bitmap = BitmapFactory.decodeResource(resources, drawableId, options)
+                    result(bitmap, null)
+                    bitmap.recycle()
+                } else if (tag == "anchor_avatar1") { // 此tag是已经写入到动画配置中的tag
                     result(ball1, null)
                 } else if (tag == "anchor_avatar2") { // 此tag是已经写入到动画配置中的tag
                     val drawableId =  R.drawable.ball_2
@@ -143,8 +153,9 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
         // 注册动画监听
         animView.setAnimListener(this)
         //设置背景图
-        val img = BitmapFactory.decodeResource(resources, R.drawable.bg)
-        animView.setBgImage(img)
+//        val img = BitmapFactory.decodeResource(resources, R.drawable.bg)
+//        animView.setBgImage(img)
+//        img.recycle()
         /**
          * 开始播放主流程
          * 主要流程都是对AnimViewV3的操作，内部是集成TextureView
@@ -159,6 +170,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
 //        animView.setLastFrame(true)
 //        animView.setScaleType(ScaleType.FIT_XY)
 //        animView.setStartPoint(70 * 1000)
+        animView.setBlend(EvaBlendMode.BLEND_ONE)
         play(videoInfo)
     }
 
@@ -188,7 +200,9 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
             }
             //循环三次
 //            animView.setLoop(3)
-            animView.startPlay(file)
+//            animView.startPlay(file)
+            animView.prepareToPlay(file)  //分阶段调用
+            animView.play()
             isPause = false
 //            val md5 = FileUtil.getFileMD5(file)
 //            if (videoInfo.md5 == md5) {
@@ -211,7 +225,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
     /**
      * 视频开始回调
      */
-    override fun onVideoStart() {
+    override fun onVideoStart(isRestart: Boolean) {
         ELog.i(TAG, "onVideoStart")
     }
 
@@ -265,7 +279,7 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
 
     private fun initLog() {
         ELog.isDebug = false
-        ELog.log = object : IELog {
+        val log = object : IELog {
             override fun i(tag: String, msg: String) {
                 Log.i(tag, msg)
             }
@@ -282,6 +296,8 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
                 Log.e(tag, msg, tr)
             }
         }
+        ELog.log = log
+        EvaJniUtil.setLog(log)
     }
 
     private var isPause = false;
@@ -314,6 +330,13 @@ class EvaKeyDemoActivity : Activity(), IEvaAnimListener {
                 animView.resume()
                 btnPause.text = "Pause"
             }
+        }
+        btnMute.setOnClickListener {
+            isMute = !isMute
+            animView.setMute(isMute)
+        }
+        btnRestart.setOnClickListener {
+            animView.restart()
         }
     }
 

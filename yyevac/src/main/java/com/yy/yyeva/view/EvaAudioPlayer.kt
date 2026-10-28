@@ -1,7 +1,6 @@
 package com.yy.yyeva.view
 
 import android.media.*
-import android.util.Log
 import com.yy.yyeva.EvaAnimPlayer
 import com.yy.yyeva.decoder.Decoder
 import com.yy.yyeva.decoder.HandlerHolder
@@ -22,10 +21,14 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     var audioTrack: AudioTrack? = null
     val decodeThread = HandlerHolder(null, null)
     var isRunning = false
-    var playLoop = 0
+    var playLoop = 1
+    var isLoop = false //无限循环
     var isStopReq = false
     var needDestroy = false
     var isPause = false
+    var isAudioMute = false
+    var isRestart = false
+    private val lock = Object()  //用于暂停和帧抽取速度调整
 
     private fun prepareThread(): Boolean {
         return Decoder.createThread(decodeThread, "anim_audio_thread")
@@ -50,6 +53,25 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
         }
     }
 
+    fun setMute(isMute: Boolean) {
+        ELog.i(TAG, "setMute $isMute")
+        this.isAudioMute = isMute
+        try {
+            if (isAudioMute) {
+                audioTrack?.setVolume(0f)
+            } else {
+                audioTrack?.setVolume(1f)
+            }
+        } catch (e: Exception) {
+            ELog.e(TAG, "setMute $e")
+        }
+    }
+
+    fun restart() {
+        ELog.i(TAG, "restart")
+        isRestart = true
+    }
+
     fun pause() {
         ELog.i(TAG, "pause")
         isPause = true
@@ -58,10 +80,38 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     fun resume() {
         ELog.i(TAG, "resume")
         isPause = false
+        synchronized(lock) {
+            lock.notifyAll()
+        }
     }
 
     fun stop() {
         isStopReq = true
+    }
+
+    fun prepareToPlay(evaFileContainer: IEvaFileContainer) {
+        ELog.i(TAG, "prepareToPlay")
+        isStopReq = false
+        isPause = true
+        needDestroy = false
+        if (!prepareThread()) return
+        if (isRunning) {
+            stop()
+        }
+        isRunning = true
+        decodeThread.handler?.post {
+            try {
+                startPlay(evaFileContainer)
+                isPause = false
+            } catch (e: Throwable) {
+                ELog.e(TAG, "Audio exception=$e", e)
+                release()
+            }
+        }
+    }
+
+    fun play() {
+        resume()
     }
 
     private fun startPlay(evaFileContainer: IEvaFileContainer) {
@@ -114,6 +164,16 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
         val bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelConfig, AudioFormat.ENCODING_PCM_16BIT)
         val audioTrack = AudioTrack(AudioManager.STREAM_MUSIC, sampleRate, channelConfig, AudioFormat.ENCODING_PCM_16BIT, bufferSize, AudioTrack.MODE_STREAM)
         this.audioTrack = audioTrack
+        try {
+            if (isAudioMute) {
+                audioTrack.setVolume(0f)
+            } else {
+                audioTrack.setVolume(1f)
+            }
+        } catch (e: Exception) {
+            ELog.e(TAG, "startPlay setVolume $e")
+        }
+
         val state = audioTrack.state
         if (state != AudioTrack.STATE_INITIALIZED) {
             release()
@@ -123,12 +183,18 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
         audioTrack.play()
         val timeOutUs = 1000L
         var isEOS = false
+        var loopRemain = playLoop
         while (!isStopReq) {
-
-            if (isPause) {
-                continue
+            synchronized(lock) {
+                if (isPause) {
+                    ELog.i(TAG, "lock wait")
+                    lock.wait()
+                }
             }
-
+            if (isRestart) {
+                extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
+                isRestart = false
+            }
             if (!isEOS) {
                 val inputIndex = decoder.dequeueInputBuffer(timeOutUs)
                 if (inputIndex >= 0) {
@@ -158,7 +224,7 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
             }
 
             if (isEOS && bufferInfo.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) {
-                if (--playLoop > 0) {
+                if (isLoop || --loopRemain > 0) {
                     ELog.d(TAG, "Reached EOS, looping -> playLoop")
                     extractor.seekTo(0, MediaExtractor.SEEK_TO_CLOSEST_SYNC)
                     decoder.flush()
@@ -200,6 +266,10 @@ class EvaAudioPlayer(val playerEva: EvaAnimPlayer) {
     }
 
     fun destroy() {
+        synchronized(lock) {
+            isPause = false
+            lock.notifyAll()
+        }
         if (isRunning) {
             needDestroy = true
             stop()

@@ -1,19 +1,15 @@
 //
 // Created by zengjiale on 2022/4/18.
 //
-
+#pragma once
 #include "src/main/cpp/bean/pointrect.h"
-
-#ifndef YYEVA_TEXCOORDSUTIL_H
-#define YYEVA_TEXCOORDSUTIL_H
+#include <memory>
 
 class TexCoordsUtil {
 public:
 
-    static float* create(int width, int height, PointRect* rect, float* array);
+    static float* create(float width, float height, std::shared_ptr<PointRect> rect, float* array);
 
     static float* rotate90(float* array);
 
 };
-
-#endif //YYEVA_TEXCOORDSUTIL_H

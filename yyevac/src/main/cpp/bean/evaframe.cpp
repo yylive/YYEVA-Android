@@ -7,11 +7,11 @@ EvaFrame::EvaFrame(){
 
 }
 
-EvaFrame::EvaFrame(int index, Data d) {
-    srcId = to_string(d.effectId);
+EvaFrame::EvaFrame(int index, shared_ptr<Data> d) {
+    srcId = to_string(d->effectId);
     z = index;
-    frame = d.renderFrame;
-    mFrame = d.outputFrame;
+    frame = d->renderFrame;
+    mFrame = d->outputFrame;
 }
 
 EvaFrame::~EvaFrame(){

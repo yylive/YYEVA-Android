@@ -1,13 +1,11 @@
 //
 // Created by zengjiale on 2022/4/19.
 //
+#pragma once
 #include <string>
 #include <android/bitmap.h>
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 #include "src/main/cpp/bean/effect.h"
-
-#ifndef YYEVA_EVASRC_H
-#define YYEVA_EVASRC_H
 
 using namespace std;
 
@@ -50,15 +48,12 @@ public:
     Style style = DEFAULT;
     string fontColor = "";
     FitType fitType = FIX_XY;
-    GLuint srcTextureId;
+    GLuint srcTextureId = 0;
     int fontSize = 0;
 
     EvaSrc();
 
-    EvaSrc(Effect* effect);
+    EvaSrc(shared_ptr<Effect> effect);
 
     ~EvaSrc();
 };
-
-
-#endif //YYEVA_EVASRC_H

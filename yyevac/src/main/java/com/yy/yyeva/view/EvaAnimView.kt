@@ -54,8 +54,8 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
                 return evaAnimListener?.onVideoConfigReady(config) ?: super.onVideoConfigReady(config)
             }
 
-            override fun onVideoStart() {
-                evaAnimListener?.onVideoStart()
+            override fun onVideoStart(isRestart: Boolean) {
+                evaAnimListener?.onVideoStart(isRestart)
             }
 
             override fun onVideoRestart() {
@@ -133,7 +133,8 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     @SuppressLint("LongLogTag")
     override fun surfaceCreated(holder: SurfaceHolder) {
         playerEva.decoder?.renderThread?.handler?.post {
-            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId, holder.surface, false, playerEva.isNormalMp4)
+            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId,
+                holder.surface, false, playerEva.isNormalMp4, playerEva.isVideoRecord)
             val textureId = EvaJniUtil.getExternalTexture(playerEva.controllerId)
             if (textureId < 0) {
                 Log.e(TAG, "surfaceCreated init OpenGL ES failed!")
@@ -240,6 +241,10 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         playerEva.playLoop = playLoop
     }
 
+    override fun setLoop(isLoop: Boolean) {
+        playerEva.isLoop = isLoop
+    }
+
     override fun setStartPoint(startPoint: Long) {
         playerEva.startPoint = startPoint * 1000
     }
@@ -259,9 +264,12 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
     // 兼容老版本视频模式
-    @Deprecated("Compatible older version mp4")
-    fun setVideoMode(mode: Int) {
+    override fun setVideoMode(mode: Int) {
         playerEva.videoMode = mode
+    }
+
+    override fun setNoJsonDetect(isNoJsonDetect: Boolean) {
+        playerEva.isNoJsonDetect = isNoJsonDetect
     }
 
     override fun setVideoFps(fps: Int, speed: Float) {
@@ -293,7 +301,19 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
      */
     override fun setMute(isMute: Boolean) {
         ELog.e(TAG, "set mute=$isMute")
-        playerEva.isMute = isMute
+        playerEva.setMute(isMute)
+    }
+
+    override fun setBlend(blendMode: Int) {
+        playerEva.setBlend(blendMode)
+    }
+
+    /**
+     * 开启录制
+     */
+    fun setVideoRecord(isVideoRecord: Boolean) {
+        ELog.i(TAG, "setVideoRecord=$isVideoRecord")
+        playerEva.isVideoRecord = isVideoRecord
     }
 
     private fun play(videoInfo: EvaVideoEntity) {
@@ -307,6 +327,24 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         startPlay(file)
     }
 
+
+    override fun prepareToPlay(file: File, repeatCount: Int) {
+        try {
+            val fileContainer = EvaFileContainer(file)
+            startPlay(fileContainer, true)
+        } catch (e: Throwable) {
+            animProxyListener.onFailed(EvaConstant.REPORT_ERROR_TYPE_FILE_ERROR, EvaConstant.ERROR_MSG_FILE_ERROR)
+            animProxyListener.onVideoComplete()
+        }
+    }
+
+    override fun play() {
+        ui {
+            playerEva.play()
+        }
+    }
+
+    //播放文件
     override fun startPlay(file: File) {
         try {
             val fileContainer = EvaFileContainer(file)
@@ -328,7 +366,7 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
     }
 
 
-    override fun startPlay(evaFileContainer: IEvaFileContainer) {
+    override fun startPlay(evaFileContainer: IEvaFileContainer, prepare: Boolean) {
         ui {
             if (visibility != View.VISIBLE) {
                 ELog.e(TAG, "AnimView is GONE, can't play")
@@ -336,11 +374,15 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
             }
             if (!playerEva.isRunning()) {
                 lastEvaFile = evaFileContainer
-                playerEva.startPlay(evaFileContainer)
+                playerEva.startPlay(evaFileContainer, prepare)
             } else {
                 ELog.e(TAG, "is running can not start")
             }
         }
+    }
+
+    override fun restart() {
+        playerEva.restart()
     }
 
     override fun pause() {
@@ -351,8 +393,8 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
         playerEva.resume()
     }
 
-    override fun stopPlay() {
-        playerEva.stopPlay()
+    override fun stopPlay(completeBlock: ((Boolean)->Unit)?) {
+        playerEva.stopPlay(completeBlock)
     }
 
     override fun isRunning(): Boolean {
@@ -401,5 +443,10 @@ open class EvaAnimView @JvmOverloads constructor(context: Context, attrs: Attrib
 
     override fun hasBgImage(): Boolean {
         return bg != null
+    }
+
+    override fun setLog(log: IELog) {
+        ELog.log = log
+        EvaJniUtil.setLog(log)
     }
 }

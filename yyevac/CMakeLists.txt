@@ -31,6 +31,8 @@ add_library( # Sets the name of the library.
         src/main/cpp/engine/render.cpp
         src/main/cpp/engine/mp4render.cpp
         src/main/cpp/engine/bgrender.cpp
+        src/main/cpp/engine/fbrender.cpp
+        src/main/cpp/engine/recordrender.cpp
         src/main/cpp/engine/rendercontroller.cpp
         src/main/cpp/engine/evaengine.cpp
         src/main/cpp/util/shaderutil.cpp
@@ -38,9 +40,11 @@ add_library( # Sets the name of the library.
         src/main/cpp/util/vertexutil.cpp
         src/main/cpp/util/texcoordsutil.cpp
         src/main/cpp/util/textureloadutil.cpp
+        src/main/cpp/util/elog.cpp
         src/main/cpp/mix/evamixrender.cpp
         src/main/cpp/mix/mixshader.cpp
-        src/main/cpp/vulkan_wrapper/vulkan_wrapper.cpp
+        src/main/cpp/record/recordercontroller.cpp
+#        src/main/cpp/vulkan_wrapper/vulkan_wrapper.cpp
         )
 
 add_library(parson
@@ -69,11 +73,12 @@ target_link_libraries( # Specifies the target library.
                        yyeva
                        android
 #                       GLESv3
-                       GLESv2
+                       GLESv3
                        EGL
                        jnigraphics
                        parson
 
                        # Links the target library to the log library
                        # included in the NDK.
-                       ${log-lib} )
+                       ${log-lib}
+                       "-Wl,-z,max-page-size=16384") #修复16K Page Size https://juejin.cn/post/7393533304506007603

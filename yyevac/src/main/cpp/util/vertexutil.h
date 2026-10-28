@@ -1,18 +1,14 @@
 //
 // Created by zengjiale on 2022/4/18.
 //
-#include "src/main/cpp/bean/pointrect.h"
+#pragma once
+#include <bean/pointrect.h>
+#include <memory>
 
-
-#ifndef YYEVA_VETEXUTIL_HPP
-#define YYEVA_VETEXUTIL_HPP
-
+using namespace std;
 class VertexUtil {
 public:
-    static float* create(int width, int height, PointRect* rect, float* array);
+    static float* create(float width, float height, std::shared_ptr<PointRect> rect, float* array);
     static float switchX(float x);
     static float switchY(float y);
 };
-
-
-#endif //YYEVA_VETEXUTIL_HPP

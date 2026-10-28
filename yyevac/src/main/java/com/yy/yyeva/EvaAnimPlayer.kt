@@ -1,25 +1,28 @@
 package com.yy.yyeva
 
-import android.util.Log
+
 import com.yy.yyeva.decoder.Decoder
 import com.yy.yyeva.decoder.EvaHardDecoder
 import com.yy.yyeva.file.IEvaFileContainer
 import com.yy.yyeva.inter.IEvaAnimListener
 import com.yy.yyeva.plugin.EvaAnimPluginManager
+import com.yy.yyeva.recorder.EvaMediaRecorder
 import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
+import com.yy.yyeva.util.EvaBlendMode
 import com.yy.yyeva.view.EvaAudioPlayer
 import com.yy.yyeva.view.IEvaAnimView
 
 class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
 
     companion object {
-        private const val TAG = "AnimPlayer"
+        private const val TAG = "EvaAnimPlayer"
     }
     @Volatile var controllerId = -1 //底层Native管理器id
     var evaAnimListener: IEvaAnimListener? = null
     var decoder: Decoder? = null
     var evaAudioPlayer: EvaAudioPlayer? = null
+    var mediaRecorder: EvaMediaRecorder = EvaMediaRecorder()
     var fps: Int = 0
         set(value) {
             decoder?.fps = value
@@ -29,10 +32,18 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     var defaultFps: Int = 30
     var isSetFps = false
     var audioSpeed = 1.0f  //音频速度
-    var playLoop: Int = 0
+    var playLoop: Int = 1
         set(value) {
+            ELog.i(TAG, "playLoop $value")
             decoder?.playLoop = value
             evaAudioPlayer?.playLoop = value
+            field = value
+        }
+    var isLoop = false
+        set(value) {
+            ELog.i(TAG, "isLoop $value")
+            decoder?.isLoop = value
+            evaAudioPlayer?.isLoop = value
             field = value
         }
     var supportMaskBoolean : Boolean = false
@@ -41,11 +52,12 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
     var enableVersion1 : Boolean = false
     // 视频模式
     var videoMode: Int = EvaConstant.VIDEO_MODE_NORMAL_MP4  // 正常mp4
+    var isNoJsonDetect = false  // 没有json的情况下，是否强制开启检测
     var isDetachedFromWindow = false
     var isSurfaceAvailable = false
     var startRunnable: Runnable? = null
     var isStartRunning = false // 启动时运行状态
-    var isMute = false // 是否静音
+    var isAudioMute = false // 是否静音
     var startPoint = 0L // 开启播放位置
     var sampleTime = 0L // sampleTime实际播放时间
 
@@ -53,9 +65,13 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
 
     var isSetLastFrame = false //是否停留在最后一帧
 
+    var isVideoRecord = false //是否开启录制
+
 //    val configManager = AnimConfigManager(this)
     val configManager = EvaAnimConfigManager(this)
     val pluginManager = EvaAnimPluginManager(this)
+    var isStartPlay = false
+    var blendMode = EvaBlendMode.BLEND_SRC_ALPHA
 
     fun onSurfaceTextureDestroyed() {
         isSurfaceAvailable = false
@@ -76,7 +92,17 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
         decoder?.onSurfaceSizeChanged(width, height)
     }
 
-    fun startPlay(evaFileContainer: IEvaFileContainer) {
+    fun setMute(isMute: Boolean) {
+        this.isAudioMute = isMute
+        evaAudioPlayer?.setMute(isMute)
+    }
+
+    fun setBlend(blendMode: Int) {
+        this.blendMode = blendMode
+        decoder?.setBlend(blendMode)
+    }
+
+    fun startPlay(evaFileContainer: IEvaFileContainer, prepare: Boolean = false) {
         isStartRunning = true
         prepareDecoder()
         if (decoder?.prepareThread() == false) {
@@ -98,29 +124,51 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
             val config = configManager.config
             // 如果是默认配置，因为信息不完整onVideoConfigReady不会被调用
             if (config != null && (config.isDefaultConfig || evaAnimListener?.onVideoConfigReady(config) == true)) {
-                innerStartPlay(evaFileContainer)
+                innerStartPlay(evaFileContainer, prepare)
             } else {
                 ELog.i(TAG, "onVideoConfigReady return false")
             }
         }
     }
 
-    private fun innerStartPlay(evaFileContainer: IEvaFileContainer) {
+    private fun innerStartPlay(evaFileContainer: IEvaFileContainer, prepare: Boolean = false) {
         synchronized(EvaAnimPlayer::class.java) {
             if (isSurfaceAvailable) {
-                Log.i(TAG, "decoder start")
+                ELog.i(TAG, "decoder start")
                 isStartRunning = false
-                decoder?.start(evaFileContainer)
-                if (!isMute) {
+                if (prepare) {  //准备播放
+                    decoder?.prepareToPlay(evaFileContainer)
+                    evaAudioPlayer?.prepareToPlay(evaFileContainer)
+                } else { //立刻播放
+                    decoder?.start(evaFileContainer)
                     evaAudioPlayer?.start(evaFileContainer)
                 }
             } else {
-                 startRunnable = Runnable {
-                    innerStartPlay(evaFileContainer)
-                 }
+                ELog.i(TAG, "use startRunnable")
+                startRunnable = Runnable {
+                    innerStartPlay(evaFileContainer, prepare)
+                    if (isStartPlay) {  //延迟调用触发
+                        play()
+                    }
+                }
                 evaAnimView.prepareTextureView()
             }
         }
+    }
+
+    fun play() {
+        isStartPlay = true
+        if (decoder?.isRunning == true) { //解码器准备完毕
+            decoder?.play()
+        }
+        if (evaAudioPlayer?.isRunning == true) {
+            evaAudioPlayer?.play()
+        }
+    }
+
+    fun restart() {
+        evaAudioPlayer?.restart()
+        decoder?.restart()
     }
 
     fun pause() {
@@ -133,8 +181,8 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
         decoder?.resume()
     }
 
-    fun stopPlay() {
-        decoder?.stop()
+    fun stopPlay(completeBlock: ((Boolean)->Unit)? = null) {
+        decoder?.stop(completeBlock)
         evaAudioPlayer?.stop()
     }
 
@@ -148,12 +196,16 @@ class EvaAnimPlayer(val evaAnimView: IEvaAnimView) {
         if (decoder == null) {
             decoder = EvaHardDecoder(this).apply {
                 playLoop = this@EvaAnimPlayer.playLoop
+                isLoop = this@EvaAnimPlayer.isLoop
                 fps = this@EvaAnimPlayer.fps
+                blendMode = this@EvaAnimPlayer.blendMode
             }
         }
         if (evaAudioPlayer == null) {
             evaAudioPlayer = EvaAudioPlayer(this).apply {
                 playLoop = this@EvaAnimPlayer.playLoop
+                isLoop = this@EvaAnimPlayer.isLoop
+                isAudioMute = this@EvaAnimPlayer.isAudioMute
             }
         }
     }

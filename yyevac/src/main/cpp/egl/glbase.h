@@ -1,8 +1,7 @@
 //#include <GLES3/gl3.h>
-#include <GLES2/gl2.h>
 
-#ifndef YYEVA_GLBASE_H
-#define YYEVA_GLBASE_H
+#pragma once
+#include <GLES3/gl3.h>
 
 /**
  * cangwang 2018.12.1
@@ -26,5 +25,3 @@ protected:
 private:
 
 };
-
-#endif

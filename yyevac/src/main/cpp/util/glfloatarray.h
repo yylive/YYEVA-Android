@@ -4,11 +4,10 @@
 
 //#include <GLES3/gl3.h>
 //#include <GLES3/gl3ext.h>
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
 
-#ifndef YYEVA_GLFLOATARRAY_H
-#define YYEVA_GLFLOATARRAY_H
+#pragma once
+#include <GLES3/gl3.h>
+#include <GLES2/gl2ext.h>
 
 class GlFloatArray {
 public:
@@ -21,4 +20,3 @@ public:
 private:
     char* floatBuffer;
 };
-#endif

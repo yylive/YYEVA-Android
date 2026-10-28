@@ -1,13 +1,13 @@
 //
 // Created by zengjiale on 2022/4/15.
 //
+#pragma once
 #include "src/main/cpp/egl/glbase.h"
 #include "src/main/cpp/egl/eglcore.h"
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
 #include <GLES2/gl2ext.h>
 //#include <GLES3/gl3.h>
 #include <android/native_window.h>
-
 
 class EvaEngine: public GLBase {
 public:

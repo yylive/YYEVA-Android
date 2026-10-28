@@ -5,49 +5,10 @@
 #include "yuvrender.h"
 
 #define LOG_TAG "YUVRender"
-#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
-
-std::string VERTEX_SHADER = std::string("attribute vec4 v_Position;\n") +
-                          "attribute vec2 vTexCoordinateAlpha;\n" +
-                          "attribute vec2 vTexCoordinateRgb;\n" +
-                          "varying vec2 v_TexCoordinateAlpha;\n" +
-                          "varying vec2 v_TexCoordinateRgb;\n" +
-                          "\n" +
-                          "void main() {\n" +
-                          "    v_TexCoordinateAlpha = vTexCoordinateAlpha;\n" +
-                          "    v_TexCoordinateRgb = vTexCoordinateRgb;\n" +
-                          "    gl_Position = v_Position;\n" +
-                          "}";
-
-std::string FRAGMENT_SHADER = std::string("precision mediump float;\n") +
-                            "uniform sampler2D sampler_y;\n" +
-                            "uniform sampler2D sampler_u;\n" +
-                            "uniform sampler2D sampler_v;\n" +
-                            "varying vec2 v_TexCoordinateAlpha;\n" +
-                            "varying vec2 v_TexCoordinateRgb;\n" +
-                            "uniform mat3 convertMatrix;\n" +
-                            "uniform vec3 offset;\n" +
-                            "\n" +
-                            "void main() {\n" +
-                            "   highp vec3 yuvColorAlpha;\n" +
-                            "   highp vec3 yuvColorRGB;\n" +
-                            "   highp vec3 rgbColorAlpha;\n" +
-                            "   highp vec3 rgbColorRGB;\n" +
-                            "   yuvColorAlpha.x = texture2D(sampler_y,v_TexCoordinateAlpha).r;\n" +
-                            "   yuvColorRGB.x = texture2D(sampler_y,v_TexCoordinateRgb).r;\n" +
-                            "   yuvColorAlpha.y = texture2D(sampler_u,v_TexCoordinateAlpha).r;\n" +
-                            "   yuvColorAlpha.z = texture2D(sampler_v,v_TexCoordinateAlpha).r;\n" +
-                            "   yuvColorRGB.y = texture2D(sampler_u,v_TexCoordinateRgb).r;\n" +
-                            "   yuvColorRGB.z = texture2D(sampler_v,v_TexCoordinateRgb).r;\n" +
-                            "   yuvColorAlpha += offset;\n" +
-                            "   yuvColorRGB += offset;\n" +
-                            "   rgbColorAlpha = convertMatrix * yuvColorAlpha; \n" +
-                            "   rgbColorRGB = convertMatrix * yuvColorRGB; \n" +
-                            "   gl_FragColor=vec4(rgbColorRGB, rgbColorAlpha.r);\n" +
-                            "}";
+#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
 
 
-YUVRender::YUVRender() {
+YUVRender::YUVRender(): vertexArray(make_shared<GlFloatArray>()), alphaArray(make_shared<GlFloatArray>()), rgbArray(make_shared<GlFloatArray>()) {
     initRender();
 }
 
@@ -55,12 +16,47 @@ YUVRender::~YUVRender() {
     y = nullptr;
     u = nullptr;
     v = nullptr;
-    vertexArray = nullptr;
-    alphaArray = nullptr;
-    rgbArray = nullptr;
 }
 
 void YUVRender::initRender() {
+    std::string VERTEX_SHADER = std::string("uniform vec4 v_Position;\n") +
+                                "uniform vec2 vTexCoordinateAlpha;\n" +
+                                "uniform vec2 vTexCoordinateRgb;\n" +
+                                "in vec2 v_TexCoordinateAlpha;\n" +
+                                "in vec2 v_TexCoordinateRgb;\n" +
+                                "\n" +
+                                "void main() {\n" +
+                                "    v_TexCoordinateAlpha = vTexCoordinateAlpha;\n" +
+                                "    v_TexCoordinateRgb = vTexCoordinateRgb;\n" +
+                                "    gl_Position = v_Position;\n" +
+                                "}";
+
+    std::string FRAGMENT_SHADER = std::string("precision mediump float;\n") +
+                                  "uniform sampler2D sampler_y;\n" +
+                                  "uniform sampler2D sampler_u;\n" +
+                                  "uniform sampler2D sampler_v;\n" +
+                                  "in vec2 v_TexCoordinateAlpha;\n" +
+                                  "in vec2 v_TexCoordinateRgb;\n" +
+                                  "uniform mat3 convertMatrix;\n" +
+                                  "uniform vec3 offset;\n" +
+                                  "\n" +
+                                  "void main() {\n" +
+                                  "   highp vec3 yuvColorAlpha;\n" +
+                                  "   highp vec3 yuvColorRGB;\n" +
+                                  "   highp vec3 rgbColorAlpha;\n" +
+                                  "   highp vec3 rgbColorRGB;\n" +
+                                  "   yuvColorAlpha.x = texture(sampler_y,v_TexCoordinateAlpha).r;\n" +
+                                  "   yuvColorRGB.x = texture(sampler_y,v_TexCoordinateRgb).r;\n" +
+                                  "   yuvColorAlpha.y = texture(sampler_u,v_TexCoordinateAlpha).r;\n" +
+                                  "   yuvColorAlpha.z = texture(sampler_v,v_TexCoordinateAlpha).r;\n" +
+                                  "   yuvColorRGB.y = texture(sampler_u,v_TexCoordinateRgb).r;\n" +
+                                  "   yuvColorRGB.z = texture(sampler_v,v_TexCoordinateRgb).r;\n" +
+                                  "   yuvColorAlpha += offset;\n" +
+                                  "   yuvColorRGB += offset;\n" +
+                                  "   rgbColorAlpha = convertMatrix * yuvColorAlpha; \n" +
+                                  "   rgbColorRGB = convertMatrix * yuvColorRGB; \n" +
+                                  "   gl_FragColor=vec4(rgbColorRGB, rgbColorAlpha.r);\n" +
+                                  "}";
     shaderProgram = ShaderUtil::createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
     //获取定点坐标字段
     avPosition = glGetAttribLocation(shaderProgram, "v_Position");
@@ -146,9 +142,9 @@ void YUVRender::destroyRender() {
     releaseTexture();
 }
 
-void YUVRender::setAnimeConfig(EvaAnimeConfig* config) {
+void YUVRender::setAnimeConfig(shared_ptr<EvaAnimeConfig> config) {
 //    vertexArray->setArray();
-    vertexArray->setArray(VertexUtil::create(config->width, config->height, new PointRect(0, 0, config->width, config->height), vertexArray->array));
+    vertexArray->setArray(VertexUtil::create(config->width, config->height, make_shared<PointRect>(0, 0, config->width, config->height), vertexArray->array));
     float* alpha = TexCoordsUtil::create(config->videoWidth, config->videoHeight, config->alphaPointRect, alphaArray->array);
     float* rgb = TexCoordsUtil::create(config->videoWidth, config->videoHeight, config->rgbPointRect, rgbArray->array);
     alphaArray->setArray(alpha);
@@ -162,6 +158,7 @@ GLuint YUVRender::getExternalTexture() {
 
 void YUVRender::releaseTexture() {
     glDeleteTextures(sizeof(textureId)/sizeof(GLuint), textureId);
+    glDeleteProgram(shaderProgram);
 }
 
 void YUVRender::swapBuffers() {
