@@ -161,7 +161,7 @@ class EvaKeyRecyclerAdapter():RecyclerView.Adapter<EvaKeyRecyclerAdapter.EvaKeyH
 
             // 注册动画监听
             animView.setAnimListener(object : IEvaAnimListener {
-                override fun onVideoStart(isRestart: Boolean) {
+                override fun onVideoStart() {
                     ELog.i(TAG, "onVideoStart")
                 }
 

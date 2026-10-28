@@ -49,15 +49,22 @@ object FileUtil {
 
     }
 
-    fun getStreamMD5(inputStream: InputStream): String? {
+    fun getFileMD5(file: File): String? {
+        if (!file.exists() || !file.isFile || file.length() <= 0) {
+            return null
+        }
+        var inputStream: InputStream? = null
         try {
             val md = MessageDigest.getInstance("MD5")
+            inputStream = FileInputStream(file)
             val dataBytes = ByteArray(4096)
-            var iRd: Int = inputStream.read(dataBytes)
+            var iRd: Int
+            iRd = inputStream.read(dataBytes)
             while (iRd != -1) {
                 md.update(dataBytes, 0, iRd)
                 iRd = inputStream.read(dataBytes)
             }
+            inputStream.close()
             val digest = md.digest()
             if (digest != null) {
                 return bufferToHex(digest)
@@ -65,25 +72,13 @@ object FileUtil {
         } catch (t: Throwable) {
             t.printStackTrace()
         } finally {
-            try {
-                inputStream.close()
-            } catch (e: Throwable) {
-                e.printStackTrace()
+            if (inputStream != null) {
+                try {
+                    inputStream.close()
+                } catch (e: Throwable) {
+                    e.printStackTrace()
+                }
             }
-        }
-        return null
-    }
-
-    fun getFileMD5(file: File): String? {
-        if (!file.exists() || !file.isFile || file.length() <= 0) {
-            return null
-        }
-        var inputStream: InputStream? = null
-        try {
-            inputStream = FileInputStream(file)
-            return getStreamMD5(inputStream)
-        } catch (t: Throwable) {
-            t.printStackTrace()
         }
         return null
     }

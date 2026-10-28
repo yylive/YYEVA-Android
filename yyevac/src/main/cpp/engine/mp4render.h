@@ -1,77 +1,63 @@
 //
 // Created by zengjiale on 2022/10/11.
 //
-#pragma once
 
+#include <android/log.h>
 #include <engine/irender.h>
 #include <egl/eglcore.h>
 #include <util/shaderutil.h>
 #include <util/glfloatarray.h>
-#include <GLES3/gl3.h>
+#include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <util/vertexutil.h>
 #include <util/texcoordsutil.h>
 #include <util/textureloadutil.h>
 #include <android/bitmap.h>
 
+#ifndef YYEVA_Mp4Render_H
+#define YYEVA_Mp4Render_H
+
 #define LOG_TAG "Mp4Render"
-#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
-#define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
+#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+
 
 using namespace std;
-namespace yyeva {
-    class Mp4Render : public IRender {
-    public:
-        Mp4Render();
+class Mp4Render: public IRender {
+public:
+    Mp4Render();
+    ~Mp4Render();
+    void initRender();
+    void setBgImage(unsigned char *bitmap, AndroidBitmapInfo *bitmapInfo);
+    void renderFrame();
+    void clearFrame();
+    void destroyRender();
+    void setAnimeConfig(EvaAnimeConfig* config);
+    GLuint getExternalTexture();
+    void releaseTexture();
+    void swapBuffers();
+    void updateViewPort(int width, int height);
+    void setHasBg(bool hasBg){};
+    void draw();
 
-        ~Mp4Render();
+private:
+    GlFloatArray *vertexArray = new GlFloatArray();
+    GlFloatArray *rgbaArray = new GlFloatArray();
 
-        void initRender();
+    GLuint shaderProgram;
+    //shader
+    GLuint textureId;
+    //顶点位置
+    GLint uTextureLocation;
+    //纹理位置
+    GLint positionLocation;
+    //纹理位置
+    GLint textureLocation;
 
-        void setBgImage(unsigned char *bitmap, AndroidBitmapInfo *bitmapInfo);
+    int surfaceWidth = 0;
+    int surfaceHeight = 0;
+    bool surfaceSizeChanged = false;
+};
 
-        void renderFrame();
 
-        void clearFrame();
-
-        void destroyRender();
-
-        void setAnimeConfig(shared_ptr<EvaAnimeConfig> config);
-
-        GLuint getExternalTexture();
-
-        void releaseTexture();
-
-        void swapBuffers();
-
-        void updateViewPort(int width, int height);
-
-        void setExternalTextureTransform(const float* matrix);
-
-        void setHasBg(bool hasBg) {};
-
-        void setBlendMode(int blendMode) {};
-
-        void draw();
-
-    private:
-        shared_ptr<GlFloatArray> vertexArray;
-        shared_ptr<GlFloatArray> rgbaArray;
-
-        GLuint shaderProgram;
-        //shader
-        GLuint textureId = 0;
-        //顶点位置
-        GLint uTextureLocation;
-        //纹理位置
-        GLint positionLocation;
-        //纹理位置
-        GLint textureLocation;
-        GLint uTextureTransformLocation;
-        GLfloat textureTransform[16];
-
-        int surfaceWidth = 0;
-        int surfaceHeight = 0;
-        bool surfaceSizeChanged = false;
-    };
-}
+#endif //YYEVA_Mp4Render_H

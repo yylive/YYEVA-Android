@@ -1,15 +1,16 @@
 //
 // Created by zengjiale on 2022/4/15.
 //
-#pragma once
-
 #include "list"
 #include "data.h"
+
+#ifndef YYEVA_DATAS_H
+#define YYEVA_DATAS_H
 
 class Datas {
 public:
     int frameIndex;
-    std::list<std::shared_ptr<Data>> data;
+    std::list<Data> data;
     Datas() {
 
     }
@@ -18,3 +19,4 @@ public:
     }
 };
 
+#endif

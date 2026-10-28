@@ -3,71 +3,61 @@
 //
 
 #include "render.h"
-#include <cstring>
 
 #define LOG_TAG "Render"
-#define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
-#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
+#define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
+#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-yyeva::Render::Render(): vertexArray(make_shared<GlFloatArray>()), alphaArray(make_shared<GlFloatArray>()), rgbArray(make_shared<GlFloatArray>()) {
-    memset(textureTransform, 0, sizeof(textureTransform));
-    textureTransform[0] = 1.0f;
-    textureTransform[5] = 1.0f;
-    textureTransform[10] = 1.0f;
-    textureTransform[15] = 1.0f;
+Render::Render() {
     initRender();
 }
 
-yyeva::Render::~Render() {
+Render::~Render() {
+    vertexArray = nullptr;
+    alphaArray = nullptr;
+    rgbArray = nullptr;
 }
 
-void yyeva::Render::initRender() {
-    char VERTEX_SHADER[] = R"(#version 310 es
-            in vec4 vPosition;
-            in vec4 vTexCoordinateAlpha;
-            in vec4 vTexCoordinateRgb;
-            uniform mat4 uTextureTransform;
-            out vec2 v_TexCoordinateAlpha;
-            out vec2 v_TexCoordinateRgb;
-            void main() {
-                vec4 alphaCoord = uTextureTransform * vec4(vTexCoordinateAlpha.x, vTexCoordinateAlpha.y, 0.0, 1.0);
-                vec4 rgbCoord = uTextureTransform * vec4(vTexCoordinateRgb.x, vTexCoordinateRgb.y, 0.0, 1.0);
-                v_TexCoordinateAlpha = alphaCoord.xy;
-                v_TexCoordinateRgb = rgbCoord.xy;
-                gl_Position = vPosition;
-            }
-    )";
+void Render::initRender() {
+    char VERTEX_SHADER[] = "attribute vec4 vPosition;\n"
+                           "attribute vec4 vTexCoordinateAlpha;\n"
+                           "attribute vec4 vTexCoordinateRgb;\n"
+                           "varying vec2 v_TexCoordinateAlpha;\n"
+                           "varying vec2 v_TexCoordinateRgb;\n"
+                           "\n"
+                           "void main() {\n"
+                           "    v_TexCoordinateAlpha = vec2(vTexCoordinateAlpha.x, vTexCoordinateAlpha.y);\n"
+                           "    v_TexCoordinateRgb = vec2(vTexCoordinateRgb.x, vTexCoordinateRgb.y);\n"
+                           "    gl_Position = vPosition;\n"
+                           "}";
 
-    char FRAGMENT_SHADER[] = R"(#version 310 es
-        #extension GL_OES_EGL_image_external_essl3 : require
-        precision mediump float;
-        uniform samplerExternalOES u_Texture;
-        in vec2 v_TexCoordinateAlpha;
-        in vec2 v_TexCoordinateRgb;
-        out vec4 fragColor;
-
-        void main () {
-            vec4 alphaColor = texture(u_Texture, v_TexCoordinateAlpha);
-            vec4 rgbColor = texture(u_Texture, v_TexCoordinateRgb);
-            fragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);
-        }
-    )";
+    char FRAGMENT_SHADER[] = "#extension GL_OES_EGL_image_external : require\n"
+                             "precision mediump float;\n"
+                             "uniform samplerExternalOES texture;\n"
+                             "varying vec2 v_TexCoordinateAlpha;\n"
+                             "varying vec2 v_TexCoordinateRgb;\n"
+                             "\n"
+                             "void main () {\n"
+                             "    vec4 alphaColor = texture2D(texture, v_TexCoordinateAlpha);\n"
+                             "    vec4 rgbColor = texture2D(texture, v_TexCoordinateRgb);\n"
+                             "    gl_FragColor = vec4(rgbColor.r, rgbColor.g, rgbColor.b, alphaColor.r);\n"
+//                             "    gl_FragColor = vec4(1.0,0.2,0.5,1.0);\n"
+                             "}";
     shaderProgram = ShaderUtil::createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    uTextureLocation = glGetUniformLocation(shaderProgram, "u_Texture");
-    uTextureTransformLocation = glGetUniformLocation(shaderProgram, "uTextureTransform");
+    uTextureLocation = glGetUniformLocation(shaderProgram, "texture");
     aPositionLocation = glGetAttribLocation(shaderProgram, "vPosition");
     aTextureAlphaLocation = glGetAttribLocation(shaderProgram, "vTexCoordinateAlpha");
     aTextureRgbLocation = glGetAttribLocation(shaderProgram, "vTexCoordinateRgb");
 
     glGenTextures(1,&textureId);
     glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
-    glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
-void yyeva::Render::renderFrame() {
+void Render::renderFrame() {
     if (surfaceSizeChanged && surfaceWidth > 0 && surfaceHeight > 0) {
         surfaceSizeChanged = false;
         glViewport(0, 0, surfaceWidth, surfaceHeight);
@@ -75,50 +65,44 @@ void yyeva::Render::renderFrame() {
     draw();
 }
 
-void yyeva::Render::clearFrame() {
+void Render::clearFrame() {
     glClearColor(0, 0, 0, 0);
 //    glClearColor(1.0, 0, 0.5, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void yyeva::Render::destroyRender() {
+void Render::destroyRender() {
     releaseTexture();
 }
 
-void yyeva::Render::setAnimeConfig(shared_ptr<EvaAnimeConfig> config) {
-    vertexArray->setArray(VertexUtil::create(config->width, config->height, make_shared<PointRect>(0, 0, config->width, config->height), vertexArray->array));
+void Render::setAnimeConfig(EvaAnimeConfig* config) {
+    vertexArray->setArray(VertexUtil::create(config->width, config->height, new PointRect(0, 0, config->width, config->height), vertexArray->array));
     float* alpha = TexCoordsUtil::create(config->videoWidth, config->videoHeight, config->alphaPointRect, alphaArray->array);
     float* rgb = TexCoordsUtil::create(config->videoWidth, config->videoHeight, config->rgbPointRect, rgbArray->array);
     alphaArray->setArray(alpha);
     rgbArray->setArray(rgb);
 }
 
-GLuint yyeva::Render::getExternalTexture() {
+GLuint Render::getExternalTexture() {
     return textureId;
 }
 
-void yyeva::Render::releaseTexture() {
+void Render::releaseTexture() {
     glDeleteTextures(1, &textureId);
-    glDeleteProgram(shaderProgram);
 }
 
-void yyeva::Render::updateViewPort(int width, int height) {
+void Render::updateViewPort(int width, int height) {
     if (width <= 0 || height <= 0) return;
     surfaceSizeChanged = true;
     surfaceWidth = width;
     surfaceHeight = height;
 }
 
-void yyeva::Render::setExternalTextureTransform(const float* matrix) {
-    if (matrix == nullptr) return;
-    memcpy(textureTransform, matrix, sizeof(textureTransform));
-}
-
-void yyeva::Render::swapBuffers() {
+void Render::swapBuffers() {
 
 }
 
-void yyeva::Render::draw() {
+void Render::draw() {
     if (textureId != -1) {
         glUseProgram(shaderProgram);
         vertexArray->setVertexAttribPointer(aPositionLocation);
@@ -126,38 +110,22 @@ void yyeva::Render::draw() {
         glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
         //加载纹理
         glUniform1i(uTextureLocation, 0);
-        glUniformMatrix4fv(uTextureTransformLocation, 1, GL_FALSE, textureTransform);
 
         alphaArray->setVertexAttribPointer(aTextureAlphaLocation);
         rgbArray->setVertexAttribPointer(aTextureRgbLocation);
         //启动混合
-        glEnable(GL_BLEND);
+        if (hasBg) { //如果有背景需要开启混合
+            glEnable(GL_BLEND);
+        }
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-        //基于alpha通道的半透明混合函数
-        //void glBlendFuncSeparate(GLenum srcRGB,
-        //     GLenum dstRGB,
-        //     GLenum srcAlpha,
-        //     GLenum dstAlpha);
-//        if (blendMode == 1) {
-//            glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA,
-//                                GL_ONE_MINUS_SRC_ALPHA);
-//        } else {
-            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-//        }
-//        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-        glDisable(GL_BLEND);
+        //关闭混合
+        if (hasBg) {
+            glDisable(GL_BLEND);
+        }
     }
 }
 
 //如果有背景需要开启混合
-void yyeva::Render::setHasBg(bool hasBg) {
+void Render::setHasBg(bool hasBg) {
     this->hasBg = hasBg;
 }
-
-//如果有背景需要开启混合
-void yyeva::Render::setBlendMode(int blendMode) {
-    this->blendMode = blendMode;
-}
-
-

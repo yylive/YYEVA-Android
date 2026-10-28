@@ -1,8 +1,10 @@
 //
 // Created by zengjiale on 2022/4/15.
 //
-#pragma once
 #include "pointrect.h"
+#ifndef YYEVA_DATA_H
+#define YYEVA_DATA_H
+
 
 class Data {
 public:
@@ -11,7 +13,10 @@ public:
         renderFrame = nullptr;
         outputFrame = nullptr;
     };
-    std::shared_ptr<PointRect> renderFrame;
+    PointRect* renderFrame;
     int effectId;
-    std::shared_ptr<PointRect> outputFrame;
+    PointRect* outputFrame;
 };
+
+
+#endif //YYEVA_DATA_H

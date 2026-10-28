@@ -1,8 +1,11 @@
 //
 // Created by zengjiale on 2022/4/15.
 //
-#pragma once
+
 #include "pointrect.h"
+
+#ifndef YYEVA_DESCRIPT_H
+#define YYEVA_DESCRIPT_H
 
 class Descript {
 public:
@@ -15,6 +18,9 @@ public:
     int height;
     bool isEffect;
     int version;
-    std::shared_ptr<PointRect> rgbFrame;
-    std::shared_ptr<PointRect> alphaFrame;
+    PointRect* rgbFrame;
+    PointRect* alphaFrame;
 };
+
+
+#endif //YYEVA_DESCRIPT_H

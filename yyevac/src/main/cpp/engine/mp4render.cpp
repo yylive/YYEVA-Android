@@ -3,51 +3,43 @@
 //
 
 #include "mp4render.h"
-#include <cstring>
 
-yyeva::Mp4Render::Mp4Render(): vertexArray(make_shared<GlFloatArray>()), rgbaArray(make_shared<GlFloatArray>()) {
-    memset(textureTransform, 0, sizeof(textureTransform));
-    textureTransform[0] = 1.0f;
-    textureTransform[5] = 1.0f;
-    textureTransform[10] = 1.0f;
-    textureTransform[15] = 1.0f;
+Mp4Render::Mp4Render() {
     initRender();
 }
 
-yyeva::Mp4Render::~Mp4Render() {
+Mp4Render::~Mp4Render() {
+    vertexArray = nullptr;
+    rgbaArray = nullptr;
 }
 
-void yyeva::Mp4Render::setBgImage(unsigned char *bitmap, AndroidBitmapInfo *bitmapInfo) {
+void Mp4Render::setBgImage(unsigned char *bitmap, AndroidBitmapInfo *bitmapInfo) {
 //    textureId = TextureLoadUtil::loadTexture(bitmap, bitmapInfo);
 }
 
 
-void yyeva::Mp4Render::initRender() {
-    char VERTEX_SHADER[] = R"(#version 310 es
-        in vec4 vPosition;
-        in vec4 vTexCoordinate;
-        uniform mat4 uTextureTransform;
-        out vec2 v_TexCoordinate;
-        void main() {
-            vec4 texCoord = uTextureTransform * vec4(vTexCoordinate.x, vTexCoordinate.y, 0.0, 1.0);
-            v_TexCoordinate = texCoord.xy;
-            gl_Position = vPosition;
-        }
-    )";
-    char FRAGMENT_SHADER[] = R"(#version 310 es
-        #extension GL_OES_EGL_image_external_essl3 : require
-        precision mediump float;
-        uniform samplerExternalOES u_Texture;
-        in vec2 v_TexCoordinate;
-        out vec4 fragColor;
+void Mp4Render::initRender() {
+    char VERTEX_SHADER[] = "attribute vec4 vPosition;\n"
+                           "attribute vec4 vTexCoordinate;\n"
+                           "varying vec2 v_TexCoordinate;\n"
+                           "\n"
+                           "void main() {\n"
+                           "    v_TexCoordinate = vec2(vTexCoordinate.x, vTexCoordinate.y);\n"
+                           "    gl_Position = vPosition;\n"
+                           "}";
 
-        void main () {
-            fragColor = texture(u_Texture, v_TexCoordinate);
-        }
-    )";
+    char FRAGMENT_SHADER[] =
+                             "#extension GL_OES_EGL_image_external : require\n"
+                             "precision mediump float;\n"
+                             "uniform samplerExternalOES texture;\n"
+                             "varying vec2 v_TexCoordinate;\n"
+                             "\n"
+                             "void main () {\n"
+                             "    gl_FragColor = texture2D(texture, v_TexCoordinate);\n"
+//                             "    gl_FragColor = vec4(1.0,0.2,0.5,1.0);\n"
+                             "}";
     shaderProgram = ShaderUtil::createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    uTextureLocation = glGetUniformLocation(shaderProgram, "u_Texture");
-    uTextureTransformLocation = glGetUniformLocation(shaderProgram, "uTextureTransform");
+    uTextureLocation = glGetUniformLocation(shaderProgram, "texture");
     positionLocation = glGetAttribLocation(shaderProgram, "vPosition");
     textureLocation = glGetAttribLocation(shaderProgram, "vTexCoordinate");
 
@@ -59,7 +51,7 @@ void yyeva::Mp4Render::initRender() {
     glTexParameterf(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 }
 
-void yyeva::Mp4Render::renderFrame() {
+void Mp4Render::renderFrame() {
     if (surfaceSizeChanged && surfaceWidth > 0 && surfaceHeight > 0) {
         surfaceSizeChanged = false;
         glViewport(0, 0, surfaceWidth, surfaceHeight);
@@ -67,56 +59,49 @@ void yyeva::Mp4Render::renderFrame() {
     draw();
 }
 
-void yyeva::Mp4Render::clearFrame() {
+void Mp4Render::clearFrame() {
     glClearColor(0, 0, 0, 0);
 
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void yyeva::Mp4Render::destroyRender() {
+void Mp4Render::destroyRender() {
     releaseTexture();
 }
 
-void yyeva::Mp4Render::setAnimeConfig(shared_ptr<EvaAnimeConfig> config) {
-    vertexArray->setArray(VertexUtil::create(config->width, config->height, make_shared<PointRect>(0, 0, config->width, config->height), vertexArray->array));
-    float* rgba = TexCoordsUtil::create(config->width, config->height, make_shared<PointRect>(0, 0, config->width, config->height), rgbaArray->array);
+void Mp4Render::setAnimeConfig(EvaAnimeConfig *config) {
+    vertexArray->setArray(VertexUtil::create(config->width, config->height, new PointRect(0, 0, config->width, config->height), vertexArray->array));
+    float* rgba = TexCoordsUtil::create(config->width, config->height, new PointRect(0, 0, config->width, config->height), rgbaArray->array);
     rgbaArray->setArray(rgba);
 }
 
-GLuint yyeva::Mp4Render::getExternalTexture() {
+GLuint Mp4Render::getExternalTexture() {
     return textureId;
 }
 
-void yyeva::Mp4Render::releaseTexture() {
+void Mp4Render::releaseTexture() {
     glDeleteTextures(1, &textureId);
-    glDeleteProgram(shaderProgram);
 }
 
-void yyeva::Mp4Render::swapBuffers() {
+void Mp4Render::swapBuffers() {
 
 }
 
-void yyeva::Mp4Render::updateViewPort(int width, int height) {
+void Mp4Render::updateViewPort(int width, int height) {
     if (width <= 0 || height <= 0) return;
     surfaceSizeChanged = true;
     surfaceWidth = width;
     surfaceHeight = height;
 }
 
-void yyeva::Mp4Render::setExternalTextureTransform(const float* matrix) {
-    if (matrix == nullptr) return;
-    memcpy(textureTransform, matrix, sizeof(textureTransform));
-}
-
-void yyeva::Mp4Render::draw() {
+void Mp4Render::draw() {
     if (textureId != -1) {
         glUseProgram(shaderProgram);
         vertexArray->setVertexAttribPointer(positionLocation);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_EXTERNAL_OES, textureId);
+        glBindTexture(GL_TEXTURE_2D, textureId);
         //加载纹理
         glUniform1i(uTextureLocation, 0);
-        glUniformMatrix4fv(uTextureTransformLocation, 1, GL_FALSE, textureTransform);
         rgbaArray->setVertexAttribPointer(textureLocation);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     }

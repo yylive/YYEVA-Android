@@ -8,7 +8,7 @@ EvaSrc::EvaSrc() {
 
 }
 
-EvaSrc::EvaSrc(shared_ptr<Effect> effect) {
+EvaSrc::EvaSrc(Effect* effect) {
     srcId = to_string(effect->effectId);
     w = effect->effectWidth;
     h = effect->effectHeight;
@@ -41,7 +41,6 @@ EvaSrc::~EvaSrc() {
     srcTag.clear();
     txt.clear();
     fontColor.clear();
-    delete[] bitmap;
     bitmap = nullptr;
     bitmapInfo = nullptr;
 }
