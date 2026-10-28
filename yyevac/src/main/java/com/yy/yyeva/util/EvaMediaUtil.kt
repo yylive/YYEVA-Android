@@ -74,7 +74,7 @@ object EvaMediaUtil {
             val numCodecs = MediaCodecList.getCodecCount()
             for (i in 0 until numCodecs) {
                 val codecInfo = MediaCodecList.getCodecInfoAt(i)
-                if (!codecInfo.isEncoder) {
+                if (codecInfo.isEncoder) {
                     continue
                 }
                 val types = codecInfo.supportedTypes
