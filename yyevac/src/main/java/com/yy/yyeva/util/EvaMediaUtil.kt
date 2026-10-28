@@ -74,7 +74,8 @@ object EvaMediaUtil {
             val numCodecs = MediaCodecList.getCodecCount()
             for (i in 0 until numCodecs) {
                 val codecInfo = MediaCodecList.getCodecInfoAt(i)
-                if (!codecInfo.isEncoder) {
+                // isEncoder=true 是编码器；这里要收集的是可用于解码播放的类型
+                if (codecInfo.isEncoder) {
                     continue
                 }
                 val types = codecInfo.supportedTypes
