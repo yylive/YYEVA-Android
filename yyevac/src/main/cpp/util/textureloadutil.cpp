@@ -9,8 +9,8 @@
 
 
 #define LOG_TAG "TextureLoadUtil"
-#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
-#define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
+#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
 
 GLuint TextureLoadUtil::loadTexture(unsigned char *bitmap, AndroidBitmapInfo* info) {
     if (bitmap == nullptr) {
@@ -18,12 +18,11 @@ GLuint TextureLoadUtil::loadTexture(unsigned char *bitmap, AndroidBitmapInfo* in
         return 0;
     }
 
-    GLuint textureObjectIds = -1;
+    GLuint textureObjectIds = 0;
     glGenTextures(1, &textureObjectIds);
-    if (textureObjectIds == -1) {
-        glDeleteTextures(1, &textureObjectIds);
+    if (textureObjectIds == 0) {
         ELOGE("textureObjectIds = 0");
-        return -1;
+        return 0;
     }
 
     glBindTexture(GL_TEXTURE_2D, textureObjectIds);
@@ -51,18 +50,17 @@ GLuint TextureLoadUtil::loadTexture(unsigned char *bitmap, AndroidBitmapInfo* in
     return textureObjectIds;
 }
 
-GLuint TextureLoadUtil::loadTexture(shared_ptr<EvaSrc> src) {
+GLuint TextureLoadUtil::loadTexture(EvaSrc* src) {
     if (src->bitmap == nullptr) {
         ELOGE("bitmap = null");
         return 0;
     }
 
-    GLuint textureObjectIds = -1;
+    GLuint textureObjectIds = 0;
     glGenTextures(1, &textureObjectIds);
-    if (textureObjectIds == -1) {
-        glDeleteTextures(1, &textureObjectIds);
+    if (textureObjectIds == 0) {
         ELOGE("textureObjectIds = 0");
-        return -1;
+        return 0;
     }
 
     glBindTexture(GL_TEXTURE_2D, textureObjectIds);

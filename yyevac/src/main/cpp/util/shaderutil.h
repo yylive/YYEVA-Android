@@ -1,13 +1,14 @@
 //
 // Created by asus on 2022/4/17.
 //
-#pragma once
 #include <string>
 //#include <GLES3/gl3.h>
 //#include <GLES3/gl3ext.h>
-#include <GLES3/gl3.h>
+#include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-#include <util/elog.h>
+
+#ifndef YYEVA_SHADERUTIL_H
+#define YYEVA_SHADERUTIL_H
 
 using namespace std;
 class ShaderUtil {
@@ -20,3 +21,5 @@ public:
 
     static GLuint createAndLinkProgram(GLuint vertexShaderHandle, GLuint fragmentShaderHandle);
 };
+
+#endif

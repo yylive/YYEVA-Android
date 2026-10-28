@@ -1,8 +1,8 @@
 package com.yy.yyeva.decoder
 
+import android.os.Build
 import android.os.HandlerThread
 import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import com.yy.yyeva.EvaAnimConfig
 import com.yy.yyeva.EvaAnimPlayer
@@ -12,6 +12,7 @@ import com.yy.yyeva.util.EvaConstant
 import com.yy.yyeva.util.ELog
 import com.yy.yyeva.util.EvaJniUtil
 import com.yy.yyeva.util.SpeedControlUtil
+import org.json.JSONObject
 
 
 abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
@@ -36,7 +37,11 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
 
         fun quitSafely(thread: HandlerThread?): HandlerThread? {
             thread?.apply {
-                thread.quitSafely()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    thread.quitSafely()
+                } else {
+                    thread.quit()
+                }
             }
             return null
         }
@@ -45,8 +50,6 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
     //    var render: IRenderListener? = null
     val renderThread = HandlerHolder(null, null)
     val decodeThread = HandlerHolder(null, null)
-    val mainHandler = Handler(Looper.getMainLooper())
-    var completeBlock: ((Boolean)->Unit)? = null
     private var surfaceWidth = 0
     private var surfaceHeight = 0
     var fps: Int = 0
@@ -55,26 +58,17 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
             speedControlUtil.setFixedPlaybackRate(value)
             field = value
         }
-    var playLoop = 1 // 循环播放次数
-    var isLoop = false //无限循环
+    var playLoop = 0 // 循环播放次数
     var isRunning = false // 是否正在运行
     var isStopReq = false // 是否需要停止
-    var blendMode = 1
     val speedControlUtil by lazy { SpeedControlUtil() }
 
     abstract fun start(evaFileContainer: IEvaFileContainer)
 
-    abstract fun prepareToPlay(evaFileContainer: IEvaFileContainer)
-
-    abstract fun play()
-
-    fun stop(completeBlock: ((Boolean)->Unit)?= null) {
+    fun stop() {
         Log.i(TAG, "stop true")
         isStopReq = true
-        this.completeBlock = completeBlock
     }
-
-    abstract fun restart()
 
     abstract fun pause()
 
@@ -89,15 +83,13 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
     fun prepareRender(needYUV: Boolean): Boolean {
         ELog.i(TAG, "prepareRender")
         playerEva.evaAnimView.getSurface()?.apply {
-            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId,
-                this, needYUV, playerEva.isNormalMp4, playerEva.isVideoRecord)
+            playerEva.controllerId = EvaJniUtil.initRender(playerEva.controllerId, this, needYUV, playerEva.isNormalMp4)
             return true
         }
         return false
     }
 
     fun preparePlay(videoWidth: Int, videoHeight: Int) {
-        EvaJniUtil.setBlendMode(playerEva.controllerId, blendMode)
         playerEva.configManager.defaultConfig(videoWidth, videoHeight)
         playerEva.configManager.config?.apply {
 //            render?.setAnimConfig(this)
@@ -107,20 +99,20 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
                         playerEva.controllerId,
                         videoWidth,
                         videoHeight,
-                        EvaConstant.VIDEO_MODE_NORMAL_MP4  //正常宽高
+                        -1  //正常宽高
                     )
                 } else {
                     EvaJniUtil.defaultConfig(
                         playerEva.controllerId,
                         videoWidth,
                         videoHeight,
-                        defaultVideoMode)
+                        defaultVideoMode
+                    )
                 }
                 playerEva.evaAnimListener?.onVideoConfigReady(this)
                 playerEva.evaAnimView.updateTextureViewLayout()
             } else if (jsonConfig != null) {
                 EvaJniUtil.setRenderConfig(playerEva.controllerId, jsonConfig.toString())
-//                playerEva.mediaRecorder.setRecordRenderConfig(playerEva.controllerId, jsonConfig.toString())
             }
         }
 
@@ -145,7 +137,6 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
             decodeThread.thread = quitSafely(decodeThread.thread)
             renderThread.handler = null
             decodeThread.handler = null
-            mainHandler.removeCallbacksAndMessages(null)
         }
     }
 
@@ -156,51 +147,34 @@ abstract class Decoder(val playerEva: EvaAnimPlayer) : IEvaAnimListener {
         Log.i(TAG, "updateViewPoint $width, $height")
     }
 
-    fun setBlend(blendMode: Int) {
-        this.blendMode = blendMode
-    }
-
-    override fun onVideoStart(isRestart: Boolean) {
+    override fun onVideoStart() {
         ELog.i(TAG, "onVideoStart")
-        mainHandler.post {
-            playerEva.evaAnimListener?.onVideoStart(isRestart)
-        }
+        playerEva.evaAnimListener?.onVideoStart()
     }
 
     override fun onVideoRestart() {
         ELog.i(TAG, "onVideoRestart")
-        mainHandler.post {
-            playerEva.evaAnimListener?.onVideoRestart()
-        }
+        playerEva.evaAnimListener?.onVideoRestart()
     }
 
     override fun onVideoRender(frameIndex: Int, config: EvaAnimConfig?) {
         ELog.d(TAG, "onVideoRender")
-        mainHandler.post {
-            playerEva.evaAnimListener?.onVideoRender(frameIndex, config)
-        }
+        playerEva.evaAnimListener?.onVideoRender(frameIndex, config)
     }
 
     override fun onVideoComplete(lastFrame: Boolean) {
         ELog.i(TAG, "onVideoComplete")
-        mainHandler.post {
-            playerEva.evaAnimListener?.onVideoComplete(lastFrame)
-            completeBlock?.invoke(lastFrame)
-        }
+        playerEva.evaAnimListener?.onVideoComplete(lastFrame)
     }
 
     override fun onVideoDestroy() {
         ELog.i(TAG, "onVideoDestroy")
-        mainHandler.post {
-            playerEva.evaAnimListener?.onVideoDestroy()
-        }
+        playerEva.evaAnimListener?.onVideoDestroy()
     }
 
     override fun onFailed(errorType: Int, errorMsg: String?) {
         ELog.e(TAG, "onFailed errorType=$errorType, errorMsg=$errorMsg")
-        mainHandler.post {
-            playerEva.evaAnimListener?.onFailed(errorType, errorMsg)
-        }
+        playerEva.evaAnimListener?.onFailed(errorType, errorMsg)
     }
 }
 

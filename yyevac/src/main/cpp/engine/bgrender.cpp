@@ -4,43 +4,45 @@
 
 #include "bgrender.h"
 
-yyeva::BgRender::BgRender(): vertexArray(make_shared<GlFloatArray>()), rgbaArray(make_shared<GlFloatArray>()) {
+BgRender::BgRender() {
     initRender();
 }
 
-yyeva::BgRender::~BgRender() {
+BgRender::~BgRender() {
+    vertexArray = nullptr;
+    rgbaArray = nullptr;
 }
 
-void yyeva::BgRender::setBgImage(unsigned char *bitmap, AndroidBitmapInfo *bitmapInfo) {
+void BgRender::setBgImage(unsigned char *bitmap, AndroidBitmapInfo *bitmapInfo) {
     textureId = TextureLoadUtil::loadTexture(bitmap, bitmapInfo);
 }
 
-void yyeva::BgRender::initRender() {
-    char VERTEX_SHADER[] = R"(in vec4 vPosition;
-        in vec4 vTexCoordinate;
-        out vec2 v_TexCoordinate;
-        void main() {
-            v_TexCoordinate = vec2(vTexCoordinate.x, vTexCoordinate.y);
-            gl_Position = vPosition;
-        }
-    )";
-    char FRAGMENT_SHADER[] = R"(#version 310 es
-        precision mediump float;
-        uniform sampler2D u_Texture;
-        in vec2 v_TexCoordinate;
-        out vec4 fragColor;
 
-        void main () {
-            fragColor = texture(u_Texture, v_TexCoordinate);
-        }
-    )";
+void BgRender::initRender() {
+    char VERTEX_SHADER[] = "attribute vec4 vPosition;\n"
+                           "attribute vec4 vTexCoordinate;\n"
+                           "varying vec2 v_TexCoordinate;\n"
+                           "\n"
+                           "void main() {\n"
+                           "    v_TexCoordinate = vec2(vTexCoordinate.x, vTexCoordinate.y);\n"
+                           "    gl_Position = vPosition;\n"
+                           "}";
+
+    char FRAGMENT_SHADER[] = "precision mediump float;\n"
+                             "uniform sampler2D texture;\n"
+                             "varying vec2 v_TexCoordinate;\n"
+                             "\n"
+                             "void main () {\n"
+                             "    gl_FragColor = texture2D(texture, v_TexCoordinate);\n"
+//                             "    gl_FragColor = vec4(1.0,0.2,0.5,1.0);\n"
+                             "}";
     shaderProgram = ShaderUtil::createProgram(VERTEX_SHADER, FRAGMENT_SHADER);
-    uTextureLocation = glGetUniformLocation(shaderProgram, "u_Texture");
+    uTextureLocation = glGetUniformLocation(shaderProgram, "texture");
     positionLocation = glGetAttribLocation(shaderProgram, "vPosition");
     textureLocation = glGetAttribLocation(shaderProgram, "vTexCoordinate");
 }
 
-void yyeva::BgRender::renderFrame() {
+void BgRender::renderFrame() {
     if (surfaceSizeChanged && surfaceWidth > 0 && surfaceHeight > 0) {
         surfaceSizeChanged = false;
         glViewport(0, 0, surfaceWidth, surfaceHeight);
@@ -48,43 +50,42 @@ void yyeva::BgRender::renderFrame() {
     draw();
 }
 
-void yyeva::BgRender::clearFrame() {
+void BgRender::clearFrame() {
     glClearColor(0, 0, 0, 0);
 
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void yyeva::BgRender::destroyRender() {
+void BgRender::destroyRender() {
     releaseTexture();
 }
 
-void yyeva::BgRender::setAnimeConfig(shared_ptr<EvaAnimeConfig> config) {
-    vertexArray->setArray(VertexUtil::create(config->width, config->height,make_shared<PointRect>(0, 0, config->width, config->height), vertexArray->array));
-    float* rgba = TexCoordsUtil::create(config->width, config->height, make_shared<PointRect>(0, 0, config->width, config->height), rgbaArray->array);
+void BgRender::setAnimeConfig(EvaAnimeConfig *config) {
+    vertexArray->setArray(VertexUtil::create(config->width, config->height, new PointRect(0, 0, config->width, config->height), vertexArray->array));
+    float* rgba = TexCoordsUtil::create(config->width, config->height, new PointRect(0, 0, config->width, config->height), rgbaArray->array);
     rgbaArray->setArray(rgba);
 }
 
-GLuint yyeva::BgRender::getExternalTexture() {
+GLuint BgRender::getExternalTexture() {
     return textureId;
 }
 
-void yyeva::BgRender::releaseTexture() {
+void BgRender::releaseTexture() {
     glDeleteTextures(1, &textureId);
-    glDeleteProgram(shaderProgram);
 }
 
-void yyeva::BgRender::swapBuffers() {
+void BgRender::swapBuffers() {
 
 }
 
-void yyeva::BgRender::updateViewPort(int width, int height) {
+void BgRender::updateViewPort(int width, int height) {
     if (width <= 0 || height <= 0) return;
     surfaceSizeChanged = true;
     surfaceWidth = width;
     surfaceHeight = height;
 }
 
-void yyeva::BgRender::draw() {
+void BgRender::draw() {
     if (textureId != -1) {
         glUseProgram(shaderProgram);
         vertexArray->setVertexAttribPointer(positionLocation);

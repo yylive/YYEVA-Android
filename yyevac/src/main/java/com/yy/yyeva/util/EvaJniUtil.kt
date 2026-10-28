@@ -26,16 +26,10 @@ object EvaJniUtil {
     external fun videoSizeChange(controllerId: Int, newWidth: Int, newHeight: Int)
 
     /**
-     * 更新外部视频纹理变换矩阵，用于裁剪解码器对齐区域。
-     * Java 层会按帧读取矩阵，但只在矩阵内容变化时才下发到 native。
-     */
-    external fun updateExternalTextureTransform(controllerId: Int, matrix: FloatArray)
-
-    /**
      * 初始化mp4渲染
      * 返回管理器id
      */
-    external fun initRender(controllerId: Int, surface: Surface, isNeedYuv: Boolean, isNormalMp4: Boolean, isVideoRecord: Boolean): Int
+    external fun initRender(controllerId: Int, surface: Surface, isNeedYuv: Boolean, isNormalMp4: Boolean): Int
 
     /**
      * 设置动效json数据
@@ -103,35 +97,4 @@ object EvaJniUtil {
      * 销毁动效元素
      */
     external fun mixRenderDestroy(controllerId: Int)
-
-    /**
-     * 初始化录制视频
-     */
-    external fun initVideoRecord(controllerId: Int, surface: Surface): Int
-
-    /**
-     * 设置动效json数据
-     */
-    external fun setRecordRenderConfig(controllerId: Int, json: String)
-
-
-    /**
-     * 触发录制绘制
-     */
-    external fun recordRender(controllerId: Int, time: Long)
-
-    /**
-     * 停止录制
-     */
-    external fun stopRecord(controllerId: Int)
-
-    /**
-     * 是否开启视频录制
-     * 需要在主渲染线程开启，不是录制线程开启
-     */
-    external fun setVideoRecord(controllerId: Int, isVideoRecord: Boolean)
-
-    external fun setLog(log: IELog)
-
-    external fun setBlendMode(controllerId: Int, blendMode: Int)
 }

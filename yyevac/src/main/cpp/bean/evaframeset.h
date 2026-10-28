@@ -1,20 +1,25 @@
 //
 // Created by zengjiale on 2022/4/19.
 //
-#pragma once
 #include "evaframe.h"
 #include "list"
 #include "datas.h"
+
+#ifndef YYEVA_EVAFRAMESET_H
+#define YYEVA_EVAFRAMESET_H
 
 
 class EvaFrameSet {
 public:
     int index = 0;
-    std::list<shared_ptr<EvaFrame>> list;
+    std::list<EvaFrame> list;
 
     EvaFrameSet();
 
-    EvaFrameSet(std::shared_ptr<Datas> datas);
+    EvaFrameSet(Datas datas);
 
     ~EvaFrameSet();
 };
+
+
+#endif //YYEVA_EVAFRAMESET_H

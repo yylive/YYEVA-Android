@@ -223,7 +223,7 @@ class EvaDownloadDemoActivity : Activity(), IEvaAnimListener {
     /**
      * 视频开始回调
      */
-    override fun onVideoStart(isRestart: Boolean) {
+    override fun onVideoStart() {
         ELog.i(TAG, "onVideoStart")
     }
 

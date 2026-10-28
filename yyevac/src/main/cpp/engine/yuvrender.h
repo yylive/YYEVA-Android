@@ -1,7 +1,6 @@
 //
 // Created by zengjiale on 2022/4/15.
 //
-#pragma once
 #include "irender.h"
 #include "src/main/cpp/egl/eglcore.h"
 #include "src/main/cpp/util/shaderutil.h"
@@ -9,7 +8,7 @@
 #include <EGL/eglext.h>
 //#include <GLES3/gl3.h>
 //#include <GLES3/gl3ext.h>
-#include <GLES3/gl3.h>
+#include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include "src/main/cpp/util/vertexutil.h"
 #include "src/main/cpp/util/texcoordsutil.h"
@@ -23,18 +22,17 @@ public:
     void renderFrame();
     void clearFrame();
     void destroyRender();
-    void setAnimeConfig(shared_ptr<EvaAnimeConfig> config);
+    void setAnimeConfig(EvaAnimeConfig* config);
     GLuint getExternalTexture();
     void releaseTexture();
     void swapBuffers();
-    void setHasBg(bool hasBg) {};
-    void setBlendMode(int blendMode) {};
+    void setHasBg(bool hasBg) {}
     void setYUVData(int width, int height, char *y, char *u, char *v);
 
 private:
-    shared_ptr<GlFloatArray> vertexArray;
-    shared_ptr<GlFloatArray> alphaArray;
-    shared_ptr<GlFloatArray> rgbArray;
+    GlFloatArray *vertexArray = new GlFloatArray();
+    GlFloatArray *alphaArray = new GlFloatArray();
+    GlFloatArray *rgbArray = new GlFloatArray();
 
     GLuint shaderProgram;
     //顶点位置

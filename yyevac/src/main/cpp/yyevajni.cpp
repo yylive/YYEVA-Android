@@ -1,29 +1,21 @@
 #include <jni.h>
 #include <string>
-
+#include <android/log.h>
 #include <android/bitmap.h>
 #include <android/native_window_jni.h>
 #include <engine/rendercontroller.h>
-#include <record/recordercontroller.h>
-#include <util/elog.h>
 #include <map>
 #include <mutex>
-#include <cstring>
 
 #define LOG_TAG "YYEVAJNI"
-#define ELOGE(...) yyeva::ELog::get()->e(LOG_TAG, __VA_ARGS__)
-#define ELOGV(...) yyeva::ELog::get()->i(LOG_TAG, __VA_ARGS__)
+#define ELOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
+#define ELOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
 
 #define YYEVA(sig) Java_com_yy_yyeva_util_EvaJniUtil_##sig
 
-
-using namespace std;
-using namespace yyeva;
-map<int, shared_ptr<RenderController>> renderMap;
-map<int, shared_ptr<RecorderController>> recordMap;
+std::map<int, RenderController*> renderMap;
 int renderId = 0;
-mutex mtx;
-jobject elog;
+std::mutex mtx;
 
 extern "C"{
 
@@ -93,32 +85,9 @@ JNIEXPORT void JNICALL YYEVA(videoSizeChange)(
     renderMap[controllerId]->videoSizeChange(newWidth, newHeight);
 }
 
-JNIEXPORT void JNICALL YYEVA(updateExternalTextureTransform)(
-        JNIEnv *env,
-        jobject instance, jint controllerId,
-        jfloatArray matrix) {
-    if (controllerId == -1) {
-        ELOGE("updateExternalTextureTransform controller not init");
-        return;
-    }
-    if (renderMap.find(controllerId) == renderMap.end()) {
-        ELOGE("updateExternalTextureTransform controller %d not found", controllerId);
-        return;
-    }
-    if (matrix == NULL || env->GetArrayLength(matrix) < 16) {
-        ELOGE("updateExternalTextureTransform matrix invalid");
-        return;
-    }
-    float textureTransform[16];
-    memset(textureTransform, 0, sizeof(textureTransform));
-    env->GetFloatArrayRegion(matrix, 0, 16, textureTransform);
-    renderMap[controllerId]->updateExternalTextureTransform(textureTransform);
-}
-
 JNIEXPORT jint JNICALL YYEVA(initRender)(
-        JNIEnv *env, jobject instance, jint controllerId,
-        jobject surface, jboolean isNeedYUV, jboolean isNormalMp4, jboolean isVideoRecord) {
-    lock_guard<mutex> auto_lock(mtx);
+        JNIEnv *env, jobject instance, jint controllerId, jobject surface, jboolean isNeedYUV, jboolean isNormalMp4) {
+    mtx.lock();
     //创建window
     ANativeWindow *window = ANativeWindow_fromSurface(env,surface);
     if (window == nullptr) {
@@ -131,18 +100,17 @@ JNIEXPORT jint JNICALL YYEVA(initRender)(
         id = renderId;
         auto* controller = new RenderController();
         controller->initRender(window, isNeedYUV, isNormalMp4);
-        renderMap.insert(make_pair(id, controller));
-        controller->setVideoRecord(isVideoRecord);
+        renderMap.insert(std::make_pair(id, controller));
     } else if (renderMap.find(controllerId) != renderMap.end()) {
         if (renderMap[controllerId]->getExternalTexture() == -1) {  //防止重复初始化
             renderMap[controllerId]->initRender(window, isNeedYUV, isNormalMp4);
-            renderMap[controllerId]->setVideoRecord(isVideoRecord);
         } else {
             ELOGE("initRender init repeat");
         }
     } else {
         ELOGE("initRender controller %d not found", controllerId);
     }
+    mtx.unlock();
 
     return id;
 
@@ -167,7 +135,7 @@ JNIEXPORT void JNICALL YYEVA(setRenderConfig)(
         ELOGE("setRenderConfig controller %d not found", controllerId);
         return;
     }
-    auto config = EvaAnimeConfig::parse(cJson);
+    EvaAnimeConfig* config = EvaAnimeConfig::parse(cJson);
     if (config != nullptr) {
         renderMap[controllerId]->setRenderConfig(config);
     }
@@ -184,7 +152,7 @@ JNIEXPORT void JNICALL YYEVA(defaultConfig)(
         ELOGE("defaultConfig controller %d not found", controllerId);
         return;
     }
-    shared_ptr<EvaAnimeConfig> config = EvaAnimeConfig::defaultConfig((int)_videoWidth, (int)_videoHeight, (int)_defaultVideoMode);
+    EvaAnimeConfig* config = EvaAnimeConfig::defaultConfig((int)_videoWidth, (int)_videoHeight, (int)_defaultVideoMode);
 
     if (config != nullptr) {
         renderMap[controllerId]->setRenderConfig(config);
@@ -193,7 +161,6 @@ JNIEXPORT void JNICALL YYEVA(defaultConfig)(
 
 JNIEXPORT void JNICALL YYEVA(renderFrame)(
         JNIEnv *env, jobject instance, jint controllerId) {
-    lock_guard<mutex> auto_lock(mtx);
     if (controllerId == -1) {
         ELOGE("renderFrame controller not init");
         return;
@@ -247,7 +214,6 @@ JNIEXPORT void JNICALL YYEVA(releaseTexture)(
 
 JNIEXPORT void JNICALL YYEVA(destroyRender)(
         JNIEnv *env, jobject instance, jint controllerId) {
-    lock_guard<mutex> auto_lock(mtx);
     if (controllerId == -1) {
         ELOGE("destroyRender controller not init");
         return;
@@ -262,17 +228,16 @@ JNIEXPORT void JNICALL YYEVA(destroyRender)(
 
 JNIEXPORT jint JNICALL YYEVA(mixConfigCreate)(
         JNIEnv *env, jobject instance, jint controllerId, jstring json) {
-    lock_guard<mutex> auto_lock(mtx);
+    mtx.lock();
     const char *cJson = env->GetStringUTFChars(json, JNI_FALSE);
-    shared_ptr<EvaAnimeConfig> config = EvaAnimeConfig::parse(cJson);
+    EvaAnimeConfig* config = EvaAnimeConfig::parse(cJson);
     int id = controllerId;
     if (controllerId == -1) {
         ELOGV("mixConfigCreate controller not init");
         renderId += 1;
         id = renderId;
-//        auto* controller = new RenderController();
-        auto controller = make_shared<RenderController>();
-        renderMap.insert(make_pair(id, controller));
+        auto* controller = new RenderController();
+        renderMap.insert(std::make_pair(id, controller));
         renderMap[id]->mixConfigCreate(config);
     } else if (renderMap.find(controllerId) != renderMap.end()){
         renderMap[controllerId]->mixConfigCreate(config);
@@ -280,6 +245,7 @@ JNIEXPORT jint JNICALL YYEVA(mixConfigCreate)(
         ELOGE("mixConfigCreate controller %d not found", controllerId);
     }
     env->ReleaseStringUTFChars(json, cJson);
+    mtx.unlock();
     return id;
 }
 
@@ -345,7 +311,7 @@ JNIEXPORT void JNICALL YYEVA(setSrcBitmap)(
     }
 
     const char *id = env->GetStringUTFChars(srcId, JNI_FALSE);
-    const string scaleM = env->GetStringUTFChars(scaleMode, JNI_FALSE);
+    const std::string scaleM = env->GetStringUTFChars(scaleMode, JNI_FALSE);
     renderMap[controllerId]->setSrcBitmap(id, pixels, &bitmapInfo, scaleM);
 
     AndroidBitmap_unlockPixels(env, bitmap);
@@ -386,7 +352,7 @@ JNIEXPORT void JNICALL YYEVA(mixRenderCreate)(
 
 JNIEXPORT void JNICALL YYEVA(mixRendering) (
         JNIEnv *env, jobject instance, jint controllerId, jint frameIndex) {
-    lock_guard<mutex> auto_lock(mtx);
+    mtx.lock();
     if (controllerId == -1) {
         ELOGE("mixRendering controller not init");
         return;
@@ -396,11 +362,11 @@ JNIEXPORT void JNICALL YYEVA(mixRendering) (
         return;
     }
     renderMap[controllerId]->mixRendering(frameIndex);
+    mtx.unlock();
 }
 
 JNIEXPORT void JNICALL YYEVA(mixRenderDestroy)(
         JNIEnv *env, jobject instance, jint controllerId) {
-    lock_guard<mutex> auto_lock(mtx);
     if (controllerId == -1) {
         ELOGE("mixRenderDestroy controller not init");
         return;
@@ -410,126 +376,6 @@ JNIEXPORT void JNICALL YYEVA(mixRenderDestroy)(
         return;
     }
     renderMap[controllerId]->mixRenderDestroy();
-}
-
-JNIEXPORT void JNICALL YYEVA(setVideoRecord)(
-        JNIEnv *env, jobject instance, jint controllerId, jboolean isVideoRecord) {
-    if (controllerId == -1) {
-        ELOGE("setVideoRecord controller not init");
-        return;
-    }
-    if (renderMap.find(controllerId) == renderMap.end()) {
-        ELOGE("setVideoRecord controller %d not found", controllerId);
-        return;
-    }
-    renderMap[controllerId]->setVideoRecord(isVideoRecord);
-}
-
-JNIEXPORT jint JNICALL YYEVA(initVideoRecord) (
-        JNIEnv *env, jobject instance, jint controllerId, jobject surface) {
-    lock_guard<mutex> auto_lock(mtx);
-    ANativeWindow *window = ANativeWindow_fromSurface(env,surface);
-    if (window == nullptr) {
-        ELOGE("window is nullptr");
-        return -1;
-    }
-    if (renderMap.find(controllerId) != renderMap.end()) {
-        auto record = make_shared<RecorderController>();
-        recordMap.insert(make_pair(controllerId, record));
-        recordMap[controllerId]->init(renderMap[controllerId]->getEglContext(), window,
-                                      renderMap[controllerId]->getRecordFramebufferId());
-    } else {
-        ELOGE("initVideoRecord controller %d not found", controllerId);
-    }
-
-    return -1;
-}
-
-JNIEXPORT void JNICALL YYEVA(setRecordRenderConfig)(
-        JNIEnv *env, jobject instance, jint controllerId, jstring json) {
-    const char *cJson = env->GetStringUTFChars(json, JNI_FALSE);
-    if (controllerId == -1) {
-        ELOGE("setRecordRenderConfig controller not init");
-        return;
-    }
-    if (recordMap.find(controllerId) == recordMap.end()) {
-        ELOGE("setRecordRenderConfig controller %d not found", controllerId);
-        return;
-    }
-    shared_ptr<EvaAnimeConfig> config = EvaAnimeConfig::parse(cJson);
-    if (config != nullptr) {
-        recordMap[controllerId]->setRenderConfig(config);
-    }
-    env->ReleaseStringUTFChars(json, cJson);
-}
-
-JNIEXPORT void JNICALL YYEVA(recordRender)(
-        JNIEnv *env, jobject instance, jint controllerId, jlong time) {
-    lock_guard<mutex> auto_lock(mtx);
-    if (controllerId == -1) {
-        ELOGE("recordRender controller not init");
-        return;
-    }
-    if (renderMap.find(controllerId) == renderMap.end()) {
-        ELOGE("recordRender renderMap controller %d not found", controllerId);
-        return;
-    }
-    if (recordMap.find(controllerId) == recordMap.end()) {
-        ELOGE("recordRender recordRender controller %d not found", controllerId);
-        return;
-    }
-
-    recordMap[controllerId]->renderFrame(
-            renderMap[controllerId]->getRecordFramebufferId(),
-            static_cast<uint64_t>(time));
-}
-
-JNIEXPORT void JNICALL YYEVA(stopRecord)(
-        JNIEnv *env, jobject instance, jint controllerId) {
-    lock_guard<mutex> auto_lock(mtx);
-    if (controllerId == -1) {
-        ELOGE("stopRecord controller not init");
-        return;
-    }
-    if (recordMap.find(controllerId) == recordMap.end()) {
-        ELOGE("stopRecord controller %d not found", controllerId);
-        return;
-    }
-    recordMap[controllerId]->destroy();
-}
-
-JNIEXPORT void JNICALL YYEVA(setLog)(
-        JNIEnv *env,
-        jobject instance, jobject log) {
-    ELOGV("nativeSetListener");
-
-    JavaVM *javaVm;
-    if (env->GetJavaVM(&javaVm) != JNI_OK) {
-        return;
-    }
-    if (elog) {
-        env->DeleteGlobalRef(elog);
-    }
-    elog = env->NewGlobalRef(log);
-
-    ELog::get()->setJavaVM(javaVm);
-    ELog::get()->setELog(elog);
-}
-
-JNIEXPORT void JNICALL YYEVA(setBlendMode) (
-        JNIEnv *env,
-        jobject instance, jint controllerId, jint blendMode) {
-    ELOGV("setBlendMode");
-    lock_guard<mutex> auto_lock(mtx);
-    if (controllerId == -1) {
-        ELOGE("setBlendMode controller not init");
-        return;
-    }
-    if (renderMap.find(controllerId) == renderMap.end()) {
-        ELOGE("setBlendMode controller %d not found", controllerId);
-        return;
-    }
-    renderMap[controllerId]->setBlendMode(blendMode);
 }
 
 }
